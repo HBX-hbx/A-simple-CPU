@@ -99,7 +99,7 @@ module decoder(
             d_op = JALR;
         end else if (inst_i[31:25] == 7'b0110000 && inst_i[14:12] == 3'b001 && inst_i[6:0] == 7'b0010011) begin
             d_op = CTZ;
-        end else if (inst_i[31:25] == 7'b0000101 && inst_i[14:12] == 3'b101 && inst_i[6:0] == 7'b0110011) begin
+        end else if (inst_i[31:25] == 7'b0000101 && inst_i[14:12] == 3'b110 && inst_i[6:0] == 7'b0110011) begin
             d_op = MINU;
         end else if (inst_i[31:25] == 7'b0100100 && inst_i[14:12] == 3'b001 && inst_i[6:0] == 7'b0110011) begin
             d_op = SBCLR;
