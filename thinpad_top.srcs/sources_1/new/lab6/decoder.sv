@@ -63,19 +63,19 @@ module decoder(
             d_op = LUI;
         end else if (inst_i[6:0] == 7'b0010111) begin
             d_op = AUIPC;
-        end else if (inst_i[14:12] == 3'b000 && inst_i[6:0] == 7'b0110011) begin
+        end else if (inst_i[31:25] == 7'b0000000 && inst_i[14:12] == 3'b000 && inst_i[6:0] == 7'b0110011) begin
             d_op = ADD;
         end else if (inst_i[14:12] == 3'b000 && inst_i[6:0] == 7'b0010011) begin
             d_op = ADDI;
-        end else if (inst_i[14:12] == 3'b111 && inst_i[6:0] == 7'b0110011) begin
+        end else if (inst_i[31:25] == 7'b0000000 && inst_i[14:12] == 3'b111 && inst_i[6:0] == 7'b0110011) begin
             d_op = _AND;
         end else if (inst_i[14:12] == 3'b111 && inst_i[6:0] == 7'b0010011) begin
             d_op = ANDI;
-        end else if (inst_i[14:12] == 3'b110 && inst_i[6:0] == 7'b0110011) begin
+        end else if (inst_i[31:25] == 7'b0000000 && inst_i[14:12] == 3'b110 && inst_i[6:0] == 7'b0110011) begin
             d_op = _OR;
         end else if (inst_i[14:12] == 3'b110 && inst_i[6:0] == 7'b0010011) begin
             d_op = ORI;
-        end else if (inst_i[14:12] == 3'b100 && inst_i[6:0] == 7'b0110011) begin
+        end else if (inst_i[31:25] == 7'b0000000 && inst_i[14:12] == 3'b100 && inst_i[6:0] == 7'b0110011) begin
             d_op = _XOR;
         end else if (inst_i[31:25] == 7'b0000000 && inst_i[14:12] == 3'b001 && inst_i[6:0] == 7'b0010011) begin
             d_op = SLLI;
