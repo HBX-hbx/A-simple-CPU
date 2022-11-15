@@ -79,7 +79,7 @@ module extra_inst_handler (
                 data_o = 32'd0;
             end
         // Current inst is MINU
-        end else if (inst_i[31:25] == 7'b0000101 && inst_i[14:12] == 3'b101 && inst_i[6:0] == 7'b0110011) begin
+        end else if (inst_i[31:25] == 7'b0000101 && inst_i[14:12] == 3'b110 && inst_i[6:0] == 7'b0110011) begin
             if (rs1_data_i < rs2_data_i) begin
                 data_o = rs1_data_i;
             end else begin
