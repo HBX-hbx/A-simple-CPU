@@ -50,6 +50,9 @@ module decoder(
       BNE,
       JAL,
       JALR,
+      CTZ,
+      MINU,
+      SBCLR,
       ERR
     } decode_ops;
     
@@ -94,6 +97,12 @@ module decoder(
             d_op = JAL;
         end else if (inst_i[14:12] == 3'b000 && inst_i[6:0] == 7'b1100111) begin
             d_op = JALR;
+        end else if (inst_i[31:25] == 7'b0110000 && inst_i[14:12] == 3'b001 && inst_i[6:0] == 7'b0010011) begin
+            d_op = CTZ;
+        end else if (inst_i[31:25] == 7'b0000101 && inst_i[14:12] == 3'b101 && inst_i[6:0] == 7'b0110011) begin
+            d_op = MINU;
+        end else if (inst_i[31:25] == 7'b0100100 && inst_i[14:12] == 3'b001 && inst_i[6:0] == 7'b0110011) begin
+            d_op = SBCLR;
         end else begin
             d_op = ERR;
         end
@@ -363,6 +372,21 @@ module decoder(
             imm_sel_o = 3;
             wb_sel_o = 3; // write back pc + 4
             br_op_o = 3; // direct branch success
+            shamt_o = 0;
+            dm_sel_o = 0;
+            dm_op_o = 0;
+        // All these inst go through extra inst handler, where data_o is passed to imm_g and then ALU
+        end else if (d_op == CTZ || d_op == MINU || d_op == SBCLR) begin
+            rd_addr_o = inst_i[11:7];
+            rs1_addr_o = inst_i[19:15];
+            rs2_addr_o = inst_i[24:20];
+            rf_wen_o = 1;
+            alu_a_sel_o = 1; 
+            alu_b_sel_o = 0; // Want IMM out
+            alu_op_o = 11; // IMM Directly out
+            imm_sel_o = 6; // we want directly out from IMM Generator
+            wb_sel_o = 1; // write back from ALU
+            br_op_o = 2; // no branch op
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;

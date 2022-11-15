@@ -350,6 +350,15 @@ module lab6_top (
   logic [31:0] ori_rs1_data;
   logic [31:0] ori_rs2_data;
 
+  logic [31:0] exe_handler_data;
+
+  extra_inst_handler u_extra_inst_handler(
+      .inst_i (exe_inst),
+      .rs1_data_i (exe_rs1_data),
+      .rs2_data_i (exe_rs2_data),
+      .data_o (exe_handler_data)
+  );
+
   rs_mux u_rs1_mux(
       .rs_sel(rs1_sel),
       .exe_rs_data(ori_rs1_data),
@@ -386,6 +395,7 @@ module lab6_top (
   imm_generator u_imm_generator(
       .inst_i (exe_inst),
       .imm_sel_i (exe_imm_sel),
+      .handler_data_i (exe_handler_data),
       .imm_o (exe_imm)
   );
   

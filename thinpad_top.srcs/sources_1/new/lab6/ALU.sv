@@ -29,10 +29,8 @@ module ALU(
             alu_y = (alu_a >> (alu_b & 32'hF)) | (36'h100000000 - (36'h100000000 >> (alu_b & 32'h1F)));
           else
             alu_y = (alu_a >> (alu_b & 32'hF));
-        // ʵ��ѭ�����ƣ�start_loop��mode��������
         end else if (alu_op == 4'd10) begin
           alu_y = (alu_a << (alu_b & 32'hF)) | (alu_a >> (32 - (alu_b & 32'hF)));
-        // ����ֱ����� imm
         end else if (alu_op == 4'd11) begin
           alu_y = alu_b;
         // ALU especially for JALR
