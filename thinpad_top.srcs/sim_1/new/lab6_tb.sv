@@ -1,13 +1,33 @@
 `timescale 1ns / 1ps
-module lab5_tb;
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2022/11/02 21:47:43
+// Design Name: 
+// Module Name: lab6_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+`timescale 1ns / 1ps
 
+module lab6_tb;
   wire clk_50M, clk_11M0592;
 
   reg push_btn;   // BTN5 按钮开关，带消抖电路，按下时为 1
   reg reset_btn;  // BTN6 复位按钮，带消抖电路，按下时为 1
 
   reg [3:0] touch_btn; // BTN1~BTN4，按钮开关，按下时为 1
-  reg [31:0] dip_sw;   // 32 位拨码开关，拨到“ON”时为 1
+  reg [31:0] dip_sw;   // 32 位拨码开关，拨到"ON"时为 1
 
   wire [15:0] leds;  // 16 位 LED，输出时 1 点亮
   wire [7:0] dpy0;   // 数码管低位信号，包括小数点，输出 1 点亮
@@ -38,72 +58,22 @@ module lab5_tb;
   wire uart_tsre;  // 数据发送完毕标志
 
   // Windows 需要注意路径分隔符的转义，例如 "D:\\foo\\bar.bin"
-  parameter BASE_RAM_INIT_FILE = "/tmp/main.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路径
-  parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";  // ExtRAM 初始化文件，请修改为实际的绝对路径
+  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\kernel2_test.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路径
+  parameter EXT_RAM_INIT_FILE = "/dev/null";  // ExtRAM 初始化文件，请修改为实际的绝对路径
 
   initial begin
-    // 在这里可以自定义测试输入序列，例如：
-    dip_sw = 32'h80001000;
-    touch_btn = 0;
-    reset_btn = 0;
-    push_btn = 0;
-
     #100;
     reset_btn = 1;
     #100;
     reset_btn = 0;
-    #20000
-
-    // TODO: 根据实验的操作要求，自定义下面的输入序列
-//    for (integer i = 0; i < 20; i = i + 1) begin
-//      #500;  // 等待 100ns
-//      push_btn = 1;  // 按下 push_btn 按钮
-//      #500
-//      // 模拟 PC 通过串口，向 FPGA 发送字符
-//      uart.pc_send_byte(8'h32 + i); // ASCII '2'
-//      #500;  // 等待 100ns
-//      push_btn = 0;  // 松开 push_btn 按钮
-//      #100000;
-//    end
-
-    // 模拟 PC 通过串口，向 FPGA 发送字符
-    uart.pc_send_byte(8'h32); // ASCII '2'
-    #10000;
-    uart.pc_send_byte(8'h33); // ASCII '3'
-    #10000;
-    uart.pc_send_byte(8'h32); // ASCII '2'
-    #10000;
-    uart.pc_send_byte(8'h33); // ASCII '3'
-    #10000;
-    uart.pc_send_byte(8'h32); // ASCII '2'
-    #10000;
-    uart.pc_send_byte(8'h33); // ASCII '3'
-    #10000;
-    uart.pc_send_byte(8'h32); // ASCII '2'
-    #10000;
-    uart.pc_send_byte(8'h33); // ASCII '3'
-    #10000;
-    uart.pc_send_byte(8'h32); // ASCII '2'
-    #10000;
-    uart.pc_send_byte(8'h33); // ASCII '3'
-    #10000;
-    uart.pc_send_byte(8'h32); // ASCII '2'
-    #10000;
-    uart.pc_send_byte(8'h33); // ASCII '3'
-    #10000;
-    uart.pc_send_byte(8'h32); // ASCII '2'
-    #10000;
-    uart.pc_send_byte(8'h33); // ASCII '3'
-    #10000;
-
-    // PC 接收到数据后，会在仿真窗口中打印出数据
-
-    // 等待一段时间，结束仿真
-    #10000 $finish;
+    #3600000;
+    uart.pc_send_byte(8'h52);
+    #100
+    $finish;
   end
-
+  
   // 待测试用户设计
-  lab5_top dut (
+  lab6_top dut (
       .clk_50M(clk_50M),
       .clk_11M0592(clk_11M0592),
       .push_btn(push_btn),
