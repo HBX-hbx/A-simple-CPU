@@ -80,11 +80,7 @@ module extra_inst_handler (
             end
         // Current inst is MINU
         end else if (inst_i[31:25] == 7'b0000101 && inst_i[14:12] == 3'b110 && inst_i[6:0] == 7'b0110011) begin
-            if (rs1_data_i < rs2_data_i) begin
-                data_o = rs1_data_i;
-            end else begin
-                data_o = rs2_data_i;
-            end
+            data_o = rs1_data_i < rs2_data_i ? rs1_data_i : rs2_data_i;
         // Current inst is SBCLR
         end else if (inst_i[31:25] == 7'b0100100 && inst_i[14:12] == 3'b001 && inst_i[6:0] == 7'b0110011) begin
             data_o = rs1_data_i & ~(1 << (rs2_data_i & 32'h0000001f));
