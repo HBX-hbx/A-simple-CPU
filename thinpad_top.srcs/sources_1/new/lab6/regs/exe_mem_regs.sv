@@ -26,8 +26,11 @@ module exe_mem_regs(
     input wire rf_wen_i,
     output reg rf_wen_o,
       
-    input wire [1:0] wb_sel_i,
-    output reg [1:0] wb_sel_o
+    input wire [2:0] wb_sel_i,
+    output reg [2:0] wb_sel_o,
+
+    input wire [31:0] csr_data_i,
+    output reg [31:0] csr_data_o
 );
     always_ff @ (posedge clk) begin
         if (reset) begin
@@ -45,6 +48,7 @@ module exe_mem_regs(
                 wb_sel_o <= 0;
                 dm_sel_o <= 0;
                 dm_op_o <= 0;
+                csr_data_o <= 0;
             end else begin
                 pc_o <= pc_i;
                 inst_o <= inst_i;
@@ -55,6 +59,7 @@ module exe_mem_regs(
                 wb_sel_o <= wb_sel_i;
                 dm_sel_o <= dm_sel_i;
                 dm_op_o <= dm_op_i;
+                csr_data_o <= csr_data_i;
             end
         end
     end

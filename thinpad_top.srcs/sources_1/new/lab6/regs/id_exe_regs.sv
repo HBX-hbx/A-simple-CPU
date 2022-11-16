@@ -40,13 +40,55 @@ module id_exe_regs(
     input wire rf_wen_i,
     output reg rf_wen_o,
       
-    input wire [1:0] wb_sel_i,
-    output reg [1:0] wb_sel_o,
+    input wire [2:0] wb_sel_i,
+    output reg [2:0] wb_sel_o,
       
     input wire [3:0] dm_sel_i,
     output reg [3:0] dm_sel_o,
     input wire [1:0] dm_op_i,
-    output reg [1:0] dm_op_o
+    output reg [1:0] dm_op_o,
+
+    // exception signals
+    input wire id_mtvec_we,
+    input wire id_mscratch_we,
+    input wire id_mepc_we,
+    input wire id_mcause_we,
+    input wire id_mstatus_we,
+    input wire id_mie_we,
+    input wire id_mip_we,
+    input wire id_priv_we,
+
+    output reg ex_mtvec_we,
+    output reg ex_mscratch_we,
+    output reg ex_mepc_we,
+    output reg ex_mcause_we,
+    output reg ex_mstatus_we,
+    output reg ex_mie_we,
+    output reg ex_mip_we,
+    output reg ex_priv_we,
+
+    input wire [31:0] id_mtvec_data,
+    input wire [31:0] id_mscratch_data,
+    input wire [31:0] id_mepc_data,
+    input wire [31:0] id_mcause_data,
+    input wire [31:0] id_mstatus_data,
+    input wire [31:0] id_mie_data,
+    input wire [31:0] id_mip_data,
+    input wire [1:0] id_priv_data,
+
+    output reg [31:0] ex_mtvec_data,
+    output reg [31:0] ex_mscratch_data,
+    output reg [31:0] ex_mepc_data,
+    output reg [31:0] ex_mcause_data,
+    output reg [31:0] ex_mstatus_data,
+    output reg [31:0] ex_mie_data,
+    output reg [31:0] ex_mip_data,
+    output reg [1:0] ex_priv_data,
+
+    input wire [31:0] id_direct_branch_addr,
+    input wire [3:0] id_csr_code,
+    output reg [31:0] ex_direct_branch_addr,
+    output reg [3:0] ex_csr_code
 );
     always_ff @ (posedge clk) begin
         if (reset) begin
@@ -72,6 +114,28 @@ module id_exe_regs(
                 wb_sel_o <= 0;
                 dm_sel_o <= 0;
                 dm_op_o <= 0;
+
+                ex_mtvec_we <= 0;
+                ex_mscratch_we <= 0;
+                ex_mepc_we <= 0;
+                ex_mcause_we <= 0;
+                ex_mstatus_we <= 0;
+                ex_mie_we <= 0;
+                ex_mip_we <= 0;
+                ex_priv_we <= 0;
+
+                ex_mtvec_data <= 0;
+                ex_mscratch_data <= 0;
+                ex_mepc_data <= 0;
+                ex_mcause_data <= 0;
+                ex_mstatus_data <= 0;
+                ex_mie_data <= 0;
+                ex_mip_data <= 0;
+                ex_priv_data <= 0;
+
+                ex_csr_code <= 0;
+                ex_direct_branch_addr <= 0;
+
             end else begin
                 pc_o <= pc_i;
                 inst_o <= inst_i;
@@ -90,6 +154,28 @@ module id_exe_regs(
                 wb_sel_o <= wb_sel_i;
                 dm_sel_o <= dm_sel_i;
                 dm_op_o <= dm_op_i;
+
+                ex_mtvec_data <= id_mtvec_data;
+                ex_mscratch_data <= id_mscratch_data;
+                ex_mepc_data <= id_mepc_data;
+                ex_mcause_data <= id_mcause_data;
+                ex_mstatus_data <= id_mstatus_data;
+                ex_mie_data <= id_mie_data;
+                ex_mip_data <= id_mip_data;
+                ex_priv_data <= id_priv_data;
+
+                ex_mtvec_we <= id_mtvec_we;
+                ex_mscratch_we <= id_mscratch_we;
+                ex_mepc_we <= id_mepc_we;
+                ex_mcause_we <= id_mcause_we;
+                ex_mstatus_we <= id_mstatus_we;
+                ex_mie_we <= id_mie_we;
+                ex_mip_we <= id_mip_we;
+                ex_priv_we <= id_priv_we;
+
+                ex_csr_code <= id_csr_code;
+                ex_direct_branch_addr <= id_direct_branch_addr;
+
             end
         end
     end
