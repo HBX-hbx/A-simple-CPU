@@ -1,4 +1,5 @@
 `define NOP 32'b0000000_00000_00000_000_00000_0110_011
+
 module id_exe_regs(
     input wire clk,
     input wire reset,
@@ -48,43 +49,86 @@ module id_exe_regs(
     input wire [1:0] dm_op_i,
     output reg [1:0] dm_op_o,
 
-    // exception signals
-    input wire id_mtvec_we,
-    input wire id_mscratch_we,
-    input wire id_mepc_we,
-    input wire id_mcause_we,
-    input wire id_mstatus_we,
-    input wire id_mie_we,
-    input wire id_mip_we,
-    input wire id_priv_we,
+    input wire [31:0] mtvec_in,
+    input wire [31:0] mscratch_in,
+    input wire [31:0] mepc_in,
+    input wire [31:0] mcause_in,
+    input wire [31:0] mstatus_in,
+    input wire [31:0] mie_in,
+    input wire [31:0] mip_in,
+    input wire [1:0] priv_in,
 
-    output reg ex_mtvec_we,
-    output reg ex_mscratch_we,
-    output reg ex_mepc_we,
-    output reg ex_mcause_we,
-    output reg ex_mstatus_we,
-    output reg ex_mie_we,
-    output reg ex_mip_we,
-    output reg ex_priv_we,
+    input wire [31:0] satp_in,
+    input wire [31:0] mtval_in,
+    input wire [31:0] mideleg_in,
+    input wire [31:0] medeleg_in,
+    input wire [31:0] sepc_in,
+    input wire [31:0] scause_in,
+    input wire [31:0] stval_in,
+    input wire [31:0] stvec_in,
+    input wire [31:0] sscratch_in,
 
-    input wire [31:0] id_mtvec_data,
-    input wire [31:0] id_mscratch_data,
-    input wire [31:0] id_mepc_data,
-    input wire [31:0] id_mcause_data,
-    input wire [31:0] id_mstatus_data,
-    input wire [31:0] id_mie_data,
-    input wire [31:0] id_mip_data,
-    input wire [1:0] id_priv_data,
+      // WE in signals
+    input wire mtvec_we_in,
+    input wire mscratch_we_in,
+    input wire mepc_we_in,
+    input wire mcause_we_in,
+    input wire mstatus_we_in,
+    input wire mie_we_in,
+    input wire mip_we_in,
+    input wire priv_we_in,
 
-    output reg [31:0] ex_mtvec_data,
-    output reg [31:0] ex_mscratch_data,
-    output reg [31:0] ex_mepc_data,
-    output reg [31:0] ex_mcause_data,
-    output reg [31:0] ex_mstatus_data,
-    output reg [31:0] ex_mie_data,
-    output reg [31:0] ex_mip_data,
-    output reg [1:0] ex_priv_data,
+    input wire satp_we_in,
+    input wire mtval_we_in,
+    input wire mideleg_we_in,
+    input wire medeleg_we_in,
+    input wire sepc_we_in,
+    input wire scause_we_in,
+    input wire stval_we_in,
+    input wire stvec_we_in,
+    input wire sscratch_we_in,
+      
+      // Data out signals
+    output logic [31:0] mtvec_out,
+    output logic [31:0] mscratch_out,
+    output logic [31:0] mepc_out,
+    output logic [31:0] mcause_out,
+    output logic [31:0] mstatus_out,
+    output logic [31:0] mie_out,
+    output logic [31:0] mip_out,
+    output logic [1:0] priv_out,
 
+    output logic [31:0] satp_out,
+    output logic [31:0] mtval_out,
+    output logic [31:0] mideleg_out,
+    output logic [31:0] medeleg_out,
+    output logic [31:0] sepc_out,
+    output logic [31:0] scause_out,
+    output logic [31:0] stval_out,
+    output logic [31:0] stvec_out,
+    output logic [31:0] sscratch_out,
+      
+      // WE output signals
+    output logic mtvec_we_out,
+    output logic mscratch_we_out,
+    output logic mepc_we_out,
+    output logic mcause_we_out,
+    output logic mstatus_we_out,
+    output logic mie_we_out,
+    output logic mip_we_out,
+    output logic priv_we_out,
+
+    output logic satp_we_out,
+    output logic mtval_we_out,
+    output logic mideleg_we_out,
+    output logic medeleg_we_out,
+    output logic sepc_we_out,
+    output logic scause_we_out,
+    output logic stval_we_out,
+    output logic stvec_we_out,
+    output logic sscratch_we_out,
+
+    // Other signals
     input wire [31:0] id_direct_branch_addr,
     input wire [3:0] id_csr_code,
     output reg [31:0] ex_direct_branch_addr,
@@ -115,23 +159,43 @@ module id_exe_regs(
                 dm_sel_o <= 0;
                 dm_op_o <= 0;
 
-                ex_mtvec_we <= 0;
-                ex_mscratch_we <= 0;
-                ex_mepc_we <= 0;
-                ex_mcause_we <= 0;
-                ex_mstatus_we <= 0;
-                ex_mie_we <= 0;
-                ex_mip_we <= 0;
-                ex_priv_we <= 0;
+                mtvec_out <= 0;
+                mscratch_out <= 0;
+                mepc_out <= 0;
+                mcause_out <= 0;
+                mstatus_out <= 0;
+                mie_out <= 0;
+                mip_out <= 0;
+                priv_out <= 0;
 
-                ex_mtvec_data <= 0;
-                ex_mscratch_data <= 0;
-                ex_mepc_data <= 0;
-                ex_mcause_data <= 0;
-                ex_mstatus_data <= 0;
-                ex_mie_data <= 0;
-                ex_mip_data <= 0;
-                ex_priv_data <= 0;
+                satp_out <= 0;
+                mtval_out <= 0;
+                mideleg_out <= 0;
+                medeleg_out <= 0;
+                sepc_out <= 0;
+                scause_out <= 0;
+                stval_out <= 0;
+                stvec_out <= 0;
+                sscratch_out <= 0;
+                
+                mtvec_we_out <= 0;
+                mscratch_we_out <= 0;
+                mepc_we_out <= 0;
+                mcause_we_out <= 0;
+                mstatus_we_out <= 0;
+                mie_we_out <= 0;
+                mip_we_out <= 0;
+                priv_we_out <= 0;
+
+                satp_we_out <= 0;
+                mtval_we_out <= 0;
+                mideleg_we_out <= 0;
+                medeleg_we_out <= 0;
+                sepc_we_out <= 0;
+                scause_we_out <= 0;
+                stval_we_out <= 0;
+                stvec_we_out <= 0;
+                sscratch_we_out <= 0;
 
                 ex_csr_code <= 0;
                 ex_direct_branch_addr <= 0;
@@ -155,23 +219,43 @@ module id_exe_regs(
                 dm_sel_o <= dm_sel_i;
                 dm_op_o <= dm_op_i;
 
-                ex_mtvec_data <= id_mtvec_data;
-                ex_mscratch_data <= id_mscratch_data;
-                ex_mepc_data <= id_mepc_data;
-                ex_mcause_data <= id_mcause_data;
-                ex_mstatus_data <= id_mstatus_data;
-                ex_mie_data <= id_mie_data;
-                ex_mip_data <= id_mip_data;
-                ex_priv_data <= id_priv_data;
+                mtvec_out <= mtvec_in;
+                mscratch_out <= mscratch_in;
+                mepc_out <= mepc_in;
+                mcause_out <= mcause_in;
+                mstatus_out <= mstatus_in;
+                mie_out <= mie_in;
+                mip_out <= mip_in;
+                priv_out <= priv_in;
 
-                ex_mtvec_we <= id_mtvec_we;
-                ex_mscratch_we <= id_mscratch_we;
-                ex_mepc_we <= id_mepc_we;
-                ex_mcause_we <= id_mcause_we;
-                ex_mstatus_we <= id_mstatus_we;
-                ex_mie_we <= id_mie_we;
-                ex_mip_we <= id_mip_we;
-                ex_priv_we <= id_priv_we;
+                satp_out <= satp_in;
+                mtval_out <= mtval_in;
+                mideleg_out <= mideleg_in;
+                medeleg_out <= medeleg_in;
+                sepc_out <= sepc_in;
+                scause_out <= scause_in;
+                stval_out <= stval_in;
+                stvec_out <= stvec_in;
+                sscratch_out <= sscratch_in;
+                
+                mtvec_we_out <= mtvec_we_in;
+                mscratch_we_out <= mscratch_we_in;
+                mepc_we_out <= mepc_we_in;
+                mcause_we_out <= mcause_we_in;
+                mstatus_we_out <= mstatus_we_in;
+                mie_we_out <= mie_we_in;
+                mip_we_out <= mip_we_in;
+                priv_we_out <= priv_we_in;
+
+                satp_we_out <= satp_we_in;
+                mtval_we_out <= mtval_we_in;
+                mideleg_we_out <= mideleg_we_in;
+                medeleg_we_out <= medeleg_we_in;
+                sepc_we_out <= sepc_we_in;
+                scause_we_out <= scause_we_in;
+                stval_we_out <= stval_we_in;
+                stvec_we_out <= stvec_we_in;
+                sscratch_we_out <= sscratch_we_in;
 
                 ex_csr_code <= id_csr_code;
                 ex_direct_branch_addr <= id_direct_branch_addr;

@@ -21,16 +21,6 @@ module pc_reg (
                 if_req_o <= 1'b1;
                 cur_pc_o <= next_pc_i;
             end
-//            if (space == 0) begin
-//                if_req_o <= 1'b1;
-//                cur_pc_o <= next_pc_i;
-//                space <= space + 1;
-//            end else if (space == 8) begin
-//                space <= 0;
-//            end else begin
-//                if_req_o <= 1'b0;
-//                space <= space + 1;
-//            end
         end
         
     end

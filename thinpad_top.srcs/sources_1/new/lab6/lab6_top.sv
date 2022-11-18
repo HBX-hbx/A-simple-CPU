@@ -1,58 +1,55 @@
 `default_nettype none
 
 module lab6_top (
-    input wire clk_50M,     // 50MHz ʱ����
-    input wire clk_11M0592, // 11.0592MHz ʱ�����루���ã��ɲ��ã�
+    input wire clk_50M,     // 50MHz
+    input wire clk_11M0592, // 11.0592MHz
 
-    input wire push_btn,  // BTN5 ��ť���أ���������·������ʱΪ 1
-    input wire reset_btn, // BTN6 ��λ��ť����������·������ʱΪ 1
+    input wire push_btn,  // BTN
+    input wire reset_btn, // BTN6
 
-    input  wire [ 3:0] touch_btn,  // BTN1~BTN4����ť���أ�����ʱΪ 1
-    input  wire [31:0] dip_sw,     // 32 λ���뿪�أ�����"ON"ʱΪ 1
-    output wire [15:0] leds,       // 16 λ LED������? 1 ����
-    output wire [ 7:0] dpy0,       // ����ܵ�λ�źţ�����С���㣬��� 1 ����
-    output wire [ 7:0] dpy1,       // ����ܸ�λ�źţ�����С���㣬��� 1 ����
+    input  wire [ 3:0] touch_btn,  //
+    input  wire [31:0] dip_sw,     //
+    output wire [15:0] leds,       //
+    output wire [ 7:0] dpy0,       //
+    output wire [ 7:0] dpy1,       //
 
-    // CPLD ���ڿ������ź�
-    output wire uart_rdn,        // �������źţ�����Ч
-    output wire uart_wrn,        // д�����źţ�����Ч
-    input  wire uart_dataready,  // ��������׼����
-    input  wire uart_tbre,       // �������ݱ�־
-    input  wire uart_tsre,       // ���ݷ�����ϱ��?
+    // CPLD
+    output wire uart_rdn,        //
+    output wire uart_wrn,        //
+    input  wire uart_dataready,  //
+    input  wire uart_tbre,       //
+    input  wire uart_tsre,       // 
 
-    // BaseRAM �ź�
-    inout wire [31:0] base_ram_data,  // BaseRAM ���ݣ��� 8 λ�� CPLD ���ڿ���������
-    output wire [19:0] base_ram_addr,  // BaseRAM ��ַ
-    output wire [3:0] base_ram_be_n,  // BaseRAM �ֽ�ʹ�ܣ�����Ч�������ʹ���ֽ�ʹ�ܣ��뱣���? 0
-    output wire base_ram_ce_n,  // BaseRAM Ƭѡ������Ч
-    output wire base_ram_oe_n,  // BaseRAM ��ʹ�ܣ�����Ч
-    output wire base_ram_we_n,  // BaseRAM дʹ�ܣ�����Ч
+    // BaseRAM
+    inout wire [31:0] base_ram_data,  // BaseRAM 
+    output wire [19:0] base_ram_addr,  // BaseRAM
+    output wire [3:0] base_ram_be_n,  // BaseRAM
+    output wire base_ram_ce_n,  // BaseRAM
+    output wire base_ram_oe_n,  // BaseRAM
+    output wire base_ram_we_n,  // BaseRAM
 
-    // ExtRAM �ź�
-    inout wire [31:0] ext_ram_data,  // ExtRAM ����
-    output wire [19:0] ext_ram_addr,  // ExtRAM ��ַ
-    output wire [3:0] ext_ram_be_n,  // ExtRAM �ֽ�ʹ�ܣ�����Ч�������ʹ���ֽ�ʹ�ܣ��뱣���? 0
-    output wire ext_ram_ce_n,  // ExtRAM Ƭѡ������Ч
-    output wire ext_ram_oe_n,  // ExtRAM ��ʹ�ܣ�����Ч
-    output wire ext_ram_we_n,  // ExtRAM дʹ�ܣ�����Ч
+    // ExtRAM
+    inout wire [31:0] ext_ram_data,  // ExtRAM
+    output wire [19:0] ext_ram_addr,  // ExtRAM
+    output wire [3:0] ext_ram_be_n,  // ExtRAM
+    output wire ext_ram_ce_n,  // ExtRAM
+    output wire ext_ram_oe_n,  // ExtRAM
+    output wire ext_ram_we_n,  // ExtRAM
 
-    // ֱ�������ź�
-    output wire txd,  // ֱ�����ڷ��Ͷ�
-    input  wire rxd,  // ֱ�����ڽ��ն�
+    // 
+    output wire txd,  //
+    input  wire rxd,  //
 
-    // Flash �洢���źţ��ο� JS28F640 оƬ�ֲ�
-    output wire [22:0] flash_a,  // Flash ��ַ��a0 ���� 8bit ģʽ��Ч��16bit ģʽ������
-    inout wire [15:0] flash_d,  // Flash ����
-    output wire flash_rp_n,  // Flash ��λ�źţ�����Ч
-    output wire flash_vpen,  // Flash д�����źţ��͵�ƽʱ���ܲ�������д
-    output wire flash_ce_n,  // Flash Ƭѡ�źţ�����Ч
-    output wire flash_oe_n,  // Flash ��ʹ���źţ�����Ч
-    output wire flash_we_n,  // Flash дʹ���źţ�����Ч
-    output wire flash_byte_n, // Flash 8bit ģʽѡ�񣬵���Ч����ʹ�� flash �� 16 λģʽʱ����Ϊ 1
+    output wire [22:0] flash_a,  //
+    inout wire [15:0] flash_d,  //
+    output wire flash_rp_n,  //
+    output wire flash_vpen,
+    output wire flash_ce_n,  //
+    output wire flash_oe_n,  //
+    output wire flash_we_n,  // 
+    output wire flash_byte_n, //
 
-    // USB �������źţ��ο� SL811 оƬ�ֲ�
     output wire sl811_a0,
-    // inout  wire [7:0] sl811_d,     // USB �������������������????? dm9k_sd[7:0] ����
     output wire sl811_wr_n,
     output wire sl811_rd_n,
     output wire sl811_cs_n,
@@ -61,7 +58,6 @@ module lab6_top (
     input  wire sl811_intrq,
     input  wire sl811_drq_n,
 
-    // ����������źţ��ο�????? DM9000A оƬ�ֲ�
     output wire dm9k_cmd,
     inout wire [15:0] dm9k_sd,
     output wire dm9k_iow_n,
@@ -70,14 +66,13 @@ module lab6_top (
     output wire dm9k_pwrst_n,
     input wire dm9k_int,
 
-    // ͼ������ź�?????
-    output wire [2:0] video_red,    // ��ɫ���أ�3 λ
-    output wire [2:0] video_green,  // ��ɫ���أ�3 λ
-    output wire [1:0] video_blue,   // ��ɫ���أ�2 λ
-    output wire       video_hsync,  // ��ͬ����ˮƽͬ�����ź�
-    output wire       video_vsync,  // ��ͬ������ֱͬ�����ź�
-    output wire       video_clk,    // ����ʱ�����?????
-    output wire       video_de      // ��������Ч�źţ���������������
+    output wire [2:0] video_red,    //
+    output wire [2:0] video_green,  //
+    output wire [1:0] video_blue,   // 
+    output wire       video_hsync,  //
+    output wire       video_vsync,  //
+    output wire       video_clk,    //
+    output wire       video_de      //
 );
 
   /* =========== Demo code begin =========== */
@@ -86,18 +81,17 @@ module lab6_top (
   logic locked, clk_10M, clk_20M;
   pll_example clock_gen (
       // Clock in ports
-      .clk_in1(clk_50M),  // �ⲿʱ������
+      .clk_in1(clk_50M),  //
       // Clock out ports
-      .clk_out1(clk_10M),  // ʱ�����????? 1��Ƶ���� IP ���ý���������
-      .clk_out2(clk_20M),  // ʱ�����????? 2��Ƶ���� IP ���ý���������
+      .clk_out1(clk_10M),  //
+      .clk_out2(clk_20M),  //
       // Status and control signals
-      .reset(reset_btn),  // PLL ��λ����
-      .locked(locked)  // PLL ����ָʾ�����?????"1"��ʾʱ���ȶ���
-                       // �󼶵�·��λ�ź�Ӧ���������ɣ����£�
+      .reset(reset_btn),  // PLL
+      .locked(locked)  // PLL
+                       //
   );
 
   logic reset_of_clk10M;
-  // �첽��λ��ͬ���ͷţ��� locked �ź�תΪ�󼶵�·�ĸ�λ reset_of_clk10M
   always_ff @(posedge clk_10M or negedge locked) begin
     if (~locked) reset_of_clk10M <= 1'b1;
     else reset_of_clk10M <= 1'b0;
@@ -110,25 +104,30 @@ module lab6_top (
 
   assign sys_clk = clk_10M;
   assign sys_rst = reset_of_clk10M;
-
-  // ��ʵ�鲻ʹ�� CPLD ���ڣ����÷�ֹ���߳�ͻ
+  
   assign uart_rdn = 1'b1;
   assign uart_wrn = 1'b1;
 
   /* =========== Lab6 begin =========== */
   
   // for pc_reg
-  logic [31:0] next_pc; // ��������µ�????? pc
-  logic [31:0] cur_pc;  // ��ǰ pc
-  logic [1:0]  pc_sel;  // pc ѡ���ź�
+  logic [31:0] next_pc; // 
+  logic [31:0] cur_pc;  //
+  logic [1:0]  pc_sel;  //
   logic        pc_hold;
   logic        if_req;
   logic        if_ack;
-  logic [31:0] if_inst; // IM ��ȡ��ָ��
+  logic [31:0] if_inst; //
 
   // for BTB
   logic [31:0] btb_branch_addr;
   logic predict_fault;
+
+  // for cache
+  logic cache_im_req;
+  logic cache_im_ack;
+  logic [31:0] cache_im_pc;
+  logic [31:0] cache_im_inst;
 
   //Timer
   logic mtime_we;
@@ -162,6 +161,16 @@ module lab6_top (
   logic mip_we;
   logic privilege_we;
 
+  logic satp_we;
+  logic mtval_we;
+  logic mideleg_we;
+  logic medeleg_we;
+  logic sepc_we;
+  logic scause_we;
+  logic stval_we;
+  logic stvec_we;
+  logic sscratch_we;
+
   //input
   logic [31:0] mtvec_wdata;
   logic [31:0] mscratch_wdata;
@@ -171,6 +180,16 @@ module lab6_top (
   logic [31:0] mie_wdata;
   logic [31:0] mip_wdata;
   logic [1:0] privilege_wdata;
+  
+  logic [31:0] satp_wdata;
+  logic [31:0] mtval_wdata;
+  logic [31:0] mideleg_wdata;
+  logic [31:0] medeleg_wdata;
+  logic [31:0] sepc_wdata;
+  logic [31:0] scause_wdata;
+  logic [31:0] stval_wdata;
+  logic [31:0] stvec_wdata;
+  logic [31:0] sscratch_wdata;
 
   //output
   logic [31:0] mtvec_o;
@@ -181,12 +200,23 @@ module lab6_top (
   logic [31:0] mie_o;
   logic [31:0] mip_o;
   logic [1:0] privilege_o;
+  
+  logic [31:0] satp_o;
+  logic [31:0] mtval_o;
+  logic [31:0] mideleg_o;
+  logic [31:0] medeleg_o;
+  logic [31:0] sepc_o;
+  logic [31:0] scause_o;
+  logic [31:0] stval_o;
+  logic [31:0] stvec_o;
+  logic [31:0] sscratch_o;
 
   csr u_csr (
       .clk(sys_clk),
       .rst(sys_rst),
       .int_time(interrupt),
 
+      // input
       .mtvec_we(mtvec_we),
       .mscratch_we(mscratch_we),
       .mepc_we(mepc_we),
@@ -194,7 +224,16 @@ module lab6_top (
       .mstatus_we(mstatus_we),
       .mie_we(mie_we),
       .mip_we(mip_we),
+      .satp_we(satp_we),
       .privilege_we(privilege_we),
+      .mtval_we(mtval_we),
+      .mideleg_we(mideleg_we),
+      .medeleg_we(medeleg_we),
+      .sepc_we(sepc_we),
+      .scause_we(scause_we),
+      .stval_we(stval_we),
+      .stvec_we(stvec_we),
+      .sscratch_we(sscratch_we),
 
       //input
       .mtvec_wdata(mtvec_wdata),
@@ -204,7 +243,16 @@ module lab6_top (
       .mstatus_wdata(mstatus_wdata),
       .mie_wdata(mie_wdata),
       .mip_wdata(mip_wdata),
+      .satp_wdata(satp_wdata),
       .privilege_wdata(privilege_wdata),
+      .mtval_wdata(mtval_wdata),
+      .mideleg_wdata(mideleg_wdata),
+      .medeleg_wdata(medeleg_wdata),
+      .sepc_wdata(sepc_wdata),
+      .scause_wdata(scause_wdata),
+      .stval_wdata(stval_wdata),
+      .stvec_wdata(stvec_wdata),
+      .sscratch_wdata(sscratch_wdata),
 
       //output
       .mtvec_o(mtvec_o),
@@ -214,8 +262,55 @@ module lab6_top (
       .mstatus_o(mstatus_o),
       .mie_o(mie_o),
       .mip_o(mip_o),
-      .privilege_o(privilege_o)
+      .satp_o(satp_o),
+      .privilege_o(privilege_o),
+      .mtval_o(mtval_o),
+      .mideleg_o(mideleg_o),
+      .medeleg_o(medeleg_o),
+      .sepc_o(sepc_o),
+      .scause_o(scause_o),
+      .stval_o(stval_o),
+      .stvec_o(stvec_o),
+      .sscratch_o(sscratch_o)
   );
+
+  logic if_mtvec_we_o;
+  logic if_mscratch_we_o;
+  logic if_mepc_we_o;
+  logic if_mcause_we_o;
+  logic if_mstatus_we_o;
+  logic if_mie_we_o;
+  logic if_mip_we_o;
+  logic if_privilege_we_o;
+
+  logic if_satp_we_o;
+  logic if_mtval_we_o;
+  logic if_mideleg_we_o;
+  logic if_medeleg_we_o;
+  logic if_sepc_we_o;
+  logic if_scause_we_o;
+  logic if_stval_we_o;
+  logic if_stvec_we_o;
+  logic if_sscratch_we_o;
+
+  logic [31:0] if_mtvec_data_o;
+  logic [31:0] if_mscratch_data_o;
+  logic [31:0] if_mepc_data_o;
+  logic [31:0] if_mcause_data_o;
+  logic [31:0] if_mstatus_data_o;
+  logic [31:0] if_mie_data_o;
+  logic [31:0] if_mip_data_o;
+  logic [1:0] if_privilege_data_o;
+  
+  logic [31:0] if_satp_data_o;
+  logic [31:0] if_mtval_data_o;
+  logic [31:0] if_mideleg_data_o;
+  logic [31:0] if_medeleg_data_o;
+  logic [31:0] if_sepc_data_o;
+  logic [31:0] if_scause_data_o;
+  logic [31:0] if_stval_data_o;
+  logic [31:0] if_stvec_data_o;
+  logic [31:0] if_sscratch_data_o;
   
   /* =========== IF Stage begin =========== */
   pc_reg u_pc_reg (
@@ -260,16 +355,38 @@ module lab6_top (
     .next_pc_o(next_pc),
     .predict_fault_o(predict_fault)
   );
+
+  // Cache
+  im_cache im_cache(
+    .clk_i(sys_clk),
+    .rst_i(sys_rst),
+
+    // inst
+    .req_i(if_req),
+    .ack_o(if_ack),
+    .pc_i(cur_pc),
+    .inst_o(if_inst),
+
+    // im master
+    .im_req_o(cache_im_req),
+    .im_ack_i(cache_im_ack),
+    .im_pc_o(cache_im_pc),
+    .im_inst_i(cache_im_inst)
+  );
   
   im_master u_im_master (
       .clk_i (sys_clk),
       .rst_i (sys_rst),
       
       // inst
-      .req_i  (if_req),
-      .ack_o  (if_ack),
-      .pc_i   (cur_pc),
-      .inst_o (if_inst),
+    //   .req_i  (if_req),
+    //   .ack_o  (if_ack),
+    //   .pc_i   (cur_pc),
+    //   .inst_o (if_inst),
+      .req_i  (cache_im_req),
+      .ack_o  (cache_im_ack),
+      .pc_i   (cache_im_pc),
+      .inst_o (cache_im_inst),
       
       // Im => If Master
       .wb_cyc_o (if_cyc_o),
@@ -281,7 +398,70 @@ module lab6_top (
       .wb_sel_o (if_sel_o),
       .wb_we_o  (if_we_o)
   );
+
+  if_excep_handler u_if_excep_handler(
+      // Connect in the signals output by CSR
+      .mtvec_in(mtvec_o),
+      .mscratch_in(mscratch_o),
+      .mepc_in(mepc_o),
+      .mcause_in(mcause_o),
+      .mstatus_in(mstatus_o),
+      .mie_in(mie_o),
+      .mip_in(mip_o),
+      .priv_in(privilege_o),
+
+      .satp_in(satp_o),
+      .mtval_in(mtval_o),
+      .mideleg_in(mideleg_o),
+      .medeleg_in(medeleg_o),
+      .sepc_in(sepc_o),
+      .scause_in(scause_o),
+      .stval_in(stval_o),
+      .stvec_in(stvec_o),
+      .sscratch_in(sscratch_o),
+      
+      // Data out signals
+      .mtvec_out(if_mtvec_data_o),
+      .mscratch_out(if_mscratch_data_o),
+      .mepc_out(if_mepc_data_o),
+      .mcause_out(if_mcause_data_o),
+      .mstatus_out(if_mstatus_data_o),
+      .mie_out(if_mie_data_o),
+      .mip_out(if_mip_data_o),
+      .priv_out(if_privilege_data_o),
+
+      .satp_out(if_satp_data_o),
+      .mtval_out(if_mtval_data_o),
+      .mideleg_out(if_mideleg_data_o),
+      .medeleg_out(if_medeleg_data_o),
+      .sepc_out(if_sepc_data_o),
+      .scause_out(if_scause_data_o),
+      .stval_out(if_stval_data_o),
+      .stvec_out(if_stvec_data_o),
+      .sscratch_out(if_sscratch_data_o),
+      
+      // WE output signals
+      .mtvec_we_out(if_mtvec_we_o),
+      .mscratch_we_out(if_mscratch_we_o),
+      .mepc_we_out(if_mepc_we_o),
+      .mcause_we_out(if_mcause_we_o),
+      .mstatus_we_out(if_mstatus_we_o),
+      .mie_we_out(if_mie_we_o),
+      .mip_we_out(if_mip_we_o),
+      .priv_we_out(if_privilege_we_o),
+
+      .satp_we_out(if_satp_we_o),
+      .mtval_we_out(if_mtval_we_o),
+      .mideleg_we_out(if_mideleg_we_o),
+      .medeleg_we_out(if_medeleg_we_o),
+      .sepc_we_out(if_sepc_we_o),
+      .scause_we_out(if_scause_we_o),
+      .stval_we_out(if_stval_we_o),
+      .stvec_we_out(if_stvec_we_o),
+      .sscratch_we_out(if_sscratch_we_o)
+  );
   
+
   // for if_id_regs
   logic        if_id_regs_hold;
   logic        if_id_regs_bubble;
@@ -299,14 +479,172 @@ module lab6_top (
       .pc_o(id_pc),
       
       .inst_i(if_inst),
-      .inst_o(id_inst)
+      .inst_o(id_inst),
+      
+      // CSR passing signals
+      // Data in signals
+      .mtvec_in(if_mtvec_data_o),
+      .mscratch_in(if_mscratch_data_o),
+      .mepc_in(if_mepc_data_o),
+      .mcause_in(if_mcause_data_o),
+      .mstatus_in(if_mstatus_data_o),
+      .mie_in(if_mie_data_o),
+      .mip_in(if_mip_data_o),
+      .priv_in(if_privilege_data_o),
+
+      .satp_in(if_satp_data_o),
+      .mtval_in(if_mtval_data_o),
+      .mideleg_in(if_mideleg_data_o),
+      .medeleg_in(if_medeleg_data_o),
+      .sepc_in(if_sepc_data_o),
+      .scause_in(if_scause_data_o),
+      .stval_in(if_stval_data_o),
+      .stvec_in(if_stvec_data_o),
+      .sscratch_in(if_sscratch_data_o),
+
+      // WE in signals
+      .mtvec_we_in(if_mtvec_we_o),
+      .mscratch_we_in(if_mscratch_we_o),
+      .mepc_we_in(if_mepc_we_o),
+      .mcause_we_in(if_mcause_we_o),
+      .mstatus_we_in(if_mstatus_we_o),
+      .mie_we_in(if_mie_we_o),
+      .mip_we_in(if_mip_we_o),
+      .priv_we_in(if_privilege_we_o),
+
+      .satp_we_in(if_satp_we_o),
+      .mtval_we_in(if_mtval_we_o),
+      .mideleg_we_in(if_mideleg_we_o),
+      .medeleg_we_in(if_medeleg_we_o),
+      .sepc_we_in(if_sepc_we_o),
+      .scause_we_in(if_scause_we_o),
+      .stval_we_in(if_stval_we_o),
+      .stvec_we_in(if_stvec_we_o),
+      .sscratch_we_in(if_sscratch_we_o),
+      
+      // Data out signals
+      .mtvec_out(id_mtvec_data_i),
+      .mscratch_out(id_mscratch_data_i),
+      .mepc_out(id_mepc_data_i),
+      .mcause_out(id_mcause_data_i),
+      .mstatus_out(id_mstatus_data_i),
+      .mie_out(id_mie_data_i),
+      .mip_out(id_mip_data_i),
+      .priv_out(id_privilege_data_i),
+
+      .satp_out(id_satp_data_i),
+      .mtval_out(id_mtval_data_i),
+      .mideleg_out(id_mideleg_data_i),
+      .medeleg_out(id_medeleg_data_i),
+      .sepc_out(id_sepc_data_i),
+      .scause_out(id_scause_data_i),
+      .stval_out(id_stval_data_i),
+      .stvec_out(id_stvec_data_i),
+      .sscratch_out(id_sscratch_data_i),
+      
+      // WE output signals
+      .mtvec_we_out(id_mtvec_we_i),
+      .mscratch_we_out(id_mscratch_we_i),
+      .mepc_we_out(id_mepc_we_i),
+      .mcause_we_out(id_mcause_we_i),
+      .mstatus_we_out(id_mstatus_we_i),
+      .mie_we_out(id_mie_we_i),
+      .mip_we_out(id_mip_we_i),
+      .priv_we_out(id_privilege_we_i),
+
+      .satp_we_out(id_satp_we_i),
+      .mtval_we_out(id_mtval_we_i),
+      .mideleg_we_out(id_mideleg_we_i),
+      .medeleg_we_out(id_medeleg_we_i),
+      .sepc_we_out(id_sepc_we_i),
+      .scause_we_out(id_scause_we_i),
+      .stval_we_out(id_stval_we_i),
+      .stvec_we_out(id_stvec_we_i),
+      .sscratch_we_out(id_sscratch_we_i)
   );
+
+  logic id_mtvec_we_i;
+  logic id_mscratch_we_i;
+  logic id_mepc_we_i;
+  logic id_mcause_we_i;
+  logic id_mstatus_we_i;
+  logic id_mie_we_i;
+  logic id_mip_we_i;
+  logic id_privilege_we_i;
+
+  logic id_satp_we_i;
+  logic id_mtval_we_i;
+  logic id_mideleg_we_i;
+  logic id_medeleg_we_i;
+  logic id_sepc_we_i;
+  logic id_scause_we_i;
+  logic id_stval_we_i;
+  logic id_stvec_we_i;
+  logic id_sscratch_we_i;
+
+  logic [31:0] id_mtvec_data_i;
+  logic [31:0] id_mscratch_data_i;
+  logic [31:0] id_mepc_data_i;
+  logic [31:0] id_mcause_data_i;
+  logic [31:0] id_mstatus_data_i;
+  logic [31:0] id_mie_data_i;
+  logic [31:0] id_mip_data_i;
+  logic [1:0] id_privilege_data_i;
+  
+  logic [31:0] id_satp_data_i;
+  logic [31:0] id_mtval_data_i;
+  logic [31:0] id_mideleg_data_i;
+  logic [31:0] id_medeleg_data_i;
+  logic [31:0] id_sepc_data_i;
+  logic [31:0] id_scause_data_i;
+  logic [31:0] id_stval_data_i;
+  logic [31:0] id_stvec_data_i;
+  logic [31:0] id_sscratch_data_i;
+
+  logic id_mtvec_we_o;
+  logic id_mscratch_we_o;
+  logic id_mepc_we_o;
+  logic id_mcause_we_o;
+  logic id_mstatus_we_o;
+  logic id_mie_we_o;
+  logic id_mip_we_o;
+  logic id_privilege_we_o;
+
+  logic id_satp_we_o;
+  logic id_mtval_we_o;
+  logic id_mideleg_we_o;
+  logic id_medeleg_we_o;
+  logic id_sepc_we_o;
+  logic id_scause_we_o;
+  logic id_stval_we_o;
+  logic id_stvec_we_o;
+  logic id_sscratch_we_o;
+
+  logic [31:0] id_mtvec_data_o;
+  logic [31:0] id_mscratch_data_o;
+  logic [31:0] id_mepc_data_o;
+  logic [31:0] id_mcause_data_o;
+  logic [31:0] id_mstatus_data_o;
+  logic [31:0] id_mie_data_o;
+  logic [31:0] id_mip_data_o;
+  logic [1:0] id_privilege_data_o;
+  
+  logic [31:0] id_satp_data_o;
+  logic [31:0] id_mtval_data_o;
+  logic [31:0] id_mideleg_data_o;
+  logic [31:0] id_medeleg_data_o;
+  logic [31:0] id_sepc_data_o;
+  logic [31:0] id_scause_data_o;
+  logic [31:0] id_stval_data_o;
+  logic [31:0] id_stvec_data_o;
+  logic [31:0] id_sscratch_data_o;
   
   /* =========== ID Stage start =========== */
   
   // for decoder
   logic [31:0] id_pc;
   logic [31:0] id_inst;
+  logic id_time_int;
   
   logic        id_rf_wen;
   logic [4:0]  id_rd_addr;
@@ -327,29 +665,12 @@ module lab6_top (
   logic [3:0]  id_dm_sel;
   logic [1:0]  id_dm_op;
 
-  logic [31:0] id_mtvec_data;
-  logic [31:0] id_mscratch_data;
-  logic [31:0] id_mepc_data;
-  logic [31:0] id_mcause_data;
-  logic [31:0] id_mstatus_data;
-  logic [31:0] id_mie_data;
-  logic [31:0] id_mip_data;
-  logic [1:0] id_priv_data;
-
-  logic  id_mtvec_we;
-  logic  id_mscratch_we;
-  logic  id_mepc_we;
-  logic  id_mcause_we;
-  logic  id_mstatus_we;
-  logic  id_mie_we;
-  logic  id_mip_we;
-  logic  id_priv_we;
-
   logic [31:0] id_direct_branch_addr;
   logic [3:0] id_csr_code;
   
   decoder u_decoder (
       .inst_i     (id_inst),
+      .time_int_i (id_time_int),
       
       .rd_addr_o  (id_rd_addr),
       .rf_wen_o   (id_rf_wen),
@@ -366,37 +687,7 @@ module lab6_top (
       .shamt_o   (id_shamt),
       
       .dm_sel_o  (id_dm_sel),
-      .dm_op_o   (id_dm_op),
-
-      .mtvec_data_in(mtvec_o),
-      .mscratch_data_in(mscratch_o),
-      .mepc_data_in(mepc_o),
-      .mcause_data_in(mcause_o),
-      .mstatus_data_in(mstatus_o),
-      .mie_data_in(mie_o),
-      .mip_data_in(mip_o),
-      .privilege_data_in(privilege_o),
-
-      .mtvec_we(id_mtvec_we),
-      .mscratch_we(id_mscratch_we),
-      .mepc_we(id_mepc_we),
-      .mcause_we(id_mcause_we),
-      .mstatus_we(id_mstatus_we),
-      .mie_we(id_mie_we),
-      .mip_we(id_mip_we),
-      .privilege_we(id_priv_we),
-
-      .mtvec_data_out(id_mtvec_data),
-      .mscratch_data_out(id_mscratch_data),
-      .mepc_data_out(id_mepc_data),
-      .mcause_data_out(id_mcause_data),
-      .mstatus_data_out(id_mstatus_data),
-      .mie_data_out(id_mie_data),
-      .mip_data_out(id_mip_data),
-      .privilege_data_out(id_priv_data),
-
-      .direct_branch_addr(id_direct_branch_addr),
-      .csr_code(id_csr_code)
+      .dm_op_o   (id_dm_op)
   );
   
   // RF
@@ -412,6 +703,155 @@ module lab6_top (
       .rf_waddr (wb_rd_addr),
       .rf_wdata (wb_wb_data),
       .rf_wen (wb_rf_wen)
+  );
+
+  id_excep_handler u_id_excep_handler(
+      .inst_i(id_inst),
+      .time_int_o(id_time_int),
+
+      // Input from CSR
+      .csr_mtvec_in(mtvec_o),
+      .csr_mscratch_in(mscratch_o),
+      .csr_mepc_in(mepc_o),
+      .csr_mcause_in(mcause_o),
+      .csr_mstatus_in(mstatus_o),
+      .csr_mie_in(mie_o),
+      .csr_mip_in(mip_o),
+      .csr_priv_in(privilege_o),
+
+      .csr_satp_in(satp_o),
+      .csr_mtval_in(mtval_o),
+      .csr_mideleg_in(mideleg_o),
+      .csr_medeleg_in(medeleg_o),
+      .csr_sepc_in(sepc_o),
+      .csr_scause_in(scause_o),
+      .csr_stval_in(stval_o),
+      .csr_stvec_in(stvec_o),
+      .csr_sscratch_in(sscratch_o),
+
+      // Input from EXE
+      .exe_mtvec_in(exe_mtvec_data_o),
+      .exe_mscratch_in(exe_mscratch_data_o),
+      .exe_mepc_in(exe_mepc_data_o),
+      .exe_mcause_in(exe_mcause_data_o),
+      .exe_mstatus_in(exe_mstatus_data_o),
+      .exe_mie_in(exe_mie_data_o),
+      .exe_mip_in(exe_mip_data_o),
+      .exe_priv_in(exe_privilege_data_o),
+
+      .exe_satp_in(exe_satp_data_o),
+      .exe_mtval_in(exe_mtval_data_o),
+      .exe_mideleg_in(exe_mideleg_data_o),
+      .exe_medeleg_in(exe_medeleg_data_o),
+      .exe_sepc_in(exe_sepc_data_o),
+      .exe_scause_in(exe_scause_data_o),
+      .exe_stval_in(exe_stval_data_o),
+      .exe_stvec_in(exe_stvec_data_o),
+      .exe_sscratch_in(exe_sscratch_data_o),
+      
+      .exe_mtvec_we_in(exe_mtvec_we_o),
+      .exe_mscratch_we_in(exe_mscratch_we_o),
+      .exe_mepc_we_in(exe_mepc_we_o),
+      .exe_mcause_we_in(exe_mcause_we_o),
+      .exe_mstatus_we_in(exe_mstatus_we_o),
+      .exe_mie_we_in(exe_mie_we_o),
+      .exe_mip_we_in(exe_mip_we_o),
+      .exe_priv_we_in(exe_privilege_we_o),
+
+      .exe_satp_we_in(exe_satp_we_o),
+      .exe_mtval_we_in(exe_mtval_we_o),
+      .exe_mideleg_we_in(exe_mideleg_we_o),
+      .exe_medeleg_we_in(exe_medeleg_we_o),
+      .exe_sepc_we_in(exe_sepc_we_o),
+      .exe_scause_we_in(exe_scause_we_o),
+      .exe_stval_we_in(exe_stval_we_o),
+      .exe_stvec_we_in(exe_stvec_we_o),
+      .exe_sscratch_we_in(exe_sscratch_we_o),
+
+      // Normal In-out Signals
+      // Data in signals
+      .mtvec_in(id_mtvec_data_i),
+      .mscratch_in(id_mscratch_data_i),
+      .mepc_in(id_mepc_data_i),
+      .mcause_in(id_mcause_data_i),
+      .mstatus_in(id_mstatus_data_i),
+      .mie_in(id_mie_data_i),
+      .mip_in(id_mip_data_i),
+      .priv_in(id_privilege_data_i),
+
+      .satp_in(id_satp_data_i),
+      .mtval_in(id_mtval_data_i),
+      .mideleg_in(id_mideleg_data_i),
+      .medeleg_in(id_medeleg_data_i),
+      .sepc_in(id_sepc_data_i),
+      .scause_in(id_scause_data_i),
+      .stval_in(id_stval_data_i),
+      .stvec_in(id_stvec_data_i),
+      .sscratch_in(id_sscratch_data_i),
+      
+      // Data out signals
+      .mtvec_out(id_mtvec_data_o),
+      .mscratch_out(id_mscratch_data_o),
+      .mepc_out(id_mepc_data_o),
+      .mcause_out(id_mcause_data_o),
+      .mstatus_out(id_mstatus_data_o),
+      .mie_out(id_mie_data_o),
+      .mip_out(id_mip_data_o),
+      .priv_out(id_privilege_data_o),
+
+      .satp_out(id_satp_data_o),
+      .mtval_out(id_mtval_data_o),
+      .mideleg_out(id_mideleg_data_o),
+      .medeleg_out(id_medeleg_data_o),
+      .sepc_out(id_sepc_data_o),
+      .scause_out(id_scause_data_o),
+      .stval_out(id_stval_data_o),
+      .stvec_out(id_stvec_data_o),
+      .sscratch_out(id_sscratch_data_o),
+
+      // WE in signals
+      .mtvec_we_in(id_mtvec_we_i),
+      .mscratch_we_in(id_mscratch_we_i),
+      .mepc_we_in(id_mepc_we_i),
+      .mcause_we_in(id_mcause_we_i),
+      .mstatus_we_in(id_mstatus_we_i),
+      .mie_we_in(id_mie_we_i),
+      .mip_we_in(id_mip_we_i),
+      .priv_we_in(id_privilege_we_i),
+
+      .satp_we_in(id_satp_we_i),
+      .mtval_we_in(id_mtval_we_i),
+      .mideleg_we_in(id_mideleg_we_i),
+      .medeleg_we_in(id_medeleg_we_i),
+      .sepc_we_in(id_sepc_we_i),
+      .scause_we_in(id_scause_we_i),
+      .stval_we_in(id_stval_we_i),
+      .stvec_we_in(id_stvec_we_i),
+      .sscratch_we_in(id_sscratch_we_i),
+      
+      // WE out signals
+      .mtvec_we_out(id_mtvec_we_o),
+      .mscratch_we_out(id_mscratch_we_o),
+      .mepc_we_out(id_mepc_we_o),
+      .mcause_we_out(id_mcause_we_o),
+      .mstatus_we_out(id_mstatus_we_o),
+      .mie_we_out(id_mie_we_o),
+      .mip_we_out(id_mip_we_o),
+      .priv_we_out(id_privilege_we_o),
+
+      .satp_we_out(id_satp_we_o),
+      .mtval_we_out(id_mtval_we_o),
+      .mideleg_we_out(id_mideleg_we_o),
+      .medeleg_we_out(id_medeleg_we_o),
+      .sepc_we_out(id_sepc_we_o),
+      .scause_we_out(id_scause_we_o),
+      .stval_we_out(id_stval_we_o),
+      .stvec_we_out(id_stvec_we_o),
+      .sscratch_we_out(id_sscratch_we_o),
+      
+      // Other signals
+      .direct_branch_addr(id_direct_branch_addr),
+      .csr_code(id_csr_code)
   );
 
   /* =========== ID Stage end =========== */
@@ -469,48 +909,170 @@ module lab6_top (
       .dm_op_i (id_dm_op),
       .dm_op_o (exe_dm_op),
 
-      .id_mtvec_we(id_mtvec_we),
-      .id_mscratch_we(id_mscratch_we),
-      .id_mepc_we(id_mepc_we),
-      .id_mcause_we(id_mcause_we),
-      .id_mstatus_we(id_mstatus_we),
-      .id_mie_we(id_mie_we),
-      .id_mip_we(id_mip_we),
-      .id_priv_we(id_priv_we),
+      // CSR passing signals
+      // Data in signals
+      .mtvec_in(id_mtvec_data_o),
+      .mscratch_in(id_mscratch_data_o),
+      .mepc_in(id_mepc_data_o),
+      .mcause_in(id_mcause_data_o),
+      .mstatus_in(id_mstatus_data_o),
+      .mie_in(id_mie_data_o),
+      .mip_in(id_mip_data_o),
+      .priv_in(id_privilege_data_o),
 
-      .ex_mtvec_we(ex_mtvec_we),
-      .ex_mscratch_we(ex_mscratch_we),
-      .ex_mepc_we(ex_mepc_we),
-      .ex_mcause_we(ex_mcause_we),
-      .ex_mstatus_we(ex_mstatus_we),
-      .ex_mie_we(ex_mie_we),
-      .ex_mip_we(ex_mip_we),
-      .ex_priv_we(ex_priv_we),
+      .satp_in(id_satp_data_o),
+      .mtval_in(id_mtval_data_o),
+      .mideleg_in(id_mideleg_data_o),
+      .medeleg_in(id_medeleg_data_o),
+      .sepc_in(id_sepc_data_o),
+      .scause_in(id_scause_data_o),
+      .stval_in(id_stval_data_o),
+      .stvec_in(id_stvec_data_o),
+      .sscratch_in(id_sscratch_data_o),
 
-      .id_mtvec_data(id_mtvec_data),
-      .id_mscratch_data(id_mscratch_data),
-      .id_mepc_data(id_mepc_data),
-      .id_mcause_data(id_mcause_data),
-      .id_mstatus_data(id_mstatus_data),
-      .id_mie_data(id_mie_data),
-      .id_mip_data(id_mip_data),
-      .id_priv_data(id_priv_data),
+      // WE in signals
+      .mtvec_we_in(id_mtvec_we_o),
+      .mscratch_we_in(id_mscratch_we_o),
+      .mepc_we_in(id_mepc_we_o),
+      .mcause_we_in(id_mcause_we_o),
+      .mstatus_we_in(id_mstatus_we_o),
+      .mie_we_in(id_mie_we_o),
+      .mip_we_in(id_mip_we_o),
+      .priv_we_in(id_privilege_we_o),
 
-      .ex_mtvec_data(ex_mtvec_data),
-      .ex_mscratch_data(ex_mscratch_data),
-      .ex_mepc_data(ex_mepc_data),
-      .ex_mcause_data(ex_mcause_data),
-      .ex_mstatus_data(ex_mstatus_data),
-      .ex_mie_data(ex_mie_data),
-      .ex_mip_data(ex_mip_data),
-      .ex_priv_data(ex_priv_data),
+      .satp_we_in(id_satp_we_o),
+      .mtval_we_in(id_mtval_we_o),
+      .mideleg_we_in(id_mideleg_we_o),
+      .medeleg_we_in(id_medeleg_we_o),
+      .sepc_we_in(id_sepc_we_o),
+      .scause_we_in(id_scause_we_o),
+      .stval_we_in(id_stval_we_o),
+      .stvec_we_in(id_stvec_we_o),
+      .sscratch_we_in(id_sscratch_we_o),
+      
+      // Data out signals
+      .mtvec_out(exe_mtvec_data_i),
+      .mscratch_out(exe_mscratch_data_i),
+      .mepc_out(exe_mepc_data_i),
+      .mcause_out(exe_mcause_data_i),
+      .mstatus_out(exe_mstatus_data_i),
+      .mie_out(exe_mie_data_i),
+      .mip_out(exe_mip_data_i),
+      .priv_out(exe_privilege_data_i),
 
+      .satp_out(exe_satp_data_i),
+      .mtval_out(exe_mtval_data_i),
+      .mideleg_out(exe_mideleg_data_i),
+      .medeleg_out(exe_medeleg_data_i),
+      .sepc_out(exe_sepc_data_i),
+      .scause_out(exe_scause_data_i),
+      .stval_out(exe_stval_data_i),
+      .stvec_out(exe_stvec_data_i),
+      .sscratch_out(exe_sscratch_data_i),
+      
+      // WE output signals
+      .mtvec_we_out(exe_mtvec_we_i),
+      .mscratch_we_out(exe_mscratch_we_i),
+      .mepc_we_out(exe_mepc_we_i),
+      .mcause_we_out(exe_mcause_we_i),
+      .mstatus_we_out(exe_mstatus_we_i),
+      .mie_we_out(exe_mie_we_i),
+      .mip_we_out(exe_mip_we_i),
+      .priv_we_out(exe_privilege_we_i),
+
+      .satp_we_out(exe_satp_we_i),
+      .mtval_we_out(exe_mtval_we_i),
+      .mideleg_we_out(exe_mideleg_we_i),
+      .medeleg_we_out(exe_medeleg_we_i),
+      .sepc_we_out(exe_sepc_we_i),
+      .scause_we_out(exe_scause_we_i),
+      .stval_we_out(exe_stval_we_i),
+      .stvec_we_out(exe_stvec_we_i),
+      .sscratch_we_out(exe_sscratch_we_i),
+      
+      // Other signals
       .id_csr_code(id_csr_code),
       .ex_csr_code(ex_csr_code),
       .id_direct_branch_addr(id_direct_branch_addr),
       .ex_direct_branch_addr(ex_direct_branch_addr)
   );
   
+  logic exe_mtvec_we_i;
+  logic exe_mscratch_we_i;
+  logic exe_mepc_we_i;
+  logic exe_mcause_we_i;
+  logic exe_mstatus_we_i;
+  logic exe_mie_we_i;
+  logic exe_mip_we_i;
+  logic exe_privilege_we_i;
+
+  logic exe_satp_we_i;
+  logic exe_mtval_we_i;
+  logic exe_mideleg_we_i;
+  logic exe_medeleg_we_i;
+  logic exe_sepc_we_i;
+  logic exe_scause_we_i;
+  logic exe_stval_we_i;
+  logic exe_stvec_we_i;
+  logic exe_sscratch_we_i;
+
+  logic [31:0] exe_mtvec_data_i;
+  logic [31:0] exe_mscratch_data_i;
+  logic [31:0] exe_mepc_data_i;
+  logic [31:0] exe_mcause_data_i;
+  logic [31:0] exe_mstatus_data_i;
+  logic [31:0] exe_mie_data_i;
+  logic [31:0] exe_mip_data_i;
+  logic [1:0] exe_privilege_data_i;
+  
+  logic [31:0] exe_satp_data_i;
+  logic [31:0] exe_mtval_data_i;
+  logic [31:0] exe_mideleg_data_i;
+  logic [31:0] exe_medeleg_data_i;
+  logic [31:0] exe_sepc_data_i;
+  logic [31:0] exe_scause_data_i;
+  logic [31:0] exe_stval_data_i;
+  logic [31:0] exe_stvec_data_i;
+  logic [31:0] exe_sscratch_data_i;
+
+  logic exe_mtvec_we_o;
+  logic exe_mscratch_we_o;
+  logic exe_mepc_we_o;
+  logic exe_mcause_we_o;
+  logic exe_mstatus_we_o;
+  logic exe_mie_we_o;
+  logic exe_mip_we_o;
+  logic exe_privilege_we_o;
+
+  logic exe_satp_we_o;
+  logic exe_mtval_we_o;
+  logic exe_mideleg_we_o;
+  logic exe_medeleg_we_o;
+  logic exe_sepc_we_o;
+  logic exe_scause_we_o;
+  logic exe_stval_we_o;
+  logic exe_stvec_we_o;
+  logic exe_sscratch_we_o;
+
+  logic [31:0] exe_mtvec_data_o;
+  logic [31:0] exe_mscratch_data_o;
+  logic [31:0] exe_mepc_data_o;
+  logic [31:0] exe_mcause_data_o;
+  logic [31:0] exe_mstatus_data_o;
+  logic [31:0] exe_mie_data_o;
+  logic [31:0] exe_mip_data_o;
+  logic [1:0] exe_privilege_data_o;
+  
+  logic [31:0] exe_satp_data_o;
+  logic [31:0] exe_mtval_data_o;
+  logic [31:0] exe_mideleg_data_o;
+  logic [31:0] exe_medeleg_data_o;
+  logic [31:0] exe_sepc_data_o;
+  logic [31:0] exe_scause_data_o;
+  logic [31:0] exe_stval_data_o;
+  logic [31:0] exe_stvec_data_o;
+  logic [31:0] exe_sscratch_data_o;
+
   /* =========== Exe Stage start =========== */
   
   // for exe
@@ -551,66 +1113,93 @@ module lab6_top (
 
   logic [31:0] exe_direct_out; // used in rs1 / rs2 comparation
 
-  logic [31:0] ex_mtvec_data;
-  logic [31:0] ex_mscratch_data;
-  logic [31:0] ex_mepc_data;
-  logic [31:0] ex_mcause_data;
-  logic [31:0] ex_mstatus_data;
-  logic [31:0] ex_mie_data;
-  logic [31:0] ex_mip_data;
-  logic [1:0] ex_priv_data;
-
-  logic  ex_mtvec_we;
-  logic  ex_mscratch_we;
-  logic  ex_mepc_we;
-  logic  ex_mcause_we;
-  logic  ex_mstatus_we;
-  logic  ex_mie_we;
-  logic  ex_mip_we;
-  logic  ex_priv_we;
-
   logic [31:0] ex_direct_branch_addr;
   logic [3:0] ex_csr_code;
 
   logic [31:0] exe_csr_data;
 
-  excep_handler u_excep_handler(
-      .mtvec_in(ex_mtvec_data),
-      .mscratch_in(ex_mscratch_data),
-      .mepc_in(ex_mepc_data),
-      .mcause_in(ex_mcause_data),
-      .mstatus_in(ex_mstatus_data),
-      .mie_in(ex_mie_data),
-      .mip_in(ex_mip_data),
-      .priv_in(ex_priv_data),
+  ex_excep_handler u_ex_excep_handler(
+      // Data in signals
+      .mtvec_in(exe_mtvec_data_i),
+      .mscratch_in(exe_mscratch_data_i),
+      .mepc_in(exe_mepc_data_i),
+      .mcause_in(exe_mcause_data_i),
+      .mstatus_in(exe_mstatus_data_i),
+      .mie_in(exe_mie_data_i),
+      .mip_in(exe_mip_data_i),
+      .priv_in(exe_privilege_data_i),
 
-      .mtvec_out(mtvec_wdata),
-      .mscratch_out(mscratch_wdata),
-      .mepc_out(mepc_wdata),
-      .mcause_out(mcause_wdata),
-      .mstatus_out(mstatus_wdata),
-      .mie_out(mie_wdata),
-      .mip_out(mip_wdata),
-      .priv_out(privilege_wdata),
+      .satp_in(exe_satp_data_i),
+      .mtval_in(exe_mtval_data_i),
+      .mideleg_in(exe_mideleg_data_i),
+      .medeleg_in(exe_medeleg_data_i),
+      .sepc_in(exe_sepc_data_i),
+      .scause_in(exe_scause_data_i),
+      .stval_in(exe_stval_data_i),
+      .stvec_in(exe_stvec_data_i),
+      .sscratch_in(exe_sscratch_data_i),
+      
+      // Data out signals
+      .mtvec_out(exe_mtvec_data_o),
+      .mscratch_out(exe_mscratch_data_o),
+      .mepc_out(exe_mepc_data_o),
+      .mcause_out(exe_mcause_data_o),
+      .mstatus_out(exe_mstatus_data_o),
+      .mie_out(exe_mie_data_o),
+      .mip_out(exe_mip_data_o),
+      .priv_out(exe_privilege_data_o),
 
-      .mtvec_we_in(ex_mtvec_we),
-      .mscratch_we_in(ex_mscratch_we),
-      .mepc_we_in(ex_mepc_we),
-      .mcause_we_in(ex_mcause_we),
-      .mstatus_we_in(ex_mstatus_we),
-      .mie_we_in(ex_mie_we),
-      .mip_we_in(ex_mip_we),
-      .priv_we_in(ex_priv_we),
+      .satp_out(exe_satp_data_o),
+      .mtval_out(exe_mtval_data_o),
+      .mideleg_out(exe_mideleg_data_o),
+      .medeleg_out(exe_medeleg_data_o),
+      .sepc_out(exe_sepc_data_o),
+      .scause_out(exe_scause_data_o),
+      .stval_out(exe_stval_data_o),
+      .stvec_out(exe_stvec_data_o),
+      .sscratch_out(exe_sscratch_data_o),
 
-      .mtvec_we_out(mtvec_we),
-      .mscratch_we_out(mscratch_we),
-      .mepc_we_out(mepc_we),
-      .mcause_we_out(mcause_we),
-      .mstatus_we_out(mstatus_we),
-      .mie_we_out(mie_we),
-      .mip_we_out(mip_we),
-      .priv_we_out(privilege_we),
+      // WE in signals
+      .mtvec_we_in(exe_mtvec_we_i),
+      .mscratch_we_in(exe_mscratch_we_i),
+      .mepc_we_in(exe_mepc_we_i),
+      .mcause_we_in(exe_mcause_we_i),
+      .mstatus_we_in(exe_mstatus_we_i),
+      .mie_we_in(exe_mie_we_i),
+      .mip_we_in(exe_mip_we_i),
+      .priv_we_in(exe_privilege_we_i),
 
+      .satp_we_in(exe_satp_we_i),
+      .mtval_we_in(exe_mtval_we_i),
+      .mideleg_we_in(exe_mideleg_we_i),
+      .medeleg_we_in(exe_medeleg_we_i),
+      .sepc_we_in(exe_sepc_we_i),
+      .scause_we_in(exe_scause_we_i),
+      .stval_we_in(exe_stval_we_i),
+      .stvec_we_in(exe_stvec_we_i),
+      .sscratch_we_in(exe_sscratch_we_i),
+      
+      // WE out signals
+      .mtvec_we_out(exe_mtvec_we_o),
+      .mscratch_we_out(exe_mscratch_we_o),
+      .mepc_we_out(exe_mepc_we_o),
+      .mcause_we_out(exe_mcause_we_o),
+      .mstatus_we_out(exe_mstatus_we_o),
+      .mie_we_out(exe_mie_we_o),
+      .mip_we_out(exe_mip_we_o),
+      .priv_we_out(exe_privilege_we_o),
+
+      .satp_we_out(exe_satp_we_o),
+      .mtval_we_out(exe_mtval_we_o),
+      .mideleg_we_out(exe_mideleg_we_o),
+      .medeleg_we_out(exe_medeleg_we_o),
+      .sepc_we_out(exe_sepc_we_o),
+      .scause_we_out(exe_scause_we_o),
+      .stval_we_out(exe_stval_we_o),
+      .stvec_we_out(exe_stvec_we_o),
+      .sscratch_we_out(exe_sscratch_we_o),
+      
+      // Other signals
       .csr_code_in(ex_csr_code),
       .data_out(exe_csr_data),
 
@@ -732,10 +1321,130 @@ module lab6_top (
       .wb_sel_i (exe_wb_sel),
       .wb_sel_o (mem_wb_sel),
 
+      // CSR passing signals
+      // Data in signals
+      .mtvec_in(exe_mtvec_data_o),
+      .mscratch_in(exe_mscratch_data_o),
+      .mepc_in(exe_mepc_data_o),
+      .mcause_in(exe_mcause_data_o),
+      .mstatus_in(exe_mstatus_data_o),
+      .mie_in(exe_mie_data_o),
+      .mip_in(exe_mip_data_o),
+      .priv_in(exe_privilege_data_o),
+
+      .satp_in(exe_satp_data_o),
+      .mtval_in(exe_mtval_data_o),
+      .mideleg_in(exe_mideleg_data_o),
+      .medeleg_in(exe_medeleg_data_o),
+      .sepc_in(exe_sepc_data_o),
+      .scause_in(exe_scause_data_o),
+      .stval_in(exe_stval_data_o),
+      .stvec_in(exe_stvec_data_o),
+      .sscratch_in(exe_sscratch_data_o),
+
+      // WE in signals
+      .mtvec_we_in(exe_mtvec_we_o),
+      .mscratch_we_in(exe_mscratch_we_o),
+      .mepc_we_in(exe_mepc_we_o),
+      .mcause_we_in(exe_mcause_we_o),
+      .mstatus_we_in(exe_mstatus_we_o),
+      .mie_we_in(exe_mie_we_o),
+      .mip_we_in(exe_mip_we_o),
+      .priv_we_in(exe_privilege_we_o),
+
+      .satp_we_in(exe_satp_we_o),
+      .mtval_we_in(exe_mtval_we_o),
+      .mideleg_we_in(exe_mideleg_we_o),
+      .medeleg_we_in(exe_medeleg_we_o),
+      .sepc_we_in(exe_sepc_we_o),
+      .scause_we_in(exe_scause_we_o),
+      .stval_we_in(exe_stval_we_o),
+      .stvec_we_in(exe_stvec_we_o),
+      .sscratch_we_in(exe_sscratch_we_o),
+      
+      // Data out signals
+      .mtvec_out(mem_mtvec_data_i),
+      .mscratch_out(mem_mscratch_data_i),
+      .mepc_out(mem_mepc_data_i),
+      .mcause_out(mem_mcause_data_i),
+      .mstatus_out(mem_mstatus_data_i),
+      .mie_out(mem_mie_data_i),
+      .mip_out(mem_mip_data_i),
+      .priv_out(mem_privilege_data_i),
+
+      .satp_out(mem_satp_data_i),
+      .mtval_out(mem_mtval_data_i),
+      .mideleg_out(mem_mideleg_data_i),
+      .medeleg_out(mem_medeleg_data_i),
+      .sepc_out(mem_sepc_data_i),
+      .scause_out(mem_scause_data_i),
+      .stval_out(mem_stval_data_i),
+      .stvec_out(mem_stvec_data_i),
+      .sscratch_out(mem_sscratch_data_i),
+      
+      // WE output signals
+      .mtvec_we_out(mem_mtvec_we_i),
+      .mscratch_we_out(mem_mscratch_we_i),
+      .mepc_we_out(mem_mepc_we_i),
+      .mcause_we_out(mem_mcause_we_i),
+      .mstatus_we_out(mem_mstatus_we_i),
+      .mie_we_out(mem_mie_we_i),
+      .mip_we_out(mem_mip_we_i),
+      .priv_we_out(mem_privilege_we_i),
+
+      .satp_we_out(mem_satp_we_i),
+      .mtval_we_out(mem_mtval_we_i),
+      .mideleg_we_out(mem_mideleg_we_i),
+      .medeleg_we_out(mem_medeleg_we_i),
+      .sepc_we_out(mem_sepc_we_i),
+      .scause_we_out(mem_scause_we_i),
+      .stval_we_out(mem_stval_we_i),
+      .stvec_we_out(mem_stvec_we_i),
+      .sscratch_we_out(mem_sscratch_we_i),
+      
+      // Other signals
       .csr_data_i (exe_csr_data),
       .csr_data_o (mem_csr_data)
   );
   
+  logic mem_mtvec_we_i;
+  logic mem_mscratch_we_i;
+  logic mem_mepc_we_i;
+  logic mem_mcause_we_i;
+  logic mem_mstatus_we_i;
+  logic mem_mie_we_i;
+  logic mem_mip_we_i;
+  logic mem_privilege_we_i;
+
+  logic mem_satp_we_i;
+  logic mem_mtval_we_i;
+  logic mem_mideleg_we_i;
+  logic mem_medeleg_we_i;
+  logic mem_sepc_we_i;
+  logic mem_scause_we_i;
+  logic mem_stval_we_i;
+  logic mem_stvec_we_i;
+  logic mem_sscratch_we_i;
+
+  logic [31:0] mem_mtvec_data_i;
+  logic [31:0] mem_mscratch_data_i;
+  logic [31:0] mem_mepc_data_i;
+  logic [31:0] mem_mcause_data_i;
+  logic [31:0] mem_mstatus_data_i;
+  logic [31:0] mem_mie_data_i;
+  logic [31:0] mem_mip_data_i;
+  logic [1:0] mem_privilege_data_i;
+  
+  logic [31:0] mem_satp_data_i;
+  logic [31:0] mem_mtval_data_i;
+  logic [31:0] mem_mideleg_data_i;
+  logic [31:0] mem_medeleg_data_i;
+  logic [31:0] mem_sepc_data_i;
+  logic [31:0] mem_scause_data_i;
+  logic [31:0] mem_stval_data_i;
+  logic [31:0] mem_stvec_data_i;
+  logic [31:0] mem_sscratch_data_i;
+
   /* =========== Mem Stage start =========== */
   
   logic [31:0] mem_pc;
@@ -790,12 +1499,96 @@ module lab6_top (
   
   writeback_mux u_writeback_mux(
       .pc_i (mem_pc),
+      .inst_i (mem_inst),
       .alu_y_i (mem_alu_y),
       .dm_data_i (mem_data_read),
       .csr_data_i (mem_csr_data),
       .wb_sel_i (mem_wb_sel),
       .wb_data_o (mem_wb_data)
   );
+
+  mem_excep_handler u_mem_excep_handler(
+      // Data in signals
+      .mtvec_in(mem_mtvec_data_i),
+      .mscratch_in(mem_mscratch_data_i),
+      .mepc_in(mem_mepc_data_i),
+      .mcause_in(mem_mcause_data_i),
+      .mstatus_in(mem_mstatus_data_i),
+      .mie_in(mem_mie_data_i),
+      .mip_in(mem_mip_data_i),
+      .priv_in(mem_privilege_data_i),
+
+      .satp_in(mem_satp_data_i),
+      .mtval_in(mem_mtval_data_i),
+      .mideleg_in(mem_mideleg_data_i),
+      .medeleg_in(mem_medeleg_data_i),
+      .sepc_in(mem_sepc_data_i),
+      .scause_in(mem_scause_data_i),
+      .stval_in(mem_stval_data_i),
+      .stvec_in(mem_stvec_data_i),
+      .sscratch_in(mem_sscratch_data_i),
+      
+      // Data out signals, writeback to CSR finally
+      .mtvec_out(mtvec_wdata),
+      .mscratch_out(mscratch_wdata),
+      .mepc_out(mepc_wdata),
+      .mcause_out(mcause_wdata),
+      .mstatus_out(mstatus_wdata),
+      .mie_out(mie_wdata),
+      .mip_out(mip_wdata),
+      .priv_out(privilege_wdata),
+
+      .satp_out(satp_wdata),
+      .mtval_out(mtval_wdata),
+      .mideleg_out(mideleg_wdata),
+      .medeleg_out(medeleg_wdata),
+      .sepc_out(sepc_wdata),
+      .scause_out(scause_wdata),
+      .stval_out(stval_wdata),
+      .stvec_out(stvec_wdata),
+      .sscratch_out(sscratch_wdata),
+
+      // WE in signals
+      .mtvec_we_in(mem_mtvec_we_i),
+      .mscratch_we_in(mem_mscratch_we_i),
+      .mepc_we_in(mem_mepc_we_i),
+      .mcause_we_in(mem_mcause_we_i),
+      .mstatus_we_in(mem_mstatus_we_i),
+      .mie_we_in(mem_mie_we_i),
+      .mip_we_in(mem_mip_we_i),
+      .priv_we_in(mem_privilege_we_i),
+
+      .satp_we_in(mem_satp_we_i),
+      .mtval_we_in(mem_mtval_we_i),
+      .mideleg_we_in(mem_mideleg_we_i),
+      .medeleg_we_in(mem_medeleg_we_i),
+      .sepc_we_in(mem_sepc_we_i),
+      .scause_we_in(mem_scause_we_i),
+      .stval_we_in(mem_stval_we_i),
+      .stvec_we_in(mem_stvec_we_i),
+      .sscratch_we_in(mem_sscratch_we_i),
+      
+      // WE out signals, write back to CSR finally
+      .mtvec_we_out(mtvec_we),
+      .mscratch_we_out(mscratch_we),
+      .mepc_we_out(mepc_we),
+      .mcause_we_out(mcause_we),
+      .mstatus_we_out(mstatus_we),
+      .mie_we_out(mie_we),
+      .mip_we_out(mip_we),
+      .priv_we_out(privilege_we),
+
+      .satp_we_out(satp_we),
+      .mtval_we_out(mtval_we),
+      .mideleg_we_out(mideleg_we),
+      .medeleg_we_out(medeleg_we),
+      .sepc_we_out(sepc_we),
+      .scause_we_out(scause_we),
+      .stval_we_out(stval_we),
+      .stvec_we_out(stvec_we),
+      .sscratch_we_out(sscratch_we)
+  );
+
   
   /* =========== Mem Stage end =========== */
   
@@ -1092,8 +1885,6 @@ module lab6_top (
       .sram_be_n(ext_ram_be_n)
   );
 
-  // ���ڿ�����ģ��
-  // NOTE: ����޸�ϵͳʱ��Ƶ�ʣ�Ҳ��Ҫ�޸Ĵ˴���ʱ��Ƶ�ʲ���?????
   uart_controller #(
       .CLK_FREQ(10_000_000),
       .BAUD    (115200)

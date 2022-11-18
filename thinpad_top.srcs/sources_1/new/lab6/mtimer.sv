@@ -18,8 +18,8 @@ end
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
-        mtime <= 63'b0;
-        mtimecmp <= {1'b1,63'b0};
+        mtime <= 64'b0;
+        mtimecmp <= 64'hFFFFFFFFFFFFFFFF;
     end else begin
         if (mtime_we) begin
             if (upper) mtime <= {wdata, mtime[31:0]};

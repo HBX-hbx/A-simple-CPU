@@ -39,33 +39,26 @@ module dm_master(
 
     reg [31:0] last_valid_addr = 0;
     reg [3:0] last_valid_sel = 0;
-    reg [63:0] last_valid_mtime = 0;
-    reg [63:0] last_valid_mtimecmp = 0;
+    reg [63:0] last_valid_time = 0;
 
     // Judge if the address is related to timer
     reg [1:0] time_op = 0; // 0 means normal(not time), 1 means mtime, 2 means mtimecmp
-    reg if_up = 0; // 0 not upper, 1 is upper
     
     logic if_same;
+    logic if_time;
+    logic isread;
+    logic iswrite;
+    assign if_same = (last_data_addr == data_addr_i) && (last_data == data_i) && (last_sel == sel_i) && (last_dm_op == dm_op_i);
+    assign if_time = (data_addr_i == 32'h0200bff8) || (data_addr_i == 32'h0200bffc) || (data_addr_i == 32'h02004000) || (data_addr_i == 32'h02004004);
+    assign isread = (dm_op_i == 1) && (state == 0) && (~if_same);
+    assign iswrite = (dm_op_i == 2) && (state == 0) && (~if_same);
+
     logic [3:0] sel;
     logic [31:0] data_sft;
     logic [31:0] normal_time_data_buf;
-    
-    assign if_same = (last_data_addr == data_addr_i) && (last_data == data_i) && (last_sel == sel_i) && (last_dm_op == dm_op_i);
-
-    logic isread;
-    assign isread = (dm_op_i == 1) && (state == 0) && (~if_same);
-    logic iswrite;
-    assign iswrite = (dm_op_i == 2) && (state == 0) && (~if_same);
-    
     assign data_sft = (data_access_ack_o && wb_we_o == 0) ? (state == 1 ? normal_time_data_buf : data_out): 0;
-    assign data_access_ack_o = (dm_ready || wb_ack_i) && (isread !== 1) && (iswrite !== 1);
-
-    // one cycle is enough to write back to update timer
-    assign mtime_we = wb_ack_i && state == 1 && (time_op == 1);
-    assign mtimecmp_we = wb_ack_i && state == 1 && (time_op == 2);
-    assign upper = wb_ack_i && state == 1 && if_up;
-    assign timer_wdata = (mtime_we || mtimecmp_we) ? wb_dat_i : 0;
+    // For mtime, we only need one cycle to read the data / load the data
+    assign data_access_ack_o = (dm_ready || (wb_ack_i || time_op != 0)) && (isread !== 1) && (iswrite !== 1);
     
     // dealing with digit shift problems
     always_comb begin
@@ -89,13 +82,7 @@ module dm_master(
         if (time_op == 0) begin
             normal_time_data_buf = wb_dat_i;
         end else begin
-            if (time_op == 1) begin
-                if (if_up) normal_time_data_buf = last_valid_mtime[63:32];
-                else normal_time_data_buf = last_valid_mtime[31:0];
-            end else if (time_op == 2) begin
-                if (if_up) normal_time_data_buf = last_valid_mtimecmp[63:32];
-                else normal_time_data_buf = last_valid_mtimecmp[31:0];
-            end
+            normal_time_data_buf = last_valid_time;
         end
     end
     
@@ -116,55 +103,85 @@ module dm_master(
             last_dm_op <= dm_op_i;
             // dm_op = 1 represents read
             if (isread) begin
-                wb_cyc_o <= 1;
-                wb_stb_o <= 1;
-                wb_adr_o <= data_addr_i;
-                wb_dat_o <= 0;
-                wb_sel_o <= sel;
-                wb_we_o <= 0;
-                state <= 1;
-                dm_ready <= 0;
-                data_out <= 0;
-                last_valid_addr <= data_addr_i;
-                last_valid_sel <= sel_i;
+                if (~if_time) begin
+                    wb_cyc_o <= 1;
+                    wb_stb_o <= 1;
+                    wb_adr_o <= data_addr_i;
+                    wb_dat_o <= 0;
+                    wb_sel_o <= sel;
+                    wb_we_o <= 0;
+                    state <= 1;
+                    dm_ready <= 0;
+                    data_out <= 0;
+                    last_valid_addr <= data_addr_i;
+                    last_valid_sel <= sel_i;
+                end else begin
+                    wb_we_o <= 0;
+                    if (data_addr_i == 32'h0200bff8) begin
+                        time_op <= 1;
+                        last_valid_time <= mtime[31:0];
+                    end else if (data_addr_i == 32'h0200bffc) begin
+                        time_op <= 1;
+                        last_valid_time <= mtime[63:32];
+                    end else if (data_addr_i == 32'h02004000) begin
+                        time_op <= 2;
+                        last_valid_time <= mtimecmp[31:0];
+                    end else begin // if (data_addr_i == 32'h02004004) begin
+                        time_op <= 2;
+                        last_valid_time <= mtimecmp[63:32];
+                    end
+                    state <= 1;
+                    dm_ready <= 0;
+                    data_out <= 0;
+                    last_valid_addr <= data_addr_i;
+                    last_valid_sel <= sel_i;
+                end
             // dm_op = 2 represents write
             end else if (iswrite) begin
-                wb_cyc_o <= 1;
-                wb_stb_o <= 1;
-                wb_adr_o <= data_addr_i;
-                wb_dat_o <= data_i;
-                wb_sel_o <= sel;
-                wb_we_o <= 1;
-                state <= 1;
-                dm_ready <= 0;
-                data_out <= 0;
-                last_valid_addr <= data_addr_i;
-                last_valid_sel <= sel_i;
-            end
-            // Related to timer
-            if (isread || iswrite) begin
-                if (data_addr_i == 32'h0200bff8) begin
-                    time_op <= 1;
-                    if_up <= 0;
-                    last_valid_mtime <= mtime;
-                end else if (data_addr_i == 32'h0200bffc) begin
-                    time_op <= 1;
-                    if_up <= 1;
-                    last_valid_mtime <= mtime;
-                end else if (data_addr_i == 32'h02004000) begin
-                    time_op <= 2;
-                    if_up <= 1;
-                    last_valid_mtimecmp <= mtimecmp;
-                end else if (data_addr_i == 32'h02004004) begin
-                    time_op <= 2;
-                    if_up <= 1;
-                    last_valid_mtimecmp <= mtimecmp;
+                if (~if_time) begin
+                    wb_cyc_o <= 1;
+                    wb_stb_o <= 1;
+                    wb_adr_o <= data_addr_i;
+                    wb_dat_o <= data_i;
+                    wb_sel_o <= sel;
+                    wb_we_o <= 1;
+                    state <= 1;
+                    dm_ready <= 0;
+                    data_out <= 0;
+                    last_valid_addr <= data_addr_i;
+                    last_valid_sel <= sel_i;
                 end else begin
-                    time_op <= 0;
-                    if_up <= 0;
+                    timer_wdata <= data_i;
+                    if (data_addr_i == 32'h0200bff8) begin
+                        time_op <= 1;
+                        last_valid_time <= 0;
+                        upper <= 0;
+                        mtime_we <= 1;
+                    end else if (data_addr_i == 32'h0200bffc) begin
+                        time_op <= 1;
+                        last_valid_time <= 0;
+                        upper <= 1;
+                        mtime_we <= 1;
+                    end else if (data_addr_i == 32'h02004000) begin
+                        time_op <= 2;
+                        last_valid_time <= 0;
+                        upper <= 0;
+                        mtimecmp_we <= 1;
+                    end else begin // if (data_addr_i == 32'h02004004) begin
+                        time_op <= 2;
+                        last_valid_time <= 0;
+                        upper <= 1;
+                        mtimecmp_we <= 1;
+                    end
+                    state <= 1;
+                    dm_ready <= 0;
+                    data_out <= 0;
+                    last_valid_addr <= data_addr_i;
+                    last_valid_sel <= sel_i;
                 end
             end
-            if (wb_ack_i == 1 && state == 1) begin
+
+            if ((wb_ack_i == 1 || time_op != 0) && state == 1) begin
                 wb_cyc_o <= 0;
                 wb_stb_o <= 0;
                 state <= 0;
@@ -174,7 +191,12 @@ module dm_master(
                 // let time op last for one cycle is enough, 
                 // as we use data out(which is update to time related output) to make data_o last longer
                 time_op <= 0;
+                upper <= 0;
+                timer_wdata <= 0;
+                mtimecmp_we <= 0;
+                mtime_we <= 0;
             end
+
         end
     end
 endmodule
