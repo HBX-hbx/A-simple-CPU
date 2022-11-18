@@ -357,7 +357,7 @@ module lab6_top (
   );
 
   // Cache
-  im_cache im_cache(
+  im_fast_cache im_cache(
     .clk_i(sys_clk),
     .rst_i(sys_rst),
 
