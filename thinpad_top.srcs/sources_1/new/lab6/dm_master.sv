@@ -70,7 +70,6 @@ module dm_master(
 
     logic [3:0] sel;
     logic [31:0] data_sft;
-    logic [31:0] mmu_data_sft;
     logic [31:0] normal_time_data_buf;
 
     // immediately return when final ack
@@ -86,7 +85,7 @@ module dm_master(
         end
     end
 
-    assign mmu_data_sft = (mmu_ack_o && wb_we_o == 0) ? (state == 1 ? normal_time_data_buf : data_out): 0;
+    assign mmu_data_o = (mmu_ack_o && wb_we_o == 0) ? (state == 1 ? normal_time_data_buf : data_out): 0;
     assign mmu_ack_o = (~dm_ready && (wb_ack_i || time_op != 0)) && (isread_without_mmu !== 1) && (iswrite_without_mmu !== 1);
     
     // dealing with digit shift problems
@@ -95,17 +94,17 @@ module dm_master(
         if (sel_i == 4'b0001 || (last_valid_sel == 4'b0001 && ~isread && ~ iswrite)) begin
             sel = (sel_i == 4'b0001) ? (sel_i << (data_addr_i % 4)) : (last_valid_sel << (last_valid_addr % 4));
             data_o = (data_sft & ((32'h000000FF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
-            mmu_data_o = (mmu_data_sft & ((32'h000000FF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
+            // mmu_data_o = (mmu_data_sft & ((32'h000000FF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
         // if load or save half
         end else if (sel_i == 4'b0011 || (last_valid_sel == 4'b0011 && ~isread && ~ iswrite)) begin
             sel = (sel_i == 4'b0011) ? (sel_i << (data_addr_i % 4)) : (last_valid_sel << (last_valid_addr % 4));
             data_o = (data_sft & ((32'h0000FFFF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
-            mmu_data_o = (mmu_data_sft & ((32'h0000FFFF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
+            // mmu_data_o = (mmu_data_sft & ((32'h0000FFFF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
         // load or save word
         end else begin
             sel = sel_i;
             data_o = data_sft;
-            mmu_data_o = mmu_data_sft;
+            // mmu_data_o = mmu_data_sft;
         end
     end
 
@@ -140,7 +139,7 @@ module dm_master(
                     wb_stb_o <= 1;
                     wb_adr_o <= data_addr_i;
                     wb_dat_o <= 0;
-                    wb_sel_o <= sel;
+                    wb_sel_o <= (mmu_state_i == 1 || mmu_state_i == 2) ? 4'b1111 : sel;
                     wb_we_o <= 0;
                     state <= 1;
                     dm_ready <= 0;

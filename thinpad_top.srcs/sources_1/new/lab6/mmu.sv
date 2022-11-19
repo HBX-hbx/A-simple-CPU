@@ -14,7 +14,7 @@ module mmu (
 	input wire [31:0] vir_addr_i, // virtual addr 1st: [31:22] 2nd: [21:12] offset: [11:0]
 
 	output wire is_mmu_on_o,
-	output wire [31:0] mmu_state_o, // tell the master which state now
+	output wire [1:0] mmu_state_o, // tell the master which state now
 	output reg [31:0] phy_addr_o // translated pa
 );
 
