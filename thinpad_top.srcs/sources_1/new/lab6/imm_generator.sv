@@ -1,6 +1,7 @@
 module imm_generator(
     input wire [31:0] inst_i,
     input wire [2:0]  imm_sel_i,
+    input wire [31:0] direct_out_i,
     output logic [31:0] imm_o
 );
     always_comb begin
@@ -36,6 +37,10 @@ module imm_generator(
                 end else begin 
                     imm_o = {20'b00000000000000000000, inst_i[31:25], inst_i[11:7]};
                 end
+            end
+            // especially for sltu currently
+            3'd6: begin
+                imm_o = direct_out_i;
             end
             default: begin
                 imm_o = 32'd0;
