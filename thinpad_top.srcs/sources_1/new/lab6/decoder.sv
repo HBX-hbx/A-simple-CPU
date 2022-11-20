@@ -287,7 +287,7 @@ module decoder(
             rf_wen_o = 1;
             alu_a_sel_o = 1;
             alu_b_sel_o = (d_op == _XOR) ? 1 : 0; // 0 represents choose imm
-            alu_op_o = 4; // 5 is XOR
+            alu_op_o = 5; // 5 is XOR
             imm_sel_o = (d_op == _XOR) ? 0 : 3; // 0 represent no imm, 3 represents want [11:0]
             wb_sel_o = 1; // 1 represent wb data comes from ALU
             br_op_o = 2; // no branch op

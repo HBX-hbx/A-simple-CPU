@@ -11,6 +11,7 @@ module im_master(
     // 2: DONE
     input wire [1:0] mmu_state_i,
     input wire is_mmu_on_i,
+    input wire tlb_hit_i,
     // inst
     input wire req_i,
     output wire mmu_ack_o, // to mmu

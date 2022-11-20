@@ -358,6 +358,7 @@ module lab6_top (
   logic        if_master_ack_mmu;
   logic [1:0]  if_mmu_state;
   logic        if_mmu_on;
+  logic        if_tlb_hit;
   logic [31:0] if_master_phy_addr;
   
   im_master u_im_master (
@@ -371,6 +372,7 @@ module lab6_top (
       .phy_addr_i (if_master_phy_addr),
       .mmu_state_i (if_mmu_state),
       .is_mmu_on_i (if_mmu_on),
+      .tlb_hit_i (if_tlb_hit),
       // to mmu
       .mmu_ack_o (if_master_ack_mmu),
       .mmu_data_o (if_master_data_mmu),
@@ -398,6 +400,7 @@ module lab6_top (
       // from pc_reg
       .vir_addr_i (cur_pc),
       // to im_master
+      .tlb_hit_o (if_tlb_hit),
       .is_mmu_on_o (if_mmu_on),
       .mmu_state_o (if_mmu_state),
       .phy_addr_o (if_master_phy_addr)
@@ -1475,6 +1478,7 @@ module lab6_top (
   logic        mem_master_ack_mmu;
   logic [1:0]  mem_mmu_state;
   logic        mem_mmu_on;
+  logic        mem_tlb_hit;
   logic [31:0] mem_master_phy_addr;
   
   dm_master u_dm_master(
@@ -1484,6 +1488,7 @@ module lab6_top (
       .data_addr_i (mem_master_phy_addr),
       .mmu_state_i (mem_mmu_state),
       .is_mmu_on_i (mem_mmu_on),
+      .tlb_hit_i   (mem_tlb_hit),
       // to mmu
       .mmu_ack_o (mem_master_ack_mmu),
       .mmu_data_o (mem_master_data_mmu),
@@ -1527,6 +1532,7 @@ module lab6_top (
       // load / store virtual addr
       .vir_addr_i (mem_alu_y),
       // to dm_master
+      .tlb_hit_o (mem_tlb_hit),
       .is_mmu_on_o (mem_mmu_on),
       .mmu_state_o (mem_mmu_state),
       .phy_addr_o (mem_master_phy_addr)

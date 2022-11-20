@@ -11,6 +11,8 @@ module dm_master(
      
     input wire [1:0] dm_op_i,
     input wire [3:0] sel_i,
+
+    input wire tlb_hit_i,
     
     output wire mmu_ack_o, // to mmu
     output reg data_access_ack_o, // to controller (only when the final PA is gotten, assign to '1')
@@ -47,6 +49,7 @@ module dm_master(
 
     reg [31:0] last_valid_addr = 0;
     reg [3:0] last_valid_sel = 0;
+    reg [31:0] last_valid_data = 0;
     reg [63:0] last_valid_time = 0;
 
     // Judge if the address is related to timer
@@ -61,15 +64,16 @@ module dm_master(
     assign if_same = (last_data_addr == data_addr_i) && (last_data == data_i) && (last_sel == sel_i) && (last_dm_op == dm_op_i);
     assign if_time = (data_addr_i == 32'h0200bff8) || (data_addr_i == 32'h0200bffc) || (data_addr_i == 32'h02004000) || (data_addr_i == 32'h02004004);
     
-    assign isread = (dm_op_i == 1 || (dm_op_i == 2 && (mmu_state_i == 1 || mmu_state_i == 2))) && (state == 0) && (~if_same);
+    assign isread = (dm_op_i == 1 || (dm_op_i == 2 && ((mmu_state_i == 1 && ~tlb_hit_i) || mmu_state_i == 2))) && (state == 0) && (~if_same);
     // only when mmu off or va->pa done can write ram
-    assign iswrite = (dm_op_i == 2 && (mmu_state_i == 0 || mmu_state_i == 3)) && (state == 0) && (~if_same);
+    assign iswrite = (dm_op_i == 2 && (mmu_state_i == 0 || (mmu_state_i == 1 && tlb_hit_i) || mmu_state_i == 3)) && (state == 0) && (~if_same);
 
     assign isread_without_mmu = (dm_op_i == 1) && (state == 0) && (~if_same);
     assign iswrite_without_mmu = (dm_op_i == 2) && (state == 0) && (~if_same);
 
     logic [3:0] sel;
     logic [31:0] data_sft;
+    logic [31:0] data;
     logic [31:0] normal_time_data_buf;
 
     // immediately return when final ack
@@ -80,7 +84,7 @@ module dm_master(
         // For mtime, we only need one cycle to read the data / load the data
         if (is_mmu_on_i) begin
             if (dm_op_i == 1 || dm_op_i == 2) begin
-                data_access_ack_o = mmu_ack_o && mmu_state_i == 3;
+                data_access_ack_o = mmu_ack_o && (mmu_state_i == 3 || mmu_state_i == 1 && tlb_hit_i);
             end
         end
     end
@@ -93,18 +97,18 @@ module dm_master(
         // if load or save byte
         if (sel_i == 4'b0001 || (last_valid_sel == 4'b0001 && ~isread && ~ iswrite)) begin
             sel = (sel_i == 4'b0001) ? (sel_i << (data_addr_i % 4)) : (last_valid_sel << (last_valid_addr % 4));
+            data = (sel_i == 4'b0001) ? (data_i << ((data_addr_i % 4) * 8)) : (last_valid_data << ((last_valid_addr % 4) * 8));
             data_o = (data_sft & ((32'h000000FF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
-            // mmu_data_o = (mmu_data_sft & ((32'h000000FF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
         // if load or save half
         end else if (sel_i == 4'b0011 || (last_valid_sel == 4'b0011 && ~isread && ~ iswrite)) begin
             sel = (sel_i == 4'b0011) ? (sel_i << (data_addr_i % 4)) : (last_valid_sel << (last_valid_addr % 4));
+            data = (sel_i == 4'b0011) ? (data_i << ((data_addr_i % 4) * 8)) : (last_valid_data << ((last_valid_addr % 4) * 8));
             data_o = (data_sft & ((32'h0000FFFF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
-            // mmu_data_o = (mmu_data_sft & ((32'h0000FFFF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
         // load or save word
         end else begin
             sel = sel_i;
+            data = data_i;
             data_o = data_sft;
-            // mmu_data_o = mmu_data_sft;
         end
     end
 
@@ -130,7 +134,7 @@ module dm_master(
         end else begin
             last_data_addr <= data_addr_i;
             last_data <= data_i;
-            last_sel <= sel;
+            last_sel <= sel_i;
             last_dm_op <= dm_op_i;
             // dm_op = 1 represents read
             if (isread) begin
@@ -139,7 +143,7 @@ module dm_master(
                     wb_stb_o <= 1;
                     wb_adr_o <= data_addr_i;
                     wb_dat_o <= 0;
-                    wb_sel_o <= (mmu_state_i == 1 || mmu_state_i == 2) ? 4'b1111 : sel;
+                    wb_sel_o <= (mmu_state_i == 1 || mmu_state_i == 2) ? 4'b1111 : sel; // shifted!
                     wb_we_o <= 0;
                     state <= 1;
                     dm_ready <= 0;
@@ -173,12 +177,13 @@ module dm_master(
                     wb_cyc_o <= 1;
                     wb_stb_o <= 1;
                     wb_adr_o <= data_addr_i;
-                    wb_dat_o <= data_i;
-                    wb_sel_o <= sel;
+                    wb_dat_o <= data; // shifted!
+                    wb_sel_o <= sel; // shifted!
                     wb_we_o <= 1;
                     state <= 1;
                     dm_ready <= 0;
                     data_out <= 0;
+                    last_valid_data <= data_i;
                     last_valid_addr <= data_addr_i;
                     last_valid_sel <= sel_i;
                 end else begin
@@ -207,6 +212,7 @@ module dm_master(
                     state <= 1;
                     dm_ready <= 0;
                     data_out <= 0;
+                    last_valid_data <= data_i;
                     last_valid_addr <= data_addr_i;
                     last_valid_sel <= sel_i;
                 end
