@@ -78,23 +78,24 @@ module lab6_top (
   /* =========== Demo code begin =========== */
 
   // PLL ��Ƶʾ��
-  logic locked, clk_10M, clk_20M;
+  logic locked, clk_10M, clk_20M, clk_40M;
   pll_example clock_gen (
       // Clock in ports
       .clk_in1(clk_50M),  //
       // Clock out ports
       .clk_out1(clk_10M),  //
       .clk_out2(clk_20M),  //
+      .clk_out3(clk_40M),
       // Status and control signals
       .reset(reset_btn),  // PLL
       .locked(locked)  // PLL
                        //
   );
 
-  logic reset_of_clk10M;
-  always_ff @(posedge clk_10M or negedge locked) begin
-    if (~locked) reset_of_clk10M <= 1'b1;
-    else reset_of_clk10M <= 1'b0;
+  logic reset_of_clk40M;
+  always_ff @(posedge clk_40M or negedge locked) begin
+    if (~locked) reset_of_clk40M <= 1'b1;
+    else reset_of_clk40M <= 1'b0;
   end
 
   /* =========== Demo code end =========== */
@@ -102,8 +103,8 @@ module lab6_top (
   logic sys_clk;
   logic sys_rst;
 
-  assign sys_clk = clk_10M;
-  assign sys_rst = reset_of_clk10M;
+  assign sys_clk = clk_40M;
+  assign sys_rst = reset_of_clk40M;
   
   assign uart_rdn = 1'b1;
   assign uart_wrn = 1'b1;
@@ -1465,17 +1466,52 @@ module lab6_top (
   logic [31:0] mem_data_read;
 
   logic [31:0] mem_csr_data;
+
+  logic [1:0] cache_dm_op;
+  logic [3:0] cache_dm_sel;
+  logic cache_dm_data_access_ack;
+  logic [31:0] cache_dm_data_addr;
+  logic [31:0] cache_dm_to_dm_data;
+  logic [31:0] cache_dm_to_cache_data;
+
+  dm_cache dm_cache(
+    .clk_i(sys_clk),
+    .rst_i(sys_rst),
+
+    .dm_op_i(mem_dm_op),
+    .data_access_ack_o(mem_data_access_ack),
+    .data_addr_i(mem_alu_y),
+    .data_i(mem_rs2_data),
+    .data_o(mem_data_read),
+    .sel_i(mem_dm_sel),
+
+    .dm_op_o(cache_dm_op),
+    .sel_o(cache_dm_sel),
+    .dm_data_access_ack_i(cache_dm_data_access_ack),
+    .dm_data_addr_o(cache_dm_data_addr),
+    .dm_data_o(cache_dm_to_dm_data),
+    .dm_data_i(cache_dm_to_cache_data),
+
+    .fence_i(1'b0),
+    .align_fault_o()
+  );
   
   dm_master u_dm_master(
       .clk_i (sys_clk),
       .rst_i (sys_rst),
      
-      .dm_op_i (mem_dm_op),
-      .data_access_ack_o (mem_data_access_ack),
-      .data_addr_i (mem_alu_y),
-      .data_i (mem_rs2_data),
-      .data_o (mem_data_read),
-      .sel_i (mem_dm_sel),
+    //   .dm_op_i (mem_dm_op),
+    //   .data_access_ack_o (mem_data_access_ack),
+    //   .data_addr_i (mem_alu_y),
+    //   .data_i (mem_rs2_data),
+    //   .data_o (mem_data_read),
+    //   .sel_i (mem_dm_sel),
+      .dm_op_i (cache_dm_op),
+      .data_access_ack_o (cache_dm_data_access_ack),
+      .data_addr_i (cache_dm_data_addr),
+      .data_i (cache_dm_to_dm_data),
+      .data_o (cache_dm_to_cache_data),
+      .sel_i (cache_dm_sel),
      
       // DM => Mem Master
       .wb_cyc_o(mem_cyc_o),
@@ -1886,7 +1922,7 @@ module lab6_top (
   );
 
   uart_controller #(
-      .CLK_FREQ(10_000_000),
+      .CLK_FREQ(40_000_000),
       .BAUD    (115200)
   ) uart_controller (
       .clk_i(sys_clk),

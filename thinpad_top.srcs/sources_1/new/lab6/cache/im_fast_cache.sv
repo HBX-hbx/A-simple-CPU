@@ -7,14 +7,14 @@ module im_fast_cache(
 
     // pc_reg
     input wire req_i,
-    output wire ack_o,
+    output logic ack_o,
     input wire [31:0] pc_i,
-    output reg [31:0] inst_o,
+    output logic [31:0] inst_o,
 
     // im_master
-    output reg im_req_o,
+    output logic im_req_o,
     input wire im_ack_i,
-    output reg [31:0] im_pc_o,
+    output logic [31:0] im_pc_o,
     input wire [31:0] im_inst_i,
 
     // fence
@@ -31,17 +31,15 @@ module im_fast_cache(
 
     reg [5:0] j;
     reg [5:0] k;
-    reg data_ready;
     
-    
-    reg cache_hit;
-    reg [31:0] cache_data;
-    reg wishbone_ack;
-    reg [31:0] wishbone_data;
-    assign data_ready = cache_hit | wishbone_ack;
-    assign inst_o = cache_hit?cache_data:wishbone_data;
-    // assign ack_o = data_ready && req_i != 1;
-    assign ack_o = data_ready ;
+    reg cache_hit = 0;
+    reg hit_longer = 0;
+
+    reg [31:0] last_w_pc = 32'b0;
+    reg [31:0] last_im_inst = 32'b0;
+    reg if_same;
+
+    assign if_same = (last_w_pc == pc_i) && (last_im_inst == im_inst_i);
 
     always_ff @(posedge clk_i) begin
         if (rst_i || fence_i) begin // init with all cache fake
@@ -54,59 +52,51 @@ module im_fast_cache(
                 valid_2[k] <= 1'b0;
                 k = k + 1;
             end
-            // init ack and inst
-            wishbone_ack <= 0;
-            inst_o <= `NOP;
         end else begin
-            // update
-            if ((req_i == 1 || data_ready == 1) && pc_tag_1[pc_i[7:2]] == pc_i[31:8] && valid_1[pc_i[7:2]]) begin
-                // nothing to do 
-                wishbone_ack <= 0;
-            end else if ((req_i == 1 || data_ready == 1) && pc_tag_2[pc_i[7:2]] == pc_i[31:8] && valid_2[pc_i[7:2]]) begin
-                // nothing to do 
-                wishbone_ack <= 0;
-            end else begin
-                    if (im_ack_i && ~data_ready) begin
-                        wishbone_ack <= 1;
-                        wishbone_data <= im_inst_i;
-                        // fill the cache
-                        if (valid_1[pc_i[7:2]] && pc_tag_1[pc_i[7:2]] == pc_i[31:8]) begin
-                            // update
-                            data_1[pc_i[7:2]] <= im_inst_i;
-                        end else if (valid_2[pc_i[7:2]]  && pc_tag_2[pc_i[7:2]] == pc_i[31:8]) begin
-                            data_2[pc_i[7:2]] <= im_inst_i;
-                        end else begin
-                            if (~valid_1[pc_i[7:2]]) begin
-                                pc_tag_1[pc_i[7:2]] <= pc_i[31:8];
-                                valid_1[pc_i[7:2]] <= 1'b1;
-                                data_1[pc_i[7:2]] <= im_inst_i;
-                            end else if (~valid_2[pc_i[7:2]]) begin
-                                pc_tag_2[pc_i[7:2]] <= pc_i[31:8];
-                                valid_2[pc_i[7:2]] <= 1'b1;
-                                data_2[pc_i[7:2]] <= im_inst_i;
-                            end else begin
-                                pc_tag_1[pc_i[7:2]] <= pc_i[31:8];
-                                valid_1[pc_i[7:2]] <= 1'b1;
-                                data_1[pc_i[7:2]] <= im_inst_i;
-                            end
-                        end
-                    end else begin
-                        wishbone_ack <= 0;
+            if (im_ack_i && ~if_same && ~cache_hit) begin
+                last_w_pc <= pc_i;
+                last_im_inst <= im_inst_i;
+                // fill the cache
+                if (valid_1[pc_i[7:2]] && pc_tag_1[pc_i[7:2]] == pc_i[31:8]) begin
+                    // update
+                    data_1[pc_i[7:2]] <= im_inst_i;
+                end else if (valid_2[pc_i[7:2]] && pc_tag_2[pc_i[7:2]] == pc_i[31:8]) begin
+                    data_2[pc_i[7:2]] <= im_inst_i;
+                end else begin
+                    if (~valid_1[pc_i[7:2]] || (valid_1[pc_i[7:2]] && valid_2[pc_i[7:2]])) begin
+                        pc_tag_1[pc_i[7:2]] <= pc_i[31:8];
+                        valid_1[pc_i[7:2]] <= 1'b1;
+                        data_1[pc_i[7:2]] <= im_inst_i;
+                    end else begin // if (~valid_2[pc_i[7:2]]) begin
+                        pc_tag_2[pc_i[7:2]] <= pc_i[31:8];
+                        valid_2[pc_i[7:2]] <= 1'b1;
+                        data_2[pc_i[7:2]] <= im_inst_i;
                     end
+                end
+            end
+            // To make the hit last longer
+            if (cache_hit) begin
+                hit_longer <= 1;
+            end else begin
+                hit_longer <= 0;
             end
         end
     end
 
     always_comb begin
-        if ((req_i == 1 || data_ready == 1) && pc_tag_1[pc_i[7:2]] == pc_i[31:8] && valid_1[pc_i[7:2]]) begin
-            cache_data = data_1[pc_i[7:2]];
+        if ((req_i == 1 || hit_longer) && pc_tag_1[pc_i[7:2]] == pc_i[31:8] && valid_1[pc_i[7:2]]) begin
+            inst_o = data_1[pc_i[7:2]];
+            ack_o = 1;
             cache_hit = 1;
-        end else if ((req_i == 1 || data_ready == 1) && pc_tag_2[pc_i[7:2]] == pc_i[31:8] && valid_2[pc_i[7:2]]) begin
-            cache_data = data_2[pc_i[7:2]];
+        end else if ((req_i == 1 || hit_longer) && pc_tag_2[pc_i[7:2]] == pc_i[31:8] && valid_2[pc_i[7:2]]) begin
+            inst_o = data_2[pc_i[7:2]];
+            ack_o = 1;
             cache_hit = 1;
         end else begin
-            cache_data = data_2[pc_i[7:2]];
+            inst_o = im_inst_i;
             cache_hit = 0;
+            if (im_ack_i) ack_o = 1;
+            else ack_o = 0;
         end
     end
 
@@ -115,11 +105,11 @@ module im_fast_cache(
             im_req_o = 0;
             im_pc_o = pc_i;
         end else begin
-            if ((req_i == 1 || data_ready == 1) && (pc_tag_1[pc_i[7:2]] == pc_i[31:8]) && valid_1[pc_i[7:2]]) begin
+            if ((req_i == 1 || hit_longer) && (pc_tag_1[pc_i[7:2]] == pc_i[31:8]) && valid_1[pc_i[7:2]]) begin
                 // not to request wishbone
                 im_req_o = 0;
                 im_pc_o = pc_i;
-            end else if ((req_i == 1 || data_ready == 1) && pc_tag_2[pc_i[7:2]] == pc_i[31:8] && valid_2[pc_i[7:2]]) begin
+            end else if ((req_i == 1 || hit_longer) && pc_tag_2[pc_i[7:2]] == pc_i[31:8] && valid_2[pc_i[7:2]]) begin
                 // not to request wishbone
                 im_req_o = 0;
                 im_pc_o = pc_i;
