@@ -12,7 +12,7 @@ module mtimer
 );
 
 always_comb begin
-    if (mtime > mtimecmp) interrupt = 1'b1;
+    if (mtime >= mtimecmp) interrupt = 1'b1;
     else interrupt = 1'b0;
 end
 

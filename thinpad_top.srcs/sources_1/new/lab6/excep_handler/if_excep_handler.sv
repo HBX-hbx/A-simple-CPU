@@ -1,4 +1,5 @@
 module if_excep_handler (
+    // input from csr regs
     input wire [31:0] mtvec_in,
     input wire [31:0] mscratch_in,
     input wire [31:0] mepc_in,
@@ -17,8 +18,13 @@ module if_excep_handler (
     input wire [31:0] stval_in,
     input wire [31:0] stvec_in,
     input wire [31:0] sscratch_in,
+
+    input wire [31:0] sstatus_in,
+    input wire [31:0] mhartid_in,
+    input wire [31:0] sie_in,
+    input wire [31:0] sip_in,
       
-      // Data out signals
+    // Data out signals
     output logic [31:0] mtvec_out,
     output logic [31:0] mscratch_out,
     output logic [31:0] mepc_out,
@@ -37,8 +43,13 @@ module if_excep_handler (
     output logic [31:0] stval_out,
     output logic [31:0] stvec_out,
     output logic [31:0] sscratch_out,
+
+    output logic [31:0] sstatus_out,
+    output logic [31:0] mhartid_out,
+    output logic [31:0] sie_out,
+    output logic [31:0] sip_out,
       
-      // WE output signals
+    // WE output signals
     output logic mtvec_we_out,
     output logic mscratch_we_out,
     output logic mepc_we_out,
@@ -56,7 +67,16 @@ module if_excep_handler (
     output logic scause_we_out,
     output logic stval_we_out,
     output logic stvec_we_out,
-    output logic sscratch_we_out
+    output logic sscratch_we_out,
+
+    // if page fault
+    input wire [31:0] page_fault_addr_i,
+    input wire [1:0] page_fault_code_i,
+    input wire [31:0] if_pc_i,
+    output logic sstatus_we_out,
+    output logic mhartid_we_out,
+    output logic sie_we_out,
+    output logic sip_we_out
 );
 
     always_comb begin
@@ -78,6 +98,11 @@ module if_excep_handler (
         stval_out = stval_in;
         stvec_out = stvec_in;
         sscratch_out = sscratch_in;
+
+        sstatus_out = sstatus_in;
+        mhartid_out = mhartid_in;
+        sie_out = sie_in;
+        sip_out = sip_in;
                 
         mtvec_we_out = 0;
         mscratch_we_out = 0;
@@ -97,8 +122,94 @@ module if_excep_handler (
         stval_we_out = 0;
         stvec_we_out = 0;
         sscratch_we_out = 0;
+
+        sstatus_we_out = 0;
+        mhartid_we_out = 0;
+        sie_we_out = 0;
+        sip_we_out = 0;
         
         // TODO : Add signals to be passed on, deal with exceptions in IF
+
+        case (page_fault_code_i) 
+            2'b01: begin // Instr Page Fault
+                priv_we_out = 1'b1;
+                mstatus_we_out = 1'b1;
+                if ((priv_in < 2) && medeleg_in[12]) begin // delegation
+                    sepc_we_out = 1'b1;
+                    scause_we_out = 1'b1;
+                    stval_we_out = 1'b1;
+
+                    priv_out = 2'b01;
+                    mstatus_out = {mstatus_in[31:9], priv_in[0], mstatus_in[7:6], mstatus_in[1],mstatus_in[4:2],1'b0,mstatus_in[0]};
+                    sepc_out = if_pc_i; // return back to here after handling the exception
+                    scause_out = {1'b0, 27'b0, 4'd12};
+                    stval_out = page_fault_addr_i; // the load/store addr
+                end else begin
+                    mepc_we_out = 1'b1;
+                    mcause_we_out = 1'b1;
+                    mtval_we_out = 1'b1;
+
+                    priv_out = 2'b11;
+                    mstatus_out = {mstatus_in[31:13], priv_in, mstatus_in[10:8], mstatus_in[3],mstatus_in[6:4],1'b0,mstatus_in[2:0]};
+                    mepc_out = if_pc_i; // return back to here after handling the exception
+                    mcause_out = {1'b0, 27'b0, 4'd12};
+                    mtval_out = page_fault_addr_i; // the load/store addr
+                end
+            end
+            2'b10: begin // Load Page Fault
+                priv_we_out = 1'b1;
+                mstatus_we_out = 1'b1;
+                if ((priv_in < 2) && medeleg_in[13]) begin // delegation
+                    sepc_we_out = 1'b1;
+                    scause_we_out = 1'b1;
+                    stval_we_out = 1'b1;
+
+                    priv_out = 2'b01;
+                    mstatus_out = {mstatus_in[31:9], priv_in[0], mstatus_in[7:6], mstatus_in[1],mstatus_in[4:2],1'b0,mstatus_in[0]};
+                    sepc_out = if_pc_i; // return back to here after handling the exception
+                    scause_out = {1'b0, 27'b0, 4'd13};
+                    stval_out = page_fault_addr_i; // the load/store addr
+                end else begin
+                    mepc_we_out = 1'b1;
+                    mcause_we_out = 1'b1;
+                    mtval_we_out = 1'b1;
+
+                    priv_out = 2'b11;
+                    mstatus_out = {mstatus_in[31:13], priv_in, mstatus_in[10:8], mstatus_in[3],mstatus_in[6:4],1'b0,mstatus_in[2:0]};
+                    mepc_out = if_pc_i; // return back to here after handling the exception
+                    mcause_out = {1'b0, 27'b0, 4'd13};
+                    mtval_out = page_fault_addr_i; // the load/store addr
+                end
+            end
+            2'b11: begin // Store Page Fault
+                priv_we_out = 1'b1;
+                mstatus_we_out = 1'b1;
+                if ((priv_in < 2) && medeleg_in[15]) begin // delegation
+                    sepc_we_out = 1'b1;
+                    scause_we_out = 1'b1;
+                    stval_we_out = 1'b1;
+
+                    priv_out = 2'b01;
+                    mstatus_out = {mstatus_in[31:9], priv_in[0], mstatus_in[7:6], mstatus_in[1],mstatus_in[4:2],1'b0,mstatus_in[0]};
+                    sepc_out = if_pc_i; // return back to here after handling the exception
+                    scause_out = {1'b0, 27'b0, 4'd15};
+                    stval_out = page_fault_addr_i; // the load/store addr
+                end else begin
+                    mepc_we_out = 1'b1;
+                    mcause_we_out = 1'b1;
+                    mtval_we_out = 1'b1;
+                    
+                    priv_out = 2'b11;
+                    mstatus_out = {mstatus_in[31:13], priv_in, mstatus_in[10:8], mstatus_in[3],mstatus_in[6:4],1'b0,mstatus_in[2:0]};
+                    mepc_out = if_pc_i; // return back to here after handling the exception
+                    mcause_out = {1'b0, 27'b0, 4'd15};
+                    mtval_out = page_fault_addr_i; // the load/store addr
+                end
+            end
+            default: begin
+                
+            end
+        endcase
     end
 
 endmodule

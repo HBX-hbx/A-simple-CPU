@@ -58,25 +58,28 @@ module lab6_tb;
   wire uart_tsre;  // 数据发送完毕标志
 
   // Windows 需要注意路径分隔符的转义，例如 "D:\\foo\\bar.bin"
-  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\kernel2.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路径
-  parameter EXT_RAM_INIT_FILE = "/dev/null";  // ExtRAM 初始化文件，请修改为实际的绝对路径
-
+  // parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\rvtests_simple\\testall.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路径
+  // parameter EXT_RAM_INIT_FILE = "/dev/null";  // ExtRAM 初始化文件，请修改为实际的绝对路径
+  
+  parameter BASE_RAM_INIT_FILE = "D:\\vivado_prj\\ucore_os_lab\\labcodes_answer\\lab8_test\\bin\\rbl.img"; // BaseRAM 初始化文件，请修改为实际的绝对路径
+  parameter EXT_RAM_INIT_FILE = "D:\\vivado_prj\\ucore_os_lab\\labcodes_answer\\lab8_test\\bin\\ucore.img";  // ExtRAM 初始化文件，请修改为实际的绝对路径
+  
   initial begin
     #100;
     reset_btn = 1;
     #100;
     reset_btn = 0;
-    #3600000;
-    uart.pc_send_byte(8'h47);
-    #1000
-    uart.pc_send_byte(8'h64);
-    #1000
-    uart.pc_send_byte(8'h10);
-    #1000
-    uart.pc_send_byte(8'h00);
-    #1000
-    uart.pc_send_byte(8'h80);
-    #1000
+    #13650000;
+//    uart.pc_send_byte(8'h47);
+//    #1000
+//    uart.pc_send_byte(8'hc4);
+//    #1000
+//    uart.pc_send_byte(8'h10);
+//    #1000
+//    uart.pc_send_byte(8'h00);
+//    #1000
+//    uart.pc_send_byte(8'h80);
+//    #1000
     $finish;
   end
   

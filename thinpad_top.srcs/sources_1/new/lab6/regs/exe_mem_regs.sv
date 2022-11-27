@@ -49,6 +49,11 @@ module exe_mem_regs(
     input wire [31:0] stvec_in,
     input wire [31:0] sscratch_in,
 
+    input wire [31:0] sstatus_in,
+    input wire [31:0] mhartid_in,
+    input wire [31:0] sie_in,
+    input wire [31:0] sip_in,
+
     // WE in signals
     input wire mtvec_we_in,
     input wire mscratch_we_in,
@@ -68,6 +73,11 @@ module exe_mem_regs(
     input wire stval_we_in,
     input wire stvec_we_in,
     input wire sscratch_we_in,
+
+    input wire sstatus_we_in,
+    input wire mhartid_we_in,
+    input wire sie_we_in,
+    input wire sip_we_in,
       
     // Data out signals
     output logic [31:0] mtvec_out,
@@ -88,6 +98,11 @@ module exe_mem_regs(
     output logic [31:0] stval_out,
     output logic [31:0] stvec_out,
     output logic [31:0] sscratch_out,
+
+    output logic [31:0] sstatus_out,
+    output logic [31:0] mhartid_out,
+    output logic [31:0] sie_out,
+    output logic [31:0] sip_out,
       
     // WE output signals
     output logic mtvec_we_out,
@@ -108,6 +123,11 @@ module exe_mem_regs(
     output logic stval_we_out,
     output logic stvec_we_out,
     output logic sscratch_we_out,
+
+    output logic sstatus_we_out,
+    output logic mhartid_we_out,
+    output logic sie_we_out,
+    output logic sip_we_out,
 
     // Other Signals
     input wire [31:0] csr_data_i,
@@ -148,6 +168,11 @@ module exe_mem_regs(
                 stval_out <= 0;
                 stvec_out <= 0;
                 sscratch_out <= 0;
+
+                sstatus_out <= 0;
+                mhartid_out <= 0;
+                sie_out <= 0;
+                sip_out <= 0;
                 
                 mtvec_we_out <= 0;
                 mscratch_we_out <= 0;
@@ -167,6 +192,11 @@ module exe_mem_regs(
                 stval_we_out <= 0;
                 stvec_we_out <= 0;
                 sscratch_we_out <= 0;
+
+                sstatus_we_out <= 0;
+                mhartid_we_out <= 0;
+                sie_we_out <= 0;
+                sip_we_out <= 0;
                 
                 csr_data_o <= 0;
             end else begin
@@ -198,6 +228,11 @@ module exe_mem_regs(
                 stval_out <= stval_in;
                 stvec_out <= stvec_in;
                 sscratch_out <= sscratch_in;
+
+                sstatus_out <= sstatus_in;
+                mhartid_out <= mhartid_in;
+                sie_out <= sie_in;
+                sip_out <= sip_in;
                 
                 mtvec_we_out <= mtvec_we_in;
                 mscratch_we_out <= mscratch_we_in;
@@ -217,6 +252,11 @@ module exe_mem_regs(
                 stval_we_out <= stval_we_in;
                 stvec_we_out <= stvec_we_in;
                 sscratch_we_out <= sscratch_we_in;
+
+                sstatus_we_out <= sstatus_we_in;
+                mhartid_we_out <= mhartid_we_in;
+                sie_we_out <= sie_we_in;
+                sip_we_out <= sip_we_in;
 
                 csr_data_o <= csr_data_i;
             end

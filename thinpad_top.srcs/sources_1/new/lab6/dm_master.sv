@@ -2,14 +2,25 @@ module dm_master(
     // clk and reset
     input wire clk_i,
     input wire rst_i,
+    // mmu state
+    // 0: FIRST_PTE
+    // 1: SECOND_PTE
+    // 2: DONE
+    input wire [1:0] mmu_state_i,
+    input wire is_mmu_on_i,
      
     input wire [1:0] dm_op_i,
     input wire [3:0] sel_i,
+
+    input wire tlb_hit_i,
+    input wire [1:0] page_fault_code_i,
     
-    output reg data_access_ack_o,
-    input wire [31:0] data_addr_i,
+    output wire mmu_ack_o, // to mmu
+    output reg data_access_ack_o, // to controller (only when the final PA is gotten, assign to '1')
+    input wire [31:0] data_addr_i, // physical address (1st, 2nd and final PA)
+    output reg [31:0] mmu_data_o, // every requested data (PageTable Address)
     input wire [31:0] data_i,
-    output reg [31:0] data_o,
+    output reg [31:0] data_o, // final PA -> data
      
     // wishbone master
     output reg wb_cyc_o,
@@ -39,6 +50,7 @@ module dm_master(
 
     reg [31:0] last_valid_addr = 0;
     reg [3:0] last_valid_sel = 0;
+    reg [31:0] last_valid_data = 0;
     reg [63:0] last_valid_time = 0;
 
     // Judge if the address is related to timer
@@ -48,31 +60,70 @@ module dm_master(
     logic if_time;
     logic isread;
     logic iswrite;
+    logic isread_without_mmu;
+    logic iswrite_without_mmu;
     assign if_same = (last_data_addr == data_addr_i) && (last_data == data_i) && (last_sel == sel_i) && (last_dm_op == dm_op_i);
     assign if_time = (data_addr_i == 32'h0200bff8) || (data_addr_i == 32'h0200bffc) || (data_addr_i == 32'h02004000) || (data_addr_i == 32'h02004004);
-    assign isread = (dm_op_i == 1) && (state == 0) && (~if_same);
-    assign iswrite = (dm_op_i == 2) && (state == 0) && (~if_same);
+    
+    // TODO: when state = 1 && tlb_hit, maybe if the ack not arrive, should not req
+    assign isread = (dm_op_i == 1 || (dm_op_i == 2 && ((mmu_state_i == 1 && ~tlb_hit_i) || mmu_state_i == 2))) && (state == 0) && (~if_same);
+    // only when mmu off or va->pa done can write ram
+    assign iswrite = (dm_op_i == 2 && (mmu_state_i == 0 || (mmu_state_i == 1 && tlb_hit_i) || mmu_state_i == 3)) && (state == 0) && (~if_same);
+
+    assign isread_without_mmu = (dm_op_i == 1) && (state == 0) && (~if_same);
+    assign iswrite_without_mmu = (dm_op_i == 2) && (state == 0) && (~if_same);
 
     logic [3:0] sel;
     logic [31:0] data_sft;
+    logic [31:0] data;
     logic [31:0] normal_time_data_buf;
+
+    // immediately return when final ack
     assign data_sft = (data_access_ack_o && wb_we_o == 0) ? (state == 1 ? normal_time_data_buf : data_out): 0;
-    // For mtime, we only need one cycle to read the data / load the data
-    assign data_access_ack_o = (dm_ready || (wb_ack_i || time_op != 0)) && (isread !== 1) && (iswrite !== 1);
+    // TODO: when to give data_access_ack_o, when im not give, it should keep high
+    always_comb begin
+        data_access_ack_o = (dm_ready || (wb_ack_i || time_op != 0)) && (isread_without_mmu !== 1) && (iswrite_without_mmu !== 1);
+        // For mtime, we only need one cycle to read the data / load the data
+        if (is_mmu_on_i) begin
+            // if (dm_op_i == 1 || dm_op_i == 2) begin
+            //     data_access_ack_o = mmu_ack_o && (mmu_state_i == 3 || mmu_state_i == 1 && tlb_hit_i);
+            // end
+            case (mmu_state_i)
+                1: begin
+                    data_access_ack_o = dm_ready && (isread_without_mmu !== 1) && (iswrite_without_mmu !== 1);
+                end
+                2: begin
+                    data_access_ack_o = 0;
+                end
+                3: begin
+                    data_access_ack_o = mmu_ack_o;
+                end
+                default: begin
+                    data_access_ack_o = (dm_ready || (wb_ack_i || time_op != 0)) && (isread_without_mmu !== 1) && (iswrite_without_mmu !== 1);
+                end
+            endcase
+        end
+    end
+
+    assign mmu_data_o = (mmu_ack_o && wb_we_o == 0) ? (state == 1 ? normal_time_data_buf : data_out): 0;
+    assign mmu_ack_o = (~dm_ready && (wb_ack_i || time_op != 0)) && (isread_without_mmu !== 1) && (iswrite_without_mmu !== 1);
     
     // dealing with digit shift problems
     always_comb begin
         // if load or save byte
         if (sel_i == 4'b0001 || (last_valid_sel == 4'b0001 && ~isread && ~ iswrite)) begin
             sel = (sel_i == 4'b0001) ? (sel_i << (data_addr_i % 4)) : (last_valid_sel << (last_valid_addr % 4));
+            data = (sel_i == 4'b0001) ? (data_i << ((data_addr_i % 4) * 8)) : (last_valid_data << ((last_valid_addr % 4) * 8));
             data_o = (data_sft & ((32'h000000FF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
         // if load or save half
         end else if (sel_i == 4'b0011 || (last_valid_sel == 4'b0011 && ~isread && ~ iswrite)) begin
             sel = (sel_i == 4'b0011) ? (sel_i << (data_addr_i % 4)) : (last_valid_sel << (last_valid_addr % 4));
+            data = (sel_i == 4'b0011) ? (data_i << ((data_addr_i % 4) * 8)) : (last_valid_data << ((last_valid_addr % 4) * 8));
             data_o = (data_sft & ((32'h0000FFFF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
         // load or save word
         end else begin
             sel = sel_i;
+            data = data_i;
             data_o = data_sft;
         end
     end
@@ -99,16 +150,16 @@ module dm_master(
         end else begin
             last_data_addr <= data_addr_i;
             last_data <= data_i;
-            last_sel <= sel;
+            last_sel <= sel_i;
             last_dm_op <= dm_op_i;
             // dm_op = 1 represents read
             if (isread) begin
-                if (~if_time) begin
+                if (~if_time && page_fault_code_i == 2'b00) begin // only the page fault not happen
                     wb_cyc_o <= 1;
                     wb_stb_o <= 1;
                     wb_adr_o <= data_addr_i;
                     wb_dat_o <= 0;
-                    wb_sel_o <= sel;
+                    wb_sel_o <= (mmu_state_i == 1 || mmu_state_i == 2) ? 4'b1111 : sel; // shifted!
                     wb_we_o <= 0;
                     state <= 1;
                     dm_ready <= 0;
@@ -138,16 +189,17 @@ module dm_master(
                 end
             // dm_op = 2 represents write
             end else if (iswrite) begin
-                if (~if_time) begin
+                if (~if_time && page_fault_code_i == 2'b00) begin // only the page fault not happen
                     wb_cyc_o <= 1;
                     wb_stb_o <= 1;
                     wb_adr_o <= data_addr_i;
-                    wb_dat_o <= data_i;
-                    wb_sel_o <= sel;
+                    wb_dat_o <= data; // shifted!
+                    wb_sel_o <= sel; // shifted!
                     wb_we_o <= 1;
                     state <= 1;
                     dm_ready <= 0;
                     data_out <= 0;
+                    last_valid_data <= data_i;
                     last_valid_addr <= data_addr_i;
                     last_valid_sel <= sel_i;
                 end else begin
@@ -176,6 +228,7 @@ module dm_master(
                     state <= 1;
                     dm_ready <= 0;
                     data_out <= 0;
+                    last_valid_data <= data_i;
                     last_valid_addr <= data_addr_i;
                     last_valid_sel <= sel_i;
                 end

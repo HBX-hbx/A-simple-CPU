@@ -1,6 +1,7 @@
 module decoder(
     input wire [31:0] inst_i,
     input wire time_int_i,
+    input wire page_fault_i, // '1': pg, '0' normal
     
     output logic rf_wen_o,
     output logic [4:0] rd_addr_o,
@@ -17,7 +18,9 @@ module decoder(
     output logic [4:0] shamt_o,
     
     output logic [3:0] dm_sel_o, // where to write in DM
-    output logic [1:0] dm_op_o
+    output logic [1:0] dm_op_o,
+
+    output logic tlb_flush_o
 );  
   
     typedef enum logic [6:0] {
@@ -69,14 +72,18 @@ module decoder(
       CSRRWI,
       CSRRSI,
       CSRRCI,
+      SFENCE_VMA,
+      PAGE_FAULT,
       ERR
     } decode_ops;
     
     decode_ops d_op;
   
     always_comb begin
-        // First deal with time interrupt
-        if (time_int_i) begin
+        // First deal with page fault and time interrupt
+        if (page_fault_i) begin
+            d_op = PAGE_FAULT;
+        end else if (time_int_i) begin
             d_op = TIME_INT;
         end else if (inst_i[6:0] == 7'b0110111) begin
             d_op = LUI;
@@ -158,6 +165,8 @@ module decoder(
             d_op = EBREAK;
         end else if (inst_i[31:20] == 12'h302 && inst_i[19:15] == 5'b00000 && inst_i[14:12] == 3'b000 && inst_i[11:7] == 5'b00000 && inst_i[6:0] == 7'b1110011) begin
             d_op = MRET;
+        end else if (inst_i[31:25] == 7'b0001001 && inst_i[14:12] == 3'b000 && inst_i[11:7] == 5'b00000 && inst_i[6:0] == 7'b1110011) begin
+            d_op = SFENCE_VMA;
         end else if (inst_i[31:20] == 12'h102 && inst_i[19:15] == 5'b00000 && inst_i[14:12] == 3'b000 && inst_i[11:7] == 5'b00000 && inst_i[6:0] == 7'b1110011) begin
             d_op = SRET;
         end else if (inst_i[14:12] == 3'b001 && inst_i[6:0] == 7'b1110011) begin
@@ -179,7 +188,7 @@ module decoder(
     
     always_comb begin
         // for these, we just want it to branch
-        if (d_op == TIME_INT || d_op == ECALL || d_op == EBREAK || d_op == MRET || d_op == SRET) begin
+        if (d_op == TIME_INT || d_op == ECALL || d_op == EBREAK || d_op == MRET || d_op == SRET || d_op == PAGE_FAULT) begin
             rd_addr_o = 0;
             rs1_addr_o = 0;
             rs2_addr_o = 0;
@@ -193,6 +202,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == LUI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = 0;
@@ -207,6 +217,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == AUIPC) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = 0;
@@ -221,6 +232,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == SUB) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -235,6 +247,7 @@ module decoder(
             shamt_o = 0; // no shamt
             dm_sel_o = 0; // no dm sel
             dm_op_o = 0; // no dm op
+            tlb_flush_o = 0;
         end else if (d_op == ADD || d_op == ADDI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -249,6 +262,7 @@ module decoder(
             shamt_o = 0; // no shamt
             dm_sel_o = 0; // no dm sel
             dm_op_o = 0; // no dm op
+            tlb_flush_o = 0;
         end else if (d_op == _AND || d_op == ANDI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -263,6 +277,7 @@ module decoder(
             shamt_o = 0; // no shamt
             dm_sel_o = 0; // no dm sel
             dm_op_o = 0; // no dm op
+            tlb_flush_o = 0;
         end else if (d_op == _OR || d_op == ORI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -277,6 +292,7 @@ module decoder(
             shamt_o = 0; // no shamt
             dm_sel_o = 0; // no dm sel
             dm_op_o = 0; // no dm op
+            tlb_flush_o = 0;
         end else if (d_op == _XOR || d_op == XORI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -284,13 +300,14 @@ module decoder(
             rf_wen_o = 1;
             alu_a_sel_o = 1;
             alu_b_sel_o = (d_op == _XOR) ? 1 : 0; // 0 represents choose imm
-            alu_op_o = 4; // 5 is XOR
+            alu_op_o = 5; // 5 is XOR
             imm_sel_o = (d_op == _XOR) ? 0 : 3; // 0 represent no imm, 3 represents want [11:0]
             wb_sel_o = 1; // 1 represent wb data comes from ALU
             br_op_o = 2; // no branch op
             shamt_o = 0; // no shamt
             dm_sel_o = 0; // no dm sel
             dm_op_o = 0; // no dm op
+            tlb_flush_o = 0;
         end else if (d_op == SLL || d_op == SLLI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -305,6 +322,7 @@ module decoder(
             shamt_o = inst_i[24:20];
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == SRL || d_op == SRLI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -319,6 +337,7 @@ module decoder(
             shamt_o = inst_i[24:20];
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == SRA || d_op == SRAI) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -333,6 +352,7 @@ module decoder(
             shamt_o = inst_i[24:20];
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == SLT || d_op == SLTU || d_op == SLTI || d_op == SLTIU) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -347,6 +367,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == SB || d_op == SH || d_op == SW) begin
             rd_addr_o = 0;
             rs1_addr_o = inst_i[19:15];
@@ -363,6 +384,7 @@ module decoder(
             else if (d_op == SH) dm_sel_o = 4'b0011; // save half
             else dm_sel_o = 4'b1111; // save all
             dm_op_o = 2; // 2 represents save
+            tlb_flush_o = 0;
         end else if (d_op == LB || d_op == LH || d_op == LW || d_op == LBU || d_op == LHU) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -380,6 +402,7 @@ module decoder(
             else if (d_op == LH || d_op == LHU) dm_sel_o = 4'b0011; // load half
             else dm_sel_o = 4'b1111; // save all
             dm_op_o = 1; // 1 represents read
+            tlb_flush_o = 0;
         end else if (d_op == BEQ || d_op == BNE || d_op == BGE || d_op == BLT || d_op == BGEU || d_op == BLTU) begin
             rd_addr_o = 0;
             rs1_addr_o = inst_i[19:15];
@@ -394,6 +417,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == JAL) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = 0;
@@ -408,6 +432,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end else if (d_op == JALR) begin
             rd_addr_o = inst_i[11:7];
             rs1_addr_o = inst_i[19:15];
@@ -422,6 +447,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         // begin to deal with csr
         end else if (d_op == CSRRC || d_op == CSRRCI || d_op == CSRRS || d_op == CSRRSI || d_op == CSRRW || d_op == CSRRWI) begin
             rd_addr_o = inst_i[11:7];
@@ -437,6 +463,22 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
+        end else if (d_op == SFENCE_VMA) begin
+            rd_addr_o = 0;
+            rs1_addr_o = 0;
+            rs2_addr_o = 0;
+            rf_wen_o = 0;
+            alu_a_sel_o = 1;
+            alu_b_sel_o = 1;
+            alu_op_o = 0;
+            imm_sel_o = 0;
+            wb_sel_o = 0;
+            br_op_o = 2;
+            shamt_o = 0;
+            dm_sel_o = 0;
+            dm_op_o = 0;
+            tlb_flush_o = 1; // flush
         end else begin
             // all default situations
             rd_addr_o = 0;
@@ -452,6 +494,7 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+            tlb_flush_o = 0;
         end
     end
 
