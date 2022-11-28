@@ -140,7 +140,7 @@ module csr(
             if(mie_we) mie <= mie_wdata;
             else mie <= mie;
             if(mip_we) mip <= mip_wdata;
-            else mip <= {24'b0,int_time,7'b0};
+            else mip <= {24'b0, int_time, 1'b0, int_time, 5'b0};
             if(privilege_we) privilege <= privilege_wdata;
             else privilege <= privilege;
 

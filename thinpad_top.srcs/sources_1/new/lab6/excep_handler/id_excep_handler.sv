@@ -343,9 +343,10 @@ module id_excep_handler (
     decode_ops d_op;
 
     always_comb begin
-        if (sip_out[5] && sie_out[5] && (((priv_out==2'b01) && mstatus_out[1]) || (priv_out==2'b00))) begin
+        // we all use mie/mip to judge
+        if (mip_out[5] && mie_out[5] && (((priv_out==2'b01) && mstatus_out[1]) || (priv_out==2'b00))) begin
             d_op = STIME_INT;
-        end else if (mip_out[7] & mie_out[7] & (mstatus_out[3] | ~priv_out[0])) begin
+        end else if (mip_out[7] & mie_out[7] & (mstatus_out[3] || priv_out == 2'b00 || priv_out == 2'b01)) begin
             d_op = MTIME_INT;
         end else if (inst_i[31:20] == 12'h000 && inst_i[19:15] == 5'b00000 && inst_i[14:12] == 3'b000 && inst_i[11:7] == 5'b00000 && inst_i[6:0] == 7'b1110011) begin
             d_op = ECALL;
