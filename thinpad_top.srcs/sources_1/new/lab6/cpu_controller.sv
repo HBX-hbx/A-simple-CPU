@@ -62,7 +62,18 @@ module cpu_controller(
             mem_wb_regs_bubble_o = 0;
         end else begin
             // if (if_br) begin
-            if (predict_fault_i) begin
+            if (mem_page_fault_code_i != 2'b00) begin // mem page fault first
+                pc_hold_o = 0;
+                pc_sel_o = 1;
+                if_id_regs_hold_o = 0;
+                id_exe_regs_hold_o = 0;
+                exe_mem_regs_hold_o = 0;
+                mem_wb_regs_hold_o = 0;
+                if_id_regs_bubble_o = 0;
+                id_exe_regs_bubble_o = 0;
+                exe_mem_regs_bubble_o = 1;
+                mem_wb_regs_bubble_o = 1;
+            end else if (predict_fault_i) begin
                 // page fault should bubble exe_mem
                 if (csr_code_i == 14) begin
                     pc_hold_o = 0;
@@ -110,17 +121,6 @@ module cpu_controller(
                     exe_mem_regs_bubble_o = 0;
                     mem_wb_regs_bubble_o = 0;
                 end
-            end else if (mem_page_fault_code_i != 2'b00) begin // page fault!
-                pc_hold_o = 0;
-                pc_sel_o = 1;
-                if_id_regs_hold_o = 0;
-                id_exe_regs_hold_o = 0;
-                exe_mem_regs_hold_o = 0;
-                mem_wb_regs_hold_o = 0;
-                if_id_regs_bubble_o = 0;
-                id_exe_regs_bubble_o = 0;
-                exe_mem_regs_bubble_o = 1;
-                mem_wb_regs_bubble_o = 1;
             end else begin
                 pc_hold_o = 0;
                 pc_sel_o = 1;
