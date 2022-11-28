@@ -496,9 +496,9 @@ module id_excep_handler (
                         12'h143: stval_we_out = 1'b1;
                         12'h105: stvec_we_out = 1'b1;
                         12'h140: sscratch_we_out = 1'b1;
-                        12'h100: sstatus_we_out = 1'b1;
-                        12'h104: sie_we_out = 1'b1;
-                        12'h144: sip_we_out = 1'b1;
+                        12'h100: mstatus_we_out = 1'b1;
+                        12'h104: mie_we_out = 1'b1;
+                        12'h144: mip_we_out = 1'b1;
                         12'hF14: mhartid_we_out = 1'b1;
                         default: mtvec_we_out = 1'b0; // shouldn't be used
                     endcase

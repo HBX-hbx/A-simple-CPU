@@ -280,18 +280,18 @@ module ex_excep_handler (
                     data_out = stval_in;
                     stval_out = stval_in & ~regs1_in;
                 end
-                // Newly added
+                // Newly added, but always use mstatus/mip/mie (s are only restricted view)
                 12'h144: begin
-                    data_out = sip_in;
-                    sip_out = sip_in & ~regs1_in;
+                    data_out = mip_in;
+                    mip_out = mip_in & ~regs1_in;
                 end
                 12'h100: begin
-                    data_out = sstatus_in;
-                    sstatus_out = sstatus_in & ~regs1_in;
+                    data_out = mstatus_in;
+                    mstatus_out = mstatus_in & ~regs1_in;
                 end
                 12'h104: begin
-                    data_out = sie_in;
-                    sie_out = sie_in & ~regs1_in;
+                    data_out = mie_in;
+                    mie_out = mie_in & ~regs1_in;
                 end
                 12'hF14: begin
                     data_out = mhartid_in;
@@ -376,16 +376,16 @@ module ex_excep_handler (
                 end
                 // Newly added!
                 12'h144: begin
-                    data_out = sip_in;
-                    sip_out = sip_in | regs1_in;
+                    data_out = mip_in;
+                    mip_out = mip_in | regs1_in;
                 end
                 12'h100: begin
-                    data_out = sstatus_in;
-                    sstatus_out = sstatus_in | regs1_in;
+                    data_out = mstatus_in;
+                    mstatus_out = mstatus_in | regs1_in;
                 end
                 12'h104: begin
-                    data_out = sie_in;
-                    sie_out = sie_in | regs1_in;
+                    data_out = mie_in;
+                    mie_out = mie_in | regs1_in;
                 end
                 12'hF14: begin
                     data_out = mhartid_in;
@@ -463,16 +463,16 @@ module ex_excep_handler (
                 end
                 // Newly added!
                 12'h144: begin
-                    data_out = sip_in;
-                    sip_out = regs1_in;
+                    data_out = mip_in;
+                    mip_out = regs1_in;
                 end
                 12'h100: begin
-                    data_out = sstatus_in;
-                    sstatus_out = regs1_in;
+                    data_out = mstatus_in;
+                    mstatus_out = regs1_in;
                 end
                 12'h104: begin
-                    data_out = sie_in;
-                    sie_out = regs1_in;
+                    data_out = mie_in;
+                    mie_out = regs1_in;
                 end
                 12'hF14: begin
                     data_out = mhartid_in;
