@@ -444,9 +444,16 @@ module id_excep_handler (
                 end else if (d_op == STIME_INT) begin
                     priv_we_out = 1'b1;
                     mstatus_we_out = 1'b1;
-                    sepc_we_out = 1'b1;
-                    scause_we_out = 1'b1;
-                    direct_branch_addr = stvec_out;
+                    // if mideleg.SITP = 1, transfer to S mode to process
+                    if (mideleg_out[5]) begin
+                        sepc_we_out = 1'b1;
+                        scause_we_out = 1'b1;
+                        direct_branch_addr = stvec_out;
+                    end else begin
+                        mepc_we_out = 1'b1;
+                        mcause_we_out = 1'b1;
+                        direct_branch_addr = mtvec_out;
+                    end
                 end else if (d_op == ECALL) begin
                     priv_we_out = 1'b1;
                     mstatus_we_out = 1'b1;
