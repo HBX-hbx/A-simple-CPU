@@ -5,6 +5,9 @@ module BTB(
     input wire clk_i,
     input wire rst_i,
     input wire [`ADDR_WIDTH-1:0] curr_pc_i, // 这个 pc 必须�? 4 对齐�?
+    input wire [1:0] addr_sel_i,
+
+    input wire stall,
 
     input wire exe_is_branch_i, // exe 阶段是不�? branch
     input wire branch_taken_i, // branch 是否发生了跳�?
@@ -30,13 +33,15 @@ module BTB(
             end
         end else begin
             // 更新 taken tag 以及寄存�?
-            if ((exe_is_branch_i === 1'b1) && (branch_taken_i === 1'b1) && (branch_addr_i !== id_addr_i)) begin // 该跳跳错了或者没�?
-                pc_tag[exe_addr_i[11:2]] <= exe_addr_i[31:12];
-                taken[exe_addr_i[11:2]] <= 1'b1;
-                next_pc[exe_addr_i[11:2]] <= branch_addr_i;
-            end else if ((exe_is_branch_i === 1'b1) && ~branch_taken_i && ( (exe_addr_i + 4) != id_addr_i)) begin // 不该跳跳�?
-                pc_tag[exe_addr_i[11:2]] <= exe_addr_i[31:12];
-                taken[exe_addr_i[11:2]] <= 1'b0;
+            if (addr_sel_i != 2'b11) begin
+                if (~stall && (exe_is_branch_i === 1'b1) && (branch_taken_i === 1'b1) && (branch_addr_i !== id_addr_i)) begin // 该跳跳错了或者没�?
+                    pc_tag[exe_addr_i[11:2]] <= exe_addr_i[31:12];
+                    taken[exe_addr_i[11:2]] <= 1'b1;
+                    next_pc[exe_addr_i[11:2]] <= branch_addr_i;
+                end else if (~stall && (exe_is_branch_i === 1'b1) && ~branch_taken_i && ( (exe_addr_i + 4) != id_addr_i)) begin // 不该跳跳�?
+                    pc_tag[exe_addr_i[11:2]] <= exe_addr_i[31:12];
+                    taken[exe_addr_i[11:2]] <= 1'b0;
+                end
             end
         end
     end

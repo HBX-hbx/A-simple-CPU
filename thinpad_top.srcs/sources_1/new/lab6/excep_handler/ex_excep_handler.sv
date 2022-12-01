@@ -18,6 +18,11 @@ module ex_excep_handler (
     input wire [31:0] stval_in,
     input wire [31:0] stvec_in,
     input wire [31:0] sscratch_in,
+
+    input wire [31:0] sstatus_in,
+    input wire [31:0] mhartid_in,
+    input wire [31:0] sie_in,
+    input wire [31:0] sip_in,
       
     // Data out signals
     output logic [31:0] mtvec_out,
@@ -39,6 +44,11 @@ module ex_excep_handler (
     output logic [31:0] stvec_out,
     output logic [31:0] sscratch_out,
 
+    output logic [31:0] sstatus_out,
+    output logic [31:0] mhartid_out,
+    output logic [31:0] sie_out,
+    output logic [31:0] sip_out,
+
     // WE in signals
     input wire mtvec_we_in,
     input wire mscratch_we_in,
@@ -58,6 +68,11 @@ module ex_excep_handler (
     input wire stval_we_in,
     input wire stvec_we_in,
     input wire sscratch_we_in,
+
+    input wire sstatus_we_in,
+    input wire mhartid_we_in,
+    input wire sie_we_in,
+    input wire sip_we_in,
      
     // WE output signals
     output logic mtvec_we_out,
@@ -79,12 +94,20 @@ module ex_excep_handler (
     output logic stvec_we_out,
     output logic sscratch_we_out,
 
+    output logic sstatus_we_out,
+    output logic mhartid_we_out,
+    output logic sie_we_out,
+    output logic sip_we_out,
+
+    // other signals
     input wire [3:0] csr_code_in,
     output logic [31:0] data_out,
 
     input wire [31:0] exe_rs1_data,
     input wire [31:0] exe_inst,
-    input wire [31:0] exe_pc
+    input wire [31:0] exe_pc,
+
+    input wire [63:0] time_in
 );
 
     // if csr_code_in = 10/11/12, indicates csr instr with zimm
@@ -111,6 +134,11 @@ module ex_excep_handler (
         stvec_we_out = stvec_we_in;
         sscratch_we_out = sscratch_we_in;
 
+        sstatus_we_out = sstatus_we_in;
+        mhartid_we_out = mhartid_we_in;
+        sie_we_out = sie_we_in;
+        sip_we_out = sip_we_in;
+
         mtvec_out = mtvec_in;
         mscratch_out = mscratch_in;
         mepc_out = mepc_in;
@@ -129,6 +157,11 @@ module ex_excep_handler (
         stvec_out = stvec_in;
         sscratch_out = sscratch_in;
 
+        sstatus_out = sstatus_in;
+        mhartid_out = mhartid_in;
+        sie_out = sie_in;
+        sip_out = sip_in;
+
         data_out = 32'b0;
 
         // MTIME_INT
@@ -139,10 +172,16 @@ module ex_excep_handler (
             mcause_out = {1'b1, 27'b0, 4'b0111};
         // STIME_INT
         end else if (csr_code_in == 2) begin
-            priv_out = 2'b01;
-            mstatus_out = {mstatus_in[31:9],priv_in[0],mstatus_in[7:6],mstatus_in[1],mstatus_in[4:2],1'b0,mstatus_in[0]};
-            sepc_out = exe_pc;
-            scause_out = {1'b1, 27'b0, 4'b0111};
+            // if delegate to S mode to process
+            if (mideleg_out[5]) begin
+                priv_out = 2'b01;
+                mstatus_out = {mstatus_in[31:9],priv_in[0],mstatus_in[7:6],mstatus_in[1],mstatus_in[4:2],1'b0,mstatus_in[0]};
+                sepc_out = mepc_in; // S interrpt is transfered from M mode, so set sepc direct to mepc
+                scause_out = {1'b1, 27'b0, 4'b0101};
+            // should not happen in ucore?
+            end else begin
+                
+            end
         // ECALL
         end else if (csr_code_in == 3) begin
             if ((priv_in < 2) && medeleg_in[priv_in+8]) begin // delegation
@@ -247,6 +286,23 @@ module ex_excep_handler (
                     data_out = stval_in;
                     stval_out = stval_in & ~regs1_in;
                 end
+                // Newly added, but always use mstatus/mip/mie (s are only restricted view)
+                12'h144: begin
+                    data_out = mip_in;
+                    mip_out = mip_in & ~regs1_in;
+                end
+                12'h100: begin
+                    data_out = mstatus_in;
+                    mstatus_out = mstatus_in & ~regs1_in;
+                end
+                12'h104: begin
+                    data_out = mie_in;
+                    mie_out = mie_in & ~regs1_in;
+                end
+                12'hF14: begin
+                    data_out = mhartid_in;
+                    mhartid_out = mhartid_in & ~regs1_in;
+                end
                 default: begin
                 end
             endcase
@@ -317,6 +373,30 @@ module ex_excep_handler (
                     data_out = stval_in;
                     stval_out = stval_in | regs1_in;
                 end
+                // Read the time throgh csrrs (rdtime[h])
+                12'hC01: begin
+                    data_out = time_in[31:0];
+                end
+                12'hC81: begin
+                    data_out = time_in[63:32];
+                end
+                // Newly added!
+                12'h144: begin
+                    data_out = mip_in;
+                    mip_out = mip_in | regs1_in;
+                end
+                12'h100: begin
+                    data_out = mstatus_in;
+                    mstatus_out = mstatus_in | regs1_in;
+                end
+                12'h104: begin
+                    data_out = mie_in;
+                    mie_out = mie_in | regs1_in;
+                end
+                12'hF14: begin
+                    data_out = mhartid_in;
+                    mhartid_out = mhartid_in | regs1_in;
+                end
                 default: begin
                 end
             endcase
@@ -386,6 +466,23 @@ module ex_excep_handler (
                 12'h143: begin
                     data_out = stval_in;
                     stval_out = regs1_in;
+                end
+                // Newly added!
+                12'h144: begin
+                    data_out = mip_in;
+                    mip_out = regs1_in;
+                end
+                12'h100: begin
+                    data_out = mstatus_in;
+                    mstatus_out = regs1_in;
+                end
+                12'h104: begin
+                    data_out = mie_in;
+                    mie_out = regs1_in;
+                end
+                12'hF14: begin
+                    data_out = mhartid_in;
+                    mhartid_out = regs1_in;
                 end
                 default: begin
                 end

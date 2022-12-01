@@ -22,6 +22,11 @@ module csr(
     input wire stvec_we,
     input wire sscratch_we,
 
+    input wire sstatus_we,
+    input wire mhartid_we,
+    input wire sie_we,
+    input wire sip_we,
+
     input wire [31:0] mtvec_wdata,
     input wire [31:0] mscratch_wdata,
     input wire [31:0] mepc_wdata,
@@ -41,6 +46,11 @@ module csr(
     input wire [31:0] stvec_wdata,
     input wire [31:0] sscratch_wdata,
 
+    input wire [31:0] sstatus_wdata,
+    input wire [31:0] mhartid_wdata,
+    input wire [31:0] sie_wdata,
+    input wire [31:0] sip_wdata,
+
     output reg[31:0] mtvec_o, // base = mtvec[31:2]; mode = mtvec[1:0]
     output reg[31:0] mscratch_o,
     output reg[31:0] mepc_o,
@@ -58,7 +68,12 @@ module csr(
     output reg[31:0] scause_o,
     output reg[31:0] stval_o,
     output reg[31:0] stvec_o,
-    output reg[31:0] sscratch_o
+    output reg[31:0] sscratch_o,
+
+    output reg [31:0] sstatus_o,
+    output reg [31:0] mhartid_o,
+    output reg [31:0] sie_o,
+    output reg [31:0] sip_o
 );
     // all of the following are rw
     reg[31:0] mtvec; // base = mtvec[31:2]; mode = mtvec[1:0]
@@ -80,6 +95,11 @@ module csr(
     reg[31:0] stvec;
     reg[31:0] sscratch;
 
+    reg[31:0] sstatus;
+    reg[31:0] mhartid;
+    reg[31:0] sie;
+    reg[31:0] sip;
+
     always @(posedge clk or posedge rst) begin
         if(rst) begin
             mtvec <= 32'b0;
@@ -89,7 +109,7 @@ module csr(
             mstatus <= 32'b0;
             mie <= 32'b0;
             mip <= 32'b0;
-            privilege <= 2'b00;
+            privilege <= 2'b11;
 
             satp <= 32'b0;
             mtval <= 32'b0;
@@ -100,6 +120,11 @@ module csr(
             stval <= 32'b0;
             stvec <= 32'b0;
             sscratch <= 32'b0;
+
+            sstatus <= 32'b0;
+            mhartid <= 32'b0;
+            sie <= 32'b0;
+            sip <= 32'b0;
         end
         else begin
             if(mtvec_we) mtvec <= mtvec_wdata;
@@ -115,14 +140,14 @@ module csr(
             if(mie_we) mie <= mie_wdata;
             else mie <= mie;
             if(mip_we) mip <= mip_wdata;
-            else mip <= {24'b0,int_time,7'b0};
+            else mip <= {mip[31:8], int_time, mip[6:0]};
             if(privilege_we) privilege <= privilege_wdata;
             else privilege <= privilege;
 
             if(satp_we) satp <= satp_wdata;
             else satp <= satp;
-            // if(mtval_we) mtval <= mtval_wdata;
-            // else mtval <= mtval;
+            if(mtval_we) mtval <= mtval_wdata;
+            else mtval <= mtval;
             if(mideleg_we) mideleg <= mideleg_wdata;
             else mideleg <= mideleg;
             if(medeleg_we) medeleg <= medeleg_wdata;
@@ -131,12 +156,21 @@ module csr(
             else sepc <= sepc;
             if(scause_we) scause <= scause_wdata;
             else scause <= scause;
-            // if(stval_we) stval <= stval_wdata;
-            // else stval <= stval;
+            if(stval_we) stval <= stval_wdata;
+            else stval <= stval;
             if(stvec_we) stvec <= stvec_wdata;
             else stvec <= stvec;
             if(sscratch_we) sscratch <= sscratch_wdata;
             else sscratch <= sscratch;
+
+            if(sstatus_we) sstatus <= sstatus_wdata;
+            else sstatus <= sstatus;
+            if(mhartid_we) mhartid <= mhartid_wdata;
+            else mhartid <= mhartid;
+            if(sie_we) sie <= sie_wdata;
+            else sie <= sie;
+            if(sip_we) sip <= sip_wdata;
+            else sip <= sip;
         end
     end
 
@@ -176,6 +210,15 @@ module csr(
         else stvec_o = stvec;
         if(sscratch_we) sscratch_o = sscratch_wdata;
         else sscratch_o = sscratch;
+
+        if(sstatus_we) sstatus_o = sstatus_wdata;
+        else sstatus_o = sstatus;
+        if(mhartid_we) mhartid_o = mhartid_wdata;
+        else mhartid_o = mhartid;
+        if(sie_we) sie_o = sie_wdata;
+        else sie_o = sie;
+        if(sip_we) sip_o = sip_wdata;
+        else sip_o = sip;
     end
 
 endmodule

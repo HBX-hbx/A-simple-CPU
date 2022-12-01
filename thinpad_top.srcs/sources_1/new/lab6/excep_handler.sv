@@ -1,4 +1,5 @@
 module excep_handler (
+    input wire [31:0] satp_in,
     input wire [31:0] mtvec_in,
     input wire [31:0] mscratch_in,
     input wire [31:0] mepc_in,
@@ -8,6 +9,7 @@ module excep_handler (
     input wire [31:0] mip_in,
     input wire [1:0] priv_in,
 
+    output logic [31:0] satp_out,
     output logic [31:0] mtvec_out,
     output logic [31:0] mscratch_out,
     output logic [31:0] mepc_out,
@@ -17,6 +19,7 @@ module excep_handler (
     output logic [31:0] mip_out,
     output logic [1:0] priv_out,
 
+    input wire satp_we_in,
     input wire mtvec_we_in,
     input wire mscratch_we_in,
     input wire mepc_we_in,
@@ -26,6 +29,7 @@ module excep_handler (
     input wire mip_we_in,
     input wire priv_we_in,
 
+    output logic satp_we_out,
     output logic mtvec_we_out,
     output logic mscratch_we_out,
     output logic mepc_we_out,
@@ -48,6 +52,7 @@ module excep_handler (
     assign regs1_in = (csr_code_in == 3 || csr_code_in == 5 || csr_code_in == 7) ? {27'b0, exe_inst[19:15]} : exe_rs1_data;
 
     always_comb begin
+        satp_we_out = satp_we_in;
         mtvec_we_out = mtvec_we_in;
         mscratch_we_out = mscratch_we_in;
         mepc_we_out = mepc_we_in;
@@ -57,6 +62,7 @@ module excep_handler (
         mip_we_out = mip_we_in;
         priv_we_out = priv_we_in;
 
+        satp_out = satp_in;
         mtvec_out = mtvec_in;
         mscratch_out = mscratch_in;
         mepc_out = mepc_in;
@@ -123,6 +129,10 @@ module excep_handler (
                     data_out = mip_in;
                     mip_out = mip_in & ~regs1_in;
                 end
+                12'h180: begin
+                    data_out = satp_in;
+                    satp_out = satp_in & ~regs1_in;
+                end
                 default: begin
                 end
             endcase
@@ -157,6 +167,10 @@ module excep_handler (
                     data_out = mip_in;
                     mip_out = mip_in | regs1_in;
                 end
+                12'h180: begin
+                    data_out = satp_in;
+                    satp_out = satp_in | regs1_in;
+                end
                 default: begin
                 end
             endcase
@@ -190,6 +204,10 @@ module excep_handler (
                 12'h344: begin
                     data_out = mip_in;
                     mip_out = regs1_in;
+                end
+                12'h180: begin
+                    data_out = satp_in;
+                    satp_out = regs1_in;
                 end
                 default: begin
                 end
