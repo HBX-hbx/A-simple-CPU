@@ -29,7 +29,7 @@ always @(posedge clk or posedge rst) begin
             else mtime <= {mtime[63:32], wdata};
         end
         else begin
-            if (state == 19) begin
+            if (state == 3) begin
                 mtime <= mtime + 1;
                 state <= 0;
             end else begin
