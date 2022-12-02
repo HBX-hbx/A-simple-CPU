@@ -22,7 +22,7 @@ always @(posedge clk or posedge rst) begin
     if (rst) begin
         mtime <= 64'b0;
         mtimecmp <= 64'hFFFFFFFFFFFFFFFF;
-        stste <= 6'b0;
+        state <= 6'b0;
     end else begin
         if (mtime_we) begin
             if (upper) mtime <= {wdata, mtime[31:0]};
