@@ -3,6 +3,7 @@ module cpu_controller(
     output logic pc_hold_o,
       
     input wire if_ack_i,
+    input wire [1:0] if_page_fault_code_i,
       
     output logic if_id_regs_hold_o,
     output logic if_id_regs_bubble_o,
@@ -74,6 +75,17 @@ module cpu_controller(
                 id_exe_regs_bubble_o = 0;
                 exe_mem_regs_bubble_o = 1;
                 mem_wb_regs_bubble_o = 1;
+            end else if (if_page_fault_code_i != 2'b00) begin // if page fault
+                pc_hold_o = 1;
+                pc_sel_o = 1;
+                if_id_regs_hold_o = 0;
+                id_exe_regs_hold_o = 0;
+                exe_mem_regs_hold_o = 0;
+                mem_wb_regs_hold_o = 0;
+                if_id_regs_bubble_o = 0;
+                id_exe_regs_bubble_o = 0;
+                exe_mem_regs_bubble_o = 0;
+                mem_wb_regs_bubble_o = 0;
             end else if (predict_fault_i) begin
                 // page fault should bubble exe_mem
                 if (csr_code_i == 14) begin

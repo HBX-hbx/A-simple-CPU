@@ -1956,6 +1956,7 @@ module lab6_top (
       .pc_hold_o (pc_hold),
       
       .if_ack_i (if_ack),
+      .if_page_fault_code_i (if_page_fault_code),
       
       .if_id_regs_hold_o (if_id_regs_hold),
       .if_id_regs_bubble_o (if_id_regs_bubble),
