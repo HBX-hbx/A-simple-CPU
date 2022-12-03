@@ -154,11 +154,14 @@ module id_exe_regs(
     input wire       id_tlb_flush,
     output reg [31:0] ex_direct_branch_addr,
     output reg [3:0] ex_csr_code,
-    output reg       ex_tlb_flush
+    output reg       ex_tlb_flush,
+
+    input wire id_fence,
+    output reg exe_fence
 );
     always_ff @ (posedge clk) begin
         if (reset) begin
-
+            exe_fence <= 0;
         end else begin
             if (id_exe_regs_hold_i) begin
             
@@ -232,6 +235,7 @@ module id_exe_regs(
 
                 ex_csr_code <= 0;
                 ex_direct_branch_addr <= 0;
+                exe_fence <= 0;
 
             end else begin
                 pc_o <= pc_i;
@@ -304,6 +308,7 @@ module id_exe_regs(
                 ex_csr_code <= id_csr_code;
                 ex_direct_branch_addr <= id_direct_branch_addr;
 
+                exe_fence <= id_fence;
             end
         end
     end

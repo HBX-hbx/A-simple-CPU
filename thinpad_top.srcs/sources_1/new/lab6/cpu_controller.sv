@@ -38,7 +38,11 @@ module cpu_controller(
     input wire [3:0] csr_code_i,
     input wire predict_fault_i,
 
-    output logic hold_all_o
+    output logic hold_all_o,
+
+    input logic id_fence_i,
+    input logic exe_fence_i,
+    input logic mem_fence_i
 );
     
     reg if_br;
@@ -121,6 +125,17 @@ module cpu_controller(
                     exe_mem_regs_bubble_o = 0;
                     mem_wb_regs_bubble_o = 0;
                 end
+            end else if (id_fence_i | exe_fence_i | mem_fence_i) begin
+                pc_hold_o = 1;
+                pc_sel_o = 0;
+                if_id_regs_hold_o = 0;
+                id_exe_regs_hold_o = 0;
+                exe_mem_regs_hold_o = 0;
+                mem_wb_regs_hold_o = 0;
+                if_id_regs_bubble_o = 1;
+                id_exe_regs_bubble_o = 0;
+                exe_mem_regs_bubble_o = 0;
+                mem_wb_regs_bubble_o = 0;
             end else begin
                 pc_hold_o = 0;
                 pc_sel_o = 1;

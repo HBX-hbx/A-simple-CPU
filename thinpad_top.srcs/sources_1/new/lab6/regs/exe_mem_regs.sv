@@ -131,11 +131,14 @@ module exe_mem_regs(
 
     // Other Signals
     input wire [31:0] csr_data_i,
-    output reg [31:0] csr_data_o
+    output reg [31:0] csr_data_o,
+
+    input wire exe_fence_i,
+    output reg mem_fence_o
 );
     always_ff @ (posedge clk) begin
         if (reset) begin
-
+            mem_fence_o <= 0;
         end else begin
             if (exe_mem_regs_hold_i) begin
             
@@ -199,6 +202,7 @@ module exe_mem_regs(
                 sip_we_out <= 0;
                 
                 csr_data_o <= 0;
+                mem_fence_o <= 0;
             end else begin
                 pc_o <= pc_i;
                 inst_o <= inst_i;
@@ -259,6 +263,7 @@ module exe_mem_regs(
                 sip_we_out <= sip_we_in;
 
                 csr_data_o <= csr_data_i;
+                mem_fence_o <= exe_fence_i;
             end
         end
     end

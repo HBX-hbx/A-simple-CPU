@@ -428,7 +428,9 @@ module lab6_top (
     .im_req_o(cache_im_req),
     .im_ack_i(cache_im_ack),
     .im_pc_o(cache_im_pc),
-    .im_inst_i(cache_im_inst)
+    .im_inst_i(cache_im_inst),
+
+    .fence_i(mem_fence)
   );
 
   im_master u_im_master (
@@ -816,6 +818,8 @@ module lab6_top (
 
   logic [31:0] id_direct_branch_addr;
   logic [3:0] id_csr_code;
+
+  logic id_fence;
   
   decoder u_decoder (
       .inst_i     (id_inst),
@@ -839,7 +843,8 @@ module lab6_top (
       .dm_sel_o  (id_dm_sel),
       .dm_op_o   (id_dm_op),
 
-      .tlb_flush_o (id_tlb_flush)
+      .tlb_flush_o (id_tlb_flush),
+      .fence_o(id_fence)
   );
   
   // RF
@@ -1205,7 +1210,9 @@ module lab6_top (
       .id_tlb_flush(id_tlb_flush),
       .ex_tlb_flush(ex_tlb_flush),
       .id_direct_branch_addr(id_direct_branch_addr),
-      .ex_direct_branch_addr(ex_direct_branch_addr)
+      .ex_direct_branch_addr(ex_direct_branch_addr),
+      .id_fence(id_fence),
+      .exe_fence(exe_fence)
   );
   
   logic exe_mtvec_we_i;
@@ -1303,6 +1310,8 @@ module lab6_top (
   logic [31:0] exe_mhartid_data_o;
   logic [31:0] exe_sie_data_o;
   logic [31:0] exe_sip_data_o;
+
+  logic exe_fence;
 
   /* =========== Exe Stage start =========== */
   
@@ -1544,7 +1553,7 @@ module lab6_top (
   
   logic  exe_mem_regs_hold;
   logic  exe_mem_regs_bubble;
-  
+
   exe_mem_regs u_exe_mem_regs(
       .clk (sys_clk),
       .reset (sys_rst),
@@ -1678,7 +1687,10 @@ module lab6_top (
       
       // Other signals
       .csr_data_i (exe_csr_data),
-      .csr_data_o (mem_csr_data)
+      .csr_data_o (mem_csr_data),
+
+      .exe_fence_i(exe_fence),
+      .mem_fence_o(mem_fence)
   );
   
   logic mem_mtvec_we_i;
@@ -1728,6 +1740,8 @@ module lab6_top (
   logic [31:0] mem_mhartid_data_i;
   logic [31:0] mem_sie_data_i;
   logic [31:0] mem_sip_data_i;
+
+  logic mem_fence;
 
   /* =========== Mem Stage start =========== */
   
@@ -2014,7 +2028,11 @@ module lab6_top (
       .csr_code_i(ex_csr_code),
       .predict_fault_i(predict_fault),
 
-      .hold_all_o(hold_all)
+      .hold_all_o(hold_all),
+      
+      .id_fence_i(id_fence),
+      .exe_fence_i(exe_fence),
+      .mem_fence_i(mem_fence)
   );
   
   /* =========== Wishbone Master 2-1-1-3 begin =========== */
