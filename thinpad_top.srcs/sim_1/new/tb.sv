@@ -57,29 +57,33 @@ module lab6_tb;
   wire uart_tbre;  // 发送数据标志
   wire uart_tsre;  // 数据发送完毕标志
 
-  // Windows 需要注意路径分隔符的转义，例如 "D:\\foo\\bar.bin"
-  // parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\rvtests_simple\\testall.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路径
-  // parameter EXT_RAM_INIT_FILE = "/dev/null";  // ExtRAM 初始化文件，请修改为实际的绝对路径
-  
-  parameter BASE_RAM_INIT_FILE = "D:\\vivado_prj\\ucore_os_lab\\labcodes_answer\\lab8_test\\bin\\rbl.img"; // BaseRAM 初始化文件，请修改为实际的绝对路径
-  parameter EXT_RAM_INIT_FILE = "D:\\vivado_prj\\ucore_os_lab\\labcodes_answer\\lab8_test\\bin\\ucore.img";  // ExtRAM 初始化文件，请修改为实际的绝对路径
+// Windows 需要注意路径分隔符的转义，例如 "D:\\foo\\bar.bin"
+//  parameter BASE_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\ucore_os_lab\\labcodes_answer\\lab8_evil\\bin\\rbl.img"; // BaseRAM 初始化文件，请修改为实际的绝对路径
+//  parameter EXT_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\ucore_os_lab\\labcodes_answer\\lab8_evil\\bin\\ucore.img";  // ExtRAM 初始化文件，请修改为实际的绝对路径
+
+  parameter BASE_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\supervisor-rv\\kernel\\kernel.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路径
+  parameter EXT_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\asmcode";  // ExtRAM 初始化文件，请修改为实际的绝对路径
   
   initial begin
     #100;
     reset_btn = 1;
     #100;
     reset_btn = 0;
+
+    #12000000; // wait until the supervisor falls into infinite loop
+    
+    uart.pc_send_byte(8'h47); // ASCII 'g'
+
     #1000;
-//    uart.pc_send_byte(8'h47);
-//    #1000
-//    uart.pc_send_byte(8'hc4);
-//    #1000
-//    uart.pc_send_byte(8'h10);
-//    #1000
-//    uart.pc_send_byte(8'h00);
-//    #1000
-//    uart.pc_send_byte(8'h80);
-//    #1000
+    uart.pc_send_byte(8'h00); // 
+    #1000;
+    uart.pc_send_byte(8'h00); //
+    #1000;
+    uart.pc_send_byte(8'h20); // 
+    #1000;
+    uart.pc_send_byte(8'h00); //
+    
+    #10000;
     $finish;
   end
   
