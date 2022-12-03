@@ -49,8 +49,90 @@ module lab7_tb;
     #100;
     reset_btn = 0;
     #3500000;
+    // 写一个 A
+    uart.pc_send_byte(8'h41);
+    #1000;
+    // 初始地址
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h30);
+    #1000;
+    uart.pc_send_byte(8'h80);
+    #1000;
+    // 写入一个四字
+    uart.pc_send_byte(8'h04);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h00);
+
+    // 写一条指令 li a0,6
+    #1000;
+    uart.pc_send_byte(8'h13);
+    #1000;
+    uart.pc_send_byte(8'h05);
+    #1000;
+    uart.pc_send_byte(8'h60);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    
+    // 写一个 A
+    uart.pc_send_byte(8'h41);
+    #1000;
+    // 初始地址
+    uart.pc_send_byte(8'h04);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h30);
+    #1000;
+    uart.pc_send_byte(8'h80);
+    #1000;
+    // 写入一个四字
+    uart.pc_send_byte(8'h04);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h00);
+
+    // 写一条指令 li jr,ra
+    //00008067
+    #1000;
+    uart.pc_send_byte(8'h67);
+    #1000;
+    uart.pc_send_byte(8'h80);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+
+    // 写一个 G
+    #10000;
     uart.pc_send_byte(8'h47);
     #1000;
+    // 初始地址
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+    uart.pc_send_byte(8'h20);
+    #1000;
+    uart.pc_send_byte(8'h00);
+    #1000;
+
+    // 写一个 G
+    #1000000;
+    uart.pc_send_byte(8'h47);
+    #1000;
+    // 初始地址
     uart.pc_send_byte(8'ha8);
     #1000;
     uart.pc_send_byte(8'h10);
