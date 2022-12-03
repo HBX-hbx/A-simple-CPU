@@ -172,10 +172,16 @@ module ex_excep_handler (
             mcause_out = {1'b1, 27'b0, 4'b0111};
         // STIME_INT
         end else if (csr_code_in == 2) begin
-            priv_out = 2'b01;
-            mstatus_out = {mstatus_in[31:9],priv_in[0],mstatus_in[7:6],mstatus_in[1],mstatus_in[4:2],1'b0,mstatus_in[0]};
-            sepc_out = exe_pc;
-            scause_out = {1'b1, 27'b0, 4'b0111};
+            // if delegate to S mode to process
+            if (mideleg_out[5]) begin
+                priv_out = 2'b01;
+                mstatus_out = {mstatus_in[31:9],priv_in[0],mstatus_in[7:6],mstatus_in[1],mstatus_in[4:2],1'b0,mstatus_in[0]};
+                sepc_out = mepc_in; // S interrpt is transfered from M mode, so set sepc direct to mepc
+                scause_out = {1'b1, 27'b0, 4'b0101};
+            // should not happen in ucore?
+            end else begin
+                
+            end
         // ECALL
         end else if (csr_code_in == 3) begin
             if ((priv_in < 2) && medeleg_in[priv_in+8]) begin // delegation
