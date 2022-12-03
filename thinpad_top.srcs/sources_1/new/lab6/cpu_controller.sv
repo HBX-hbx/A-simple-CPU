@@ -40,9 +40,9 @@ module cpu_controller(
 
     output logic hold_all_o,
 
-    input logic id_fence_i,
-    input logic exe_fence_i,
-    input logic mem_fence_i
+    input wire id_fence_i,
+    input wire exe_fence_i,
+    input wire mem_fence_i
 );
     
     reg if_br;
