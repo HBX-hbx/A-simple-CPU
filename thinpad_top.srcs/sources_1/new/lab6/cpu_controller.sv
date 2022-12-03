@@ -36,13 +36,9 @@ module cpu_controller(
     input wire wb_rf_wen_i,
 
     input wire [3:0] csr_code_i,
-<<<<<<< HEAD
-    input wire predict_fault_i
-=======
     input wire predict_fault_i,
 
     output logic hold_all_o
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
 );
     
     reg if_br;
@@ -66,11 +62,6 @@ module cpu_controller(
             mem_wb_regs_bubble_o = 0;
         end else begin
             // if (if_br) begin
-<<<<<<< HEAD
-            if (predict_fault_i) begin
-                // if it is CSR
-                if (csr_code_i != 0) begin
-=======
             if (mem_page_fault_code_i != 2'b00) begin // mem page fault first
                 pc_hold_o = 0;
                 pc_sel_o = 1;
@@ -96,7 +87,6 @@ module cpu_controller(
                     exe_mem_regs_bubble_o = 1;
                     mem_wb_regs_bubble_o = 0;
                 end else if (csr_code_i != 0 && csr_code_i != 14) begin // if it is CSR
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
                     pc_hold_o = 0;
                     pc_sel_o = 3; // branch select direct branch addr from csr!
                     if_id_regs_hold_o = 0;

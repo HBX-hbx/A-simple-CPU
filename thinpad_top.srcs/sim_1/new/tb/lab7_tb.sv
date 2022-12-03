@@ -38,7 +38,7 @@ module lab7_tb;
   wire uart_tsre;  // 数据发�?�完毕标�?
 
   // Windows �?要注意路径分隔符的转义，例如 "D:\\foo\\bar.bin"
-  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\kernel2.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路�?
+  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\supervisor-rv\\kernel\\kernel.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路�?
   // parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\lab6.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路�?
   parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";  // ExtRAM 初始化文件，请修改为实际的绝对路�?
 
@@ -48,7 +48,7 @@ module lab7_tb;
     reset_btn = 1;
     #100;
     reset_btn = 0;
-    #2908610;
+    #3500000;
     uart.pc_send_byte(8'h47);
     #1000;
     uart.pc_send_byte(8'ha8);

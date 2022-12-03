@@ -50,10 +50,7 @@ module dm_master(
 
     reg [31:0] last_valid_addr = 0;
     reg [3:0] last_valid_sel = 0;
-<<<<<<< HEAD
-=======
     reg [31:0] last_valid_data = 0;
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
     reg [63:0] last_valid_time = 0;
 
     // Judge if the address is related to timer
@@ -63,20 +60,6 @@ module dm_master(
     logic if_time;
     logic isread;
     logic iswrite;
-<<<<<<< HEAD
-    assign if_same = (last_data_addr == data_addr_i) && (last_data == data_i) && (last_sel == sel_i) && (last_dm_op == dm_op_i);
-    assign if_time = (data_addr_i == 32'h0200bff8) || (data_addr_i == 32'h0200bffc) || (data_addr_i == 32'h02004000) || (data_addr_i == 32'h02004004);
-    assign isread = (dm_op_i == 1) && (state == 0) && (~if_same);
-    assign iswrite = (dm_op_i == 2) && (state == 0) && (~if_same);
-
-    logic [3:0] sel;
-    logic [31:0] data_sft;
-    logic [31:0] normal_time_data_buf;
-    assign data_sft = (data_access_ack_o && wb_we_o == 0) ? (state == 1 ? normal_time_data_buf : data_out): 0;
-    // For mtime, we only need one cycle to read the data / load the data
-    assign data_access_ack_o = (dm_ready || (wb_ack_i || time_op != 0)) && (isread !== 1) && (iswrite !== 1);
-    
-=======
     logic isread_without_mmu;
     logic iswrite_without_mmu;
     assign if_same = (last_data_addr == data_addr_i) && (last_data == data_i) && (last_sel == sel_i) && (last_dm_op == dm_op_i);
@@ -125,7 +108,6 @@ module dm_master(
     assign mmu_data_o = (mmu_ack_o && wb_we_o == 0) ? (state == 1 ? normal_time_data_buf : data_out): 0;
     assign mmu_ack_o = (~dm_ready && (wb_ack_i || time_op != 0)) && (isread_without_mmu !== 1) && (iswrite_without_mmu !== 1);
     
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
     // dealing with digit shift problems
     always_comb begin
         // if load or save byte
@@ -136,10 +118,7 @@ module dm_master(
         // if load or save half
         end else if (sel_i == 4'b0011 || (last_valid_sel == 4'b0011 && ~isread && ~ iswrite)) begin
             sel = (sel_i == 4'b0011) ? (sel_i << (data_addr_i % 4)) : (last_valid_sel << (last_valid_addr % 4));
-<<<<<<< HEAD
-=======
             data = (sel_i == 4'b0011) ? (data_i << ((data_addr_i % 4) * 8)) : (last_valid_data << ((last_valid_addr % 4) * 8));
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
             data_o = (data_sft & ((32'h0000FFFF) << ((last_valid_addr % 4) * 8))) >> ((last_valid_addr % 4) * 8);
         // load or save word
         end else begin
@@ -175,20 +154,12 @@ module dm_master(
             last_dm_op <= dm_op_i;
             // dm_op = 1 represents read
             if (isread) begin
-<<<<<<< HEAD
-                if (~if_time) begin
-=======
                 if (~if_time && page_fault_code_i == 2'b00) begin // only the page fault not happen
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
                     wb_cyc_o <= 1;
                     wb_stb_o <= 1;
                     wb_adr_o <= data_addr_i;
                     wb_dat_o <= 0;
-<<<<<<< HEAD
-                    wb_sel_o <= sel;
-=======
                     wb_sel_o <= (mmu_state_i == 1 || mmu_state_i == 2) ? 4'b1111 : sel; // shifted!
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
                     wb_we_o <= 0;
                     state <= 1;
                     dm_ready <= 0;
@@ -218,29 +189,17 @@ module dm_master(
                 end
             // dm_op = 2 represents write
             end else if (iswrite) begin
-<<<<<<< HEAD
-                if (~if_time) begin
-                    wb_cyc_o <= 1;
-                    wb_stb_o <= 1;
-                    wb_adr_o <= data_addr_i;
-                    wb_dat_o <= data_i;
-                    wb_sel_o <= sel;
-=======
                 if (~if_time && page_fault_code_i == 2'b00) begin // only the page fault not happen
                     wb_cyc_o <= 1;
                     wb_stb_o <= 1;
                     wb_adr_o <= data_addr_i;
                     wb_dat_o <= data; // shifted!
                     wb_sel_o <= sel; // shifted!
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
                     wb_we_o <= 1;
                     state <= 1;
                     dm_ready <= 0;
                     data_out <= 0;
-<<<<<<< HEAD
-=======
                     last_valid_data <= data_i;
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
                     last_valid_addr <= data_addr_i;
                     last_valid_sel <= sel_i;
                 end else begin
@@ -269,10 +228,7 @@ module dm_master(
                     state <= 1;
                     dm_ready <= 0;
                     data_out <= 0;
-<<<<<<< HEAD
-=======
                     last_valid_data <= data_i;
->>>>>>> 70f5705f5ef1230723b2a0742f443b93e0ec6fd5
                     last_valid_addr <= data_addr_i;
                     last_valid_sel <= sel_i;
                 end
