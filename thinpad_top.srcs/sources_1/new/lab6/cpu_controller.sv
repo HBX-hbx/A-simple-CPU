@@ -6,6 +6,7 @@ module cpu_controller(
       
     output logic if_id_regs_hold_o,
     output logic if_id_regs_bubble_o,
+    // TODO: if_page_fault_i with pc_hold
       
     input wire [31:0] id_inst_i,
     input wire [4:0] id_rs1_i,
@@ -63,7 +64,7 @@ module cpu_controller(
         end else begin
             // if (if_br) begin
             if (mem_page_fault_code_i != 2'b00) begin // mem page fault first
-                pc_hold_o = 0;
+                pc_hold_o = 1;
                 pc_sel_o = 1;
                 if_id_regs_hold_o = 0;
                 id_exe_regs_hold_o = 0;

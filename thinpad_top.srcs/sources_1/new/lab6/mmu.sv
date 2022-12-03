@@ -33,6 +33,8 @@ module mmu (
 );
 
 	reg [31:0] master_data_reg;
+	wire       is_mmu_on;
+	reg        last_is_mmu_on = 0;
 
 	reg [31:0] last_phy_addr = 0;
 	reg [1:0]  page_fault_code = 0;
@@ -49,8 +51,6 @@ module mmu (
 	state_t state;
 
 	assign mmu_state_o = state;
-
-	assign is_mmu_on_o = (priv_i == 2'b01 || priv_i == 2'b00) & satp_i[31]; // for S mode and U mode
 
 	// to tlb
 	reg tlb_ppn_we; // tmp
@@ -88,6 +88,10 @@ module mmu (
 	// 4. U-mode software may only access the page when U=1. ?
 	// TODO:5. what about S mode program access a page whose U=1 ? (sstatus)
 
+	assign is_mmu_on = (priv_i == 2'b01 || priv_i == 2'b00) & satp_i[31];
+	// tmp
+	assign is_mmu_on_o = (priv_i == 2'b01 || priv_i == 2'b00) & satp_i[31];
+	// assign is_mmu_on_o = last_pc != pc_i ? (is_mmu_on ? 1'b1 : 1'b0) : (is_mmu_on | last_is_mmu_on); // for S mode and U mode
 	assign page_fault_code_o = last_pc != pc_i ? 2'b00 : (page_fault_code | last_page_fault_code);
 
 	always_comb begin
@@ -307,11 +311,19 @@ module mmu (
 		end else begin
 			last_pc <= pc_i;
 			last_phy_addr <= phy_addr_o;
+
 			if (last_page_fault_code == 2'b00 && page_fault_code != 2'b00) begin
 				last_page_fault_code <= page_fault_code;
 			end else if (last_pc != pc_i) begin
 				last_page_fault_code <= 2'b00;
 			end
+
+			if (last_is_mmu_on == 1'b0 && is_mmu_on == 1'b1) begin
+				last_is_mmu_on <= is_mmu_on;
+			end else if (last_pc != pc_i) begin
+				last_is_mmu_on <= 1'b0;
+			end
+
 			case (state)
 				INIT: begin
 					if (is_mmu_on_o) begin
