@@ -46,6 +46,7 @@ module im_fast_cache(
     always_ff @(posedge clk_i) begin
         if (rst_i) begin // init with all cache fake
             j = 6'b0;
+            k = 6'b0;
             repeat(64) begin
                 valid_1[j] <= 1'b0;
                 j = j + 1;
@@ -64,6 +65,7 @@ module im_fast_cache(
                 fence_requested <= 1;
             end begin
                 j = 6'b0;
+                k = 6'b0;
                 repeat(64) begin
                     valid_1[j] <= 1'b0;
                     j = j + 1;
