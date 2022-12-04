@@ -1773,7 +1773,39 @@ module lab6_top (
   logic [31:0] mem_master_phy_addr;
   logic [1:0]  mem_page_fault_code;
   logic [31:0] mem_page_fault_addr;
+
+  // for dm cache
+  logic [1:0] cache_dm_op;
+  logic [3:0] cache_dm_sel;
+  logic cache_dm_data_access_ack;
+  logic [31:0] cache_dm_data_addr;
+  logic [31:0] cache_dm_to_dm_data;
+  logic [31:0] cache_dm_to_cache_data;
   
+  dm_cache dm_cache(
+    .clk_i(sys_clk),
+    .rst_i(sys_rst),
+
+    // for mem
+    .dm_op_i(mem_dm_op),
+    .data_access_ack_o(mem_data_access_ack),
+    .data_addr_i(mem_alu_y),
+    .data_i(mem_rs2_data),
+    .data_o(mem_data_read),
+    .sel_i(mem_dm_sel),
+
+    // for master
+    .dm_op_o(cache_dm_op),
+    .sel_o(cache_dm_sel),
+    .dm_data_access_ack_i(cache_dm_data_access_ack),
+    .dm_data_addr_o(cache_dm_data_addr),
+    .dm_data_o(cache_dm_to_dm_data),
+    .dm_data_i(cache_dm_to_cache_data),
+    
+    .fence_i(1'b0),
+    .align_fault_o()
+  );
+
   dm_master u_dm_master(
       .clk_i (sys_clk),
       .rst_i (sys_rst),
@@ -1787,12 +1819,17 @@ module lab6_top (
       .mmu_ack_o (mem_master_ack_mmu),
       .mmu_data_o (mem_master_data_mmu),
 
-      .dm_op_i (mem_dm_op),
-      .data_access_ack_o (mem_data_access_ack),
-
-      .data_i (mem_rs2_data),
-      .data_o (mem_data_read),
-      .sel_i (mem_dm_sel),
+      // to cache
+    //   .dm_op_i (mem_dm_op),
+    //   .data_access_ack_o (mem_data_access_ack),
+    //   .data_i (mem_rs2_data),
+    //   .data_o (mem_data_read),
+    //   .sel_i (mem_dm_sel),
+      .dm_op_i (cache_dm_op),
+      .data_access_ack_o (cache_dm_data_access_ack),
+      .data_i (cache_dm_to_dm_data),
+      .data_o (cache_dm_to_cache_data),
+      .sel_i (cache_dm_sel),
      
       // DM => Mem Master
       .wb_cyc_o(mem_cyc_o),
@@ -1816,23 +1853,31 @@ module lab6_top (
       .clk_i (sys_clk),
       .rst_i (sys_rst),
       .pc_i  (mem_pc),
+
       // from decoder
       .tlb_flush_i (ex_tlb_flush),
+
       // from csr
       .priv_i (mem_privilege_data_i),
       .satp_i (mem_satp_data_i), 
+
       // from dm_master
       .master_type_i (1'b1), // dm
-      .master_rw_type_i (mem_dm_op),
+    //   .master_rw_type_i (mem_dm_op),
+      .master_rw_type_i (cache_dm_op),
       .is_requesting_i (mem_cyc_o),
       .master_data_i (mem_master_data_mmu),
       .master_ack_i (mem_master_ack_mmu),
       .ctrl_ack_i (mem_data_access_ack),
+
       // load / store virtual addr
-      .vir_addr_i (mem_alu_y),
+    //   .vir_addr_i (mem_alu_y),
+      .vir_addr_i (cache_dm_data_addr),
+      
       // page fault code
       .page_fault_addr_o (mem_page_fault_addr),
       .page_fault_code_o (mem_page_fault_code),
+
       // to dm_master
       .tlb_hit_o (mem_tlb_hit),
       .is_mmu_on_o (mem_mmu_on),

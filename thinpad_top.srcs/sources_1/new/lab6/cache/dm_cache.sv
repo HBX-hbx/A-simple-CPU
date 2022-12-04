@@ -32,7 +32,6 @@ module dm_cache(
 
     dm_cache_entry entry[63:0];
 
-    reg [5:0] j;
     reg [31:0] addr_4_align;
     reg [3:0] sel_4_align;
     reg [31:0] data_4_align;
@@ -44,6 +43,7 @@ module dm_cache(
     reg wishbone_ok;
     reg writeback_dirty;
     reg fence_i_finish;
+    integer j;
 
     // for fence
     reg [5:0] dirty_judge_idx;
@@ -56,11 +56,15 @@ module dm_cache(
     `define ENTRY_VALID 1'b1;
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            j = 6'b0;
-            repeat(64) begin
+            // j = 6'b0;
+            // repeat(64) begin
+            //     entry[j].valid <= 1'b0;
+            //     entry[j].dirty <= 1'b0;
+            //     j = j + 1;
+            // end
+            for(j=0;j<64;j=j+1)begin
                 entry[j].valid <= 1'b0;
                 entry[j].dirty <= 1'b0;
-                j = j + 1;
             end
             fence_i_finish <= 0;
         end else begin
@@ -165,7 +169,7 @@ module dm_cache(
                 cache_data = 32'b0;
             end
         end else begin
-            if (~align_fault_o) begin
+            if (~align_fault_o) begin // no align fault
                 if (dm_op_i == 2'b01 || dm_op_i == 2'b10) begin
                     cache_hit = (cachable) && (entry[addr_4_align[7:2]].tag == addr_4_align[31:8]) && (entry[addr_4_align[7:2]].valid); 
                     cache_data = entry[addr_4_align[7:2]].data;
@@ -173,7 +177,7 @@ module dm_cache(
                     cache_hit = 1'b1;
                     cache_data = 32'b0;
                 end
-            end else begin // fault
+            end else begin // align fault
                 cache_hit = 1'b0;
                 cache_data = 32'b0;
             end
