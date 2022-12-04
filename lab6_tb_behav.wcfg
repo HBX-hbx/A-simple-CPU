@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="9449256333fs"></ZoomStartTime>
-      <ZoomEndTime time="9450656334fs"></ZoomEndTime>
-      <Cursor1Time time="9450423000fs"></Cursor1Time>
+      <ZoomStartTime time="4653802000fs"></ZoomStartTime>
+      <ZoomEndTime time="4654920001fs"></ZoomEndTime>
+      <Cursor1Time time="4654910000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="223"></NameColumnWidth>
-      <ValueColumnWidth column_width="103"></ValueColumnWidth>
+      <ValueColumnWidth column_width="97"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="109" />
+   <WVObjectSize size="135" />
    <wvobject fp_name="/lab7_tb/dut/sys_clk" type="logic">
       <obj_property name="ElementShortName">sys_clk</obj_property>
       <obj_property name="ObjectShortName">sys_clk</obj_property>
@@ -455,6 +455,109 @@
    <wvobject fp_name="/lab7_tb/dut/u_regfile/allregs" type="array">
       <obj_property name="ElementShortName">allregs[31:0][31:0]</obj_property>
       <obj_property name="ObjectShortName">allregs[31:0][31:0]</obj_property>
-      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/rst_i" type="logic">
+      <obj_property name="ElementShortName">rst_i</obj_property>
+      <obj_property name="ObjectShortName">rst_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/curr_pc_i" type="array">
+      <obj_property name="ElementShortName">curr_pc_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">curr_pc_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/addr_sel_i" type="array">
+      <obj_property name="ElementShortName">addr_sel_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">addr_sel_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/stall" type="logic">
+      <obj_property name="ElementShortName">stall</obj_property>
+      <obj_property name="ObjectShortName">stall</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/exe_is_branch_i" type="logic">
+      <obj_property name="ElementShortName">exe_is_branch_i</obj_property>
+      <obj_property name="ObjectShortName">exe_is_branch_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/branch_taken_i" type="logic">
+      <obj_property name="ElementShortName">branch_taken_i</obj_property>
+      <obj_property name="ObjectShortName">branch_taken_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/branch_addr_i" type="array">
+      <obj_property name="ElementShortName">branch_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">branch_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/id_addr_i" type="array">
+      <obj_property name="ElementShortName">id_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">id_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/exe_addr_i" type="array">
+      <obj_property name="ElementShortName">exe_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">exe_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/next_pc_o" type="array">
+      <obj_property name="ElementShortName">next_pc_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">next_pc_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/predict_fault_o" type="logic">
+      <obj_property name="ElementShortName">predict_fault_o</obj_property>
+      <obj_property name="ObjectShortName">predict_fault_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/pc_tag" type="array">
+      <obj_property name="ElementShortName">pc_tag[63:0][23:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_tag[63:0][23:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/taken" type="array">
+      <obj_property name="ElementShortName">taken[63:0]</obj_property>
+      <obj_property name="ObjectShortName">taken[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/next_pc" type="array">
+      <obj_property name="ElementShortName">next_pc[63:0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">next_pc[63:0][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb/j" type="array">
+      <obj_property name="ElementShortName">j[5:0]</obj_property>
+      <obj_property name="ObjectShortName">j[5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb_mux/exe_pc_i" type="array">
+      <obj_property name="ElementShortName">exe_pc_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">exe_pc_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb_mux/alu_pc_i" type="array">
+      <obj_property name="ElementShortName">alu_pc_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">alu_pc_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb_mux/direct_br_addr" type="array">
+      <obj_property name="ElementShortName">direct_br_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">direct_br_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb_mux/branch_addr_o" type="array">
+      <obj_property name="ElementShortName">branch_addr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">branch_addr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb_mux/addr_sel" type="array">
+      <obj_property name="ElementShortName">addr_sel[1:0]</obj_property>
+      <obj_property name="ObjectShortName">addr_sel[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/pc_sel_mux/csr_code_i" type="array">
+      <obj_property name="ElementShortName">csr_code_i[3:0]</obj_property>
+      <obj_property name="ObjectShortName">csr_code_i[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/pc_sel_mux/exe_inst_i" type="array">
+      <obj_property name="ElementShortName">exe_inst_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">exe_inst_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/pc_sel_mux/pc_sel_o" type="array">
+      <obj_property name="ElementShortName">pc_sel_o[1:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_sel_o[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb_branch_decider/br_op_i" type="array">
+      <obj_property name="ElementShortName">br_op_i[3:0]</obj_property>
+      <obj_property name="ObjectShortName">br_op_i[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/btb_branch_decider/is_branch_o" type="logic">
+      <obj_property name="ElementShortName">is_branch_o</obj_property>
+      <obj_property name="ObjectShortName">is_branch_o</obj_property>
    </wvobject>
 </wave_config>
