@@ -67,6 +67,7 @@ module dm_cache(
                 entry[j].dirty <= 1'b0;
             end
             fence_i_finish <= 0;
+            dirty_judge_idx <= 6'b0;
         end else begin
             if (fence_i) begin // fence 
                 if (wishbone_ok) begin
@@ -80,6 +81,7 @@ module dm_cache(
                 end
             end else begin
                 fence_i_finish <= 1'b0;
+                dirty_judge_idx <= 6'b0;
                 if (cache_hit && dm_op_i == 2'b10) begin // update the dirty cache
                     case (sel_4_align)
                     4'b1111 : begin

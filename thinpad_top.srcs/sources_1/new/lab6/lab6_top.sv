@@ -1802,7 +1802,7 @@ module lab6_top (
     .dm_data_o(cache_dm_to_dm_data),
     .dm_data_i(cache_dm_to_cache_data),
     
-    .fence_i(1'b0),
+    .fence_i(mem_fence),
     .align_fault_o()
   );
 
