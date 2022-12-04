@@ -3,10 +3,10 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="lab6_tb_behav.wdb" id="1">
+      <db_ref path="lab7_tb_behav.wdb" id="1">
          <top_modules>
             <top_module name="glbl" />
-            <top_module name="lab6_tb" />
+            <top_module name="lab7_tb" />
          </top_modules>
       </db_ref>
    </db_ref_list>

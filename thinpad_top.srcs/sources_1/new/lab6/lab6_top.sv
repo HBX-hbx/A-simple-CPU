@@ -123,6 +123,12 @@ module lab6_top (
   logic [31:0] btb_branch_addr;
   logic predict_fault;
 
+  // for cache 
+  logic cache_im_req;
+  logic cache_im_ack;
+  logic [31:0] cache_im_pc;
+  logic [31:0] cache_im_inst;
+
   //Timer
   logic mtime_we;
   logic mtimecmp_we;
@@ -408,13 +414,32 @@ module lab6_top (
   logic [1:0]  if_page_fault_code;
   logic [31:0] if_page_fault_addr;
   
+  im_fast_cache im_cache(
+    .clk_i(sys_clk),
+    .rst_i(sys_rst),
+
+    // inst
+    .req_i(if_req),
+    .ack_o(if_ack),
+    .pc_i(cur_pc),
+    .inst_o(if_inst),
+
+    // im master
+    .im_req_o(cache_im_req),
+    .im_ack_i(cache_im_ack),
+    .im_pc_o(cache_im_pc),
+    .im_inst_i(cache_im_inst),
+
+    .fence_i(id_fence)
+  );
+
   im_master u_im_master (
       .clk_i (sys_clk),
       .rst_i (sys_rst),
       // inst
-      .req_i  (if_req),
-      .ack_o  (if_ack),
-      .inst_o (if_inst),
+      .req_i  (cache_im_req),
+      .ack_o  (cache_im_ack),
+      .inst_o (cache_im_inst),
       // from mmu
       .phy_addr_i (if_master_phy_addr),
       .mmu_state_i (if_mmu_state),
@@ -438,7 +463,7 @@ module lab6_top (
   mmu u_im_mmu (
       .clk_i (sys_clk),
       .rst_i (sys_rst),
-      .pc_i  (cur_pc),
+      .pc_i  (cache_im_pc),
       // from csr
       .priv_i (privilege_o),
       .satp_i (satp_o),
@@ -455,7 +480,7 @@ module lab6_top (
       .master_ack_i (if_master_ack_mmu),
       .ctrl_ack_i (if_ack),
       // from pc_reg
-      .vir_addr_i (cur_pc),
+      .vir_addr_i (cache_im_pc),
       // page fault code
       .page_fault_code_o (if_page_fault_code),
       .page_fault_addr_o (if_page_fault_addr),
@@ -799,6 +824,8 @@ module lab6_top (
 
   logic [31:0] id_direct_branch_addr;
   logic [3:0] id_csr_code;
+
+  logic id_fence;
   
   decoder u_decoder (
       .inst_i     (id_inst),
@@ -822,7 +849,8 @@ module lab6_top (
       .dm_sel_o  (id_dm_sel),
       .dm_op_o   (id_dm_op),
 
-      .tlb_flush_o (id_tlb_flush)
+      .tlb_flush_o (id_tlb_flush),
+      .fence_o(id_fence)
   );
   
   // RF
@@ -1191,7 +1219,9 @@ module lab6_top (
       .ex_direct_branch_addr(ex_direct_branch_addr),
 
       .page_fault_code_i (id_page_fault_code),
-      .page_fault_code_o (ex_page_fault_code)
+      .page_fault_code_o (ex_page_fault_code),
+      .id_fence(id_fence),
+      .exe_fence(exe_fence)
   );
   
   logic exe_mtvec_we_i;
@@ -1289,6 +1319,8 @@ module lab6_top (
   logic [31:0] exe_mhartid_data_o;
   logic [31:0] exe_sie_data_o;
   logic [31:0] exe_sip_data_o;
+
+  logic exe_fence;
 
   /* =========== Exe Stage start =========== */
   
@@ -1531,7 +1563,7 @@ module lab6_top (
   
   logic  exe_mem_regs_hold;
   logic  exe_mem_regs_bubble;
-  
+
   exe_mem_regs u_exe_mem_regs(
       .clk (sys_clk),
       .reset (sys_rst),
@@ -1665,7 +1697,10 @@ module lab6_top (
       
       // Other signals
       .csr_data_i (exe_csr_data),
-      .csr_data_o (mem_csr_data)
+      .csr_data_o (mem_csr_data),
+
+      .exe_fence_i(exe_fence),
+      .mem_fence_o(mem_fence)
   );
   
   logic mem_mtvec_we_i;
@@ -1716,6 +1751,8 @@ module lab6_top (
   logic [31:0] mem_sie_data_i;
   logic [31:0] mem_sip_data_i;
 
+  logic mem_fence;
+
   /* =========== Mem Stage start =========== */
   
   logic [31:0] mem_pc;
@@ -1746,7 +1783,39 @@ module lab6_top (
   logic [31:0] mem_master_phy_addr;
   logic [1:0]  mem_page_fault_code;
   logic [31:0] mem_page_fault_addr;
+
+  // for dm cache
+  logic [1:0] cache_dm_op;
+  logic [3:0] cache_dm_sel;
+  logic cache_dm_data_access_ack;
+  logic [31:0] cache_dm_data_addr;
+  logic [31:0] cache_dm_to_dm_data;
+  logic [31:0] cache_dm_to_cache_data;
   
+  dm_cache dm_cache(
+    .clk_i(sys_clk),
+    .rst_i(sys_rst),
+
+    // for mem
+    .dm_op_i(mem_dm_op),
+    .data_access_ack_o(mem_data_access_ack),
+    .data_addr_i(mem_alu_y),
+    .data_i(mem_rs2_data),
+    .data_o(mem_data_read),
+    .sel_i(mem_dm_sel),
+
+    // for master
+    .dm_op_o(cache_dm_op),
+    .sel_o(cache_dm_sel),
+    .dm_data_access_ack_i(cache_dm_data_access_ack),
+    .dm_data_addr_o(cache_dm_data_addr),
+    .dm_data_o(cache_dm_to_dm_data),
+    .dm_data_i(cache_dm_to_cache_data),
+    
+    .fence_i(mem_fence),
+    .align_fault_o()
+  );
+
   dm_master u_dm_master(
       .clk_i (sys_clk),
       .rst_i (sys_rst),
@@ -1760,12 +1829,17 @@ module lab6_top (
       .mmu_ack_o (mem_master_ack_mmu),
       .mmu_data_o (mem_master_data_mmu),
 
-      .dm_op_i (mem_dm_op),
-      .data_access_ack_o (mem_data_access_ack),
-
-      .data_i (mem_rs2_data),
-      .data_o (mem_data_read),
-      .sel_i (mem_dm_sel),
+      // to cache
+    //   .dm_op_i (mem_dm_op),
+    //   .data_access_ack_o (mem_data_access_ack),
+    //   .data_i (mem_rs2_data),
+    //   .data_o (mem_data_read),
+    //   .sel_i (mem_dm_sel),
+      .dm_op_i (cache_dm_op),
+      .data_access_ack_o (cache_dm_data_access_ack),
+      .data_i (cache_dm_to_dm_data),
+      .data_o (cache_dm_to_cache_data),
+      .sel_i (cache_dm_sel),
      
       // DM => Mem Master
       .wb_cyc_o(mem_cyc_o),
@@ -1789,23 +1863,31 @@ module lab6_top (
       .clk_i (sys_clk),
       .rst_i (sys_rst),
       .pc_i  (mem_pc),
+
       // from decoder
       .tlb_flush_i (ex_tlb_flush),
+
       // from csr
       .priv_i (mem_privilege_data_i),
       .satp_i (mem_satp_data_i), 
+
       // from dm_master
       .master_type_i (1'b1), // dm
-      .master_rw_type_i (mem_dm_op),
+    //   .master_rw_type_i (mem_dm_op),
+      .master_rw_type_i (cache_dm_op),
       .is_requesting_i (mem_cyc_o),
       .master_data_i (mem_master_data_mmu),
       .master_ack_i (mem_master_ack_mmu),
       .ctrl_ack_i (mem_data_access_ack),
+
       // load / store virtual addr
-      .vir_addr_i (mem_alu_y),
+    //   .vir_addr_i (mem_alu_y),
+      .vir_addr_i (cache_dm_data_addr),
+      
       // page fault code
       .page_fault_addr_o (mem_page_fault_addr),
       .page_fault_code_o (mem_page_fault_code),
+
       // to dm_master
       .tlb_hit_o (mem_tlb_hit),
       .is_mmu_on_o (mem_mmu_on),
@@ -2002,7 +2084,11 @@ module lab6_top (
       .csr_code_i(ex_csr_code),
       .predict_fault_i(predict_fault),
 
-      .hold_all_o(hold_all)
+      .hold_all_o(hold_all),
+      
+      .id_fence_i(id_fence),
+      .exe_fence_i(exe_fence),
+      .mem_fence_i(mem_fence)
   );
   
   /* =========== Wishbone Master 2-1-1-3 begin =========== */
