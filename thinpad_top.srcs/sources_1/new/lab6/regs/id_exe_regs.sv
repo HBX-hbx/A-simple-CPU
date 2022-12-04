@@ -154,7 +154,10 @@ module id_exe_regs(
     input wire       id_tlb_flush,
     output reg [31:0] ex_direct_branch_addr,
     output reg [3:0] ex_csr_code,
-    output reg       ex_tlb_flush
+    output reg       ex_tlb_flush,
+
+    input wire [1:0]   page_fault_code_i,
+    output logic [1:0] page_fault_code_o
 );
     always_ff @ (posedge clk) begin
         if (reset) begin
@@ -232,6 +235,7 @@ module id_exe_regs(
 
                 ex_csr_code <= 0;
                 ex_direct_branch_addr <= 0;
+                page_fault_code_o <= 0;
 
             end else begin
                 pc_o <= pc_i;
@@ -303,6 +307,7 @@ module id_exe_regs(
 
                 ex_csr_code <= id_csr_code;
                 ex_direct_branch_addr <= id_direct_branch_addr;
+                page_fault_code_o <= page_fault_code_i;
 
             end
         end

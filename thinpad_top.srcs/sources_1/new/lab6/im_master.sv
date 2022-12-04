@@ -12,6 +12,7 @@ module im_master(
     input wire [1:0] mmu_state_i,
     input wire is_mmu_on_i,
     input wire tlb_hit_i,
+    input wire [1:0] page_fault_code_i,
     // inst
     input wire req_i,
     output wire mmu_ack_o, // to mmu
@@ -74,7 +75,7 @@ module im_master(
             wb_we_o <= 1'd0;
         end else begin
             last_pa <= phy_addr_i;
-            if ((req_i == 1 || (mmu_state_i == 2 || mmu_state_i == 3)) && state == 0 && last_pa != phy_addr_i) begin
+            if ((req_i == 1 || ((mmu_state_i == 2 || mmu_state_i == 3) && page_fault_code_i == 2'b00)) && state == 0 && last_pa != phy_addr_i) begin
                 wb_cyc_o <= 1;
                 wb_stb_o <= 1;
                 wb_adr_o <= phy_addr_i;

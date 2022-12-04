@@ -180,7 +180,7 @@ module id_excep_handler (
     output logic sip_we_out,
 
     // Other signals
-    input wire [1:0] if_page_fault_code_i,
+    input wire [1:0] if_page_fault_code_i, // 从 if_id_reg 而来
     input wire [1:0] mem_page_fault_code_i,
     output logic [31:0] direct_branch_addr,
     output logic [3:0] csr_code
@@ -337,7 +337,8 @@ module id_excep_handler (
       CSRRSI,
       CSRRWI,
       SFENCE_VMA,
-      PAGE_FAULT
+      IM_PAGE_FAULT, // 14
+      DM_PAGE_FAULT
     } decode_ops;
     
     decode_ops d_op;
@@ -370,8 +371,10 @@ module id_excep_handler (
             d_op = CSRRSI;
         end else if (inst_i[14:12] == 3'b111 && inst_i[6:0] == 7'b1110011) begin
             d_op = CSRRCI;
-        end else if (mem_page_fault_code_i != 2'b00 || if_page_fault_code_i != 2'b00) begin
-            d_op = PAGE_FAULT;
+        end else if (mem_page_fault_code_i != 2'b00) begin
+            d_op = DM_PAGE_FAULT;
+        end else if (if_page_fault_code_i != 2'b00 ) begin
+            d_op = IM_PAGE_FAULT;
         end else begin
             d_op = NORMAL;
         end

@@ -79,9 +79,9 @@ module lab6_tb;
     #1000;
     uart.pc_send_byte(8'h00); //
     #1000;
-    uart.pc_send_byte(8'h20); // 
+    uart.pc_send_byte(8'h30); // 
     #1000;
-    uart.pc_send_byte(8'h00); //
+    uart.pc_send_byte(8'h80); //
     
     #10000;
     $finish;

@@ -75,20 +75,9 @@ module cpu_controller(
                 id_exe_regs_bubble_o = 0;
                 exe_mem_regs_bubble_o = 1;
                 mem_wb_regs_bubble_o = 1;
-            end else if (if_page_fault_code_i != 2'b00) begin // if page fault
-                pc_hold_o = 1;
-                pc_sel_o = 1;
-                if_id_regs_hold_o = 0;
-                id_exe_regs_hold_o = 0;
-                exe_mem_regs_hold_o = 0;
-                mem_wb_regs_hold_o = 0;
-                if_id_regs_bubble_o = 0;
-                id_exe_regs_bubble_o = 0;
-                exe_mem_regs_bubble_o = 0;
-                mem_wb_regs_bubble_o = 0;
             end else if (predict_fault_i) begin
-                // page fault should bubble exe_mem
-                if (csr_code_i == 14) begin
+                // dm page fault should bubble exe_mem
+                if (csr_code_i == 15) begin
                     pc_hold_o = 0;
                     pc_sel_o = 3; // branch select direct branch addr from csr!
                     if_id_regs_hold_o = 0;
@@ -99,7 +88,18 @@ module cpu_controller(
                     id_exe_regs_bubble_o = 1;
                     exe_mem_regs_bubble_o = 1;
                     mem_wb_regs_bubble_o = 0;
-                end else if (csr_code_i != 0 && csr_code_i != 14) begin // if it is CSR
+                end else if(csr_code_i == 14) begin // im page fault
+                    pc_hold_o = 0;
+                    pc_sel_o = 3; // branch select direct branch addr from csr!
+                    if_id_regs_hold_o = 0;
+                    id_exe_regs_hold_o = 0;
+                    exe_mem_regs_hold_o = 0;
+                    mem_wb_regs_hold_o = 0;
+                    if_id_regs_bubble_o = 0;
+                    id_exe_regs_bubble_o = 0;
+                    exe_mem_regs_bubble_o = 0;
+                    mem_wb_regs_bubble_o = 0;
+                end else if (csr_code_i != 0 && csr_code_i != 14 && csr_code_i != 15) begin // if it is CSR
                     pc_hold_o = 0;
                     pc_sel_o = 3; // branch select direct branch addr from csr!
                     if_id_regs_hold_o = 0;
@@ -134,6 +134,17 @@ module cpu_controller(
                     exe_mem_regs_bubble_o = 0;
                     mem_wb_regs_bubble_o = 0;
                 end
+            end else if (if_page_fault_code_i != 2'b00) begin // if page fault,
+                pc_hold_o = 1;
+                pc_sel_o = 1;
+                if_id_regs_hold_o = 0;
+                id_exe_regs_hold_o = 0;
+                exe_mem_regs_hold_o = 0;
+                mem_wb_regs_hold_o = 0;
+                if_id_regs_bubble_o = 0;
+                id_exe_regs_bubble_o = 0;
+                exe_mem_regs_bubble_o = 0;
+                mem_wb_regs_bubble_o = 0;
             end else begin
                 pc_hold_o = 0;
                 pc_sel_o = 1;
