@@ -29,8 +29,7 @@ module im_fast_cache(
     reg valid_2 [63:0];
     reg [31:0] data_2 [63:0];
 
-    reg [5:0] j;
-    reg [5:0] k;
+    integer i,j;
     
     reg cache_hit = 0;
     reg hit_longer = 0;
@@ -45,15 +44,19 @@ module im_fast_cache(
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin // init with all cache fake
-            j = 6'b0;
-            k = 6'b0;
-            repeat(64) begin
-                valid_1[j] <= 1'b0;
-                j = j + 1;
-            end
-            repeat(64) begin
-                valid_2[k] <= 1'b0;
-                k = k + 1;
+            // j = 6'b0;
+            // k = 6'b0;
+            // repeat(64) begin
+            //     valid_1[j] <= 1'b0;
+            //     j = j + 1;
+            // end
+            // repeat(64) begin
+            //     valid_2[k] <= 1'b0;
+            //     k = k + 1;
+            // end
+            for(i=0;i<64;i=i+1)begin
+                valid_1[i] <= 1'b0;
+                valid_2[i] <= 1'b0;
             end
             fence_start_and_finish <= 0;
             fence_requested <= 0;
@@ -64,15 +67,19 @@ module im_fast_cache(
                 // Do nothing and wait
                 fence_requested <= 1;
             end begin
-                j = 6'b0;
-                k = 6'b0;
-                repeat(64) begin
+                // j = 6'b0;
+                // k = 6'b0;
+                // repeat(64) begin
+                //     valid_1[j] <= 1'b0;
+                //     j = j + 1;
+                // end
+                // repeat(64) begin
+                //     valid_2[k] <= 1'b0;
+                //     k = k + 1;
+                // end
+                for(j=0;j<64;j=j+1) begin
                     valid_1[j] <= 1'b0;
-                    j = j + 1;
-                end
-                repeat(64) begin
-                    valid_2[k] <= 1'b0;
-                    k = k + 1;
+                    valid_2[j] <= 1'b0;
                 end
                 fence_start_and_finish <= 1;
             end
