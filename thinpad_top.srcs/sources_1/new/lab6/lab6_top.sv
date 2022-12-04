@@ -430,7 +430,7 @@ module lab6_top (
     .im_pc_o(cache_im_pc),
     .im_inst_i(cache_im_inst),
 
-    .fence_i(id_fence|exe_fence|mem_fence)
+    .fence_i(id_fence)
   );
 
   im_master u_im_master (
