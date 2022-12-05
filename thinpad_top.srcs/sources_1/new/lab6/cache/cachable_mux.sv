@@ -1,7 +1,7 @@
 module cachable_mux(
     input wire [31:0] addr,
     output reg cachable
-)
+);
     // four bytes align
     // only used in dm_cache
     // TODO
