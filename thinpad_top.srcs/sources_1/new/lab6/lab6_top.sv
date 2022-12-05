@@ -2339,4 +2339,20 @@ module lab6_top (
 
   /* =========== Lab6 Slaves end =========== */
   
+  /* =========== VGA begin =========== */
+  logic [11:0] hdata;
+  assign video_red   = hdata < 266 ? 3'b111 : 0;  // 红色竖条
+  assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0;  // 绿色竖条
+  assign video_blue  = hdata >= 532 ? 2'b11 : 0;  // 蓝色竖条
+  assign video_clk   = clk_50M;
+  vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+      .clk        (clk_50M),
+      .hdata      (hdata),        // 横坐标
+      .vdata      (),             // 纵坐标
+      .hsync      (video_hsync),
+      .vsync      (video_vsync),
+      .data_enable(video_de)
+  );
+
+  
 endmodule
