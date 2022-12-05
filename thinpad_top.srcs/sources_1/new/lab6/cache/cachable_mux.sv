@@ -19,10 +19,10 @@ module cachable_mux(
             cachable = `CACHE_ON;
         end else if ((addr >= 32'h8000_1000) && (addr <= 32'h8000_1FFF)) begin
             cachable = `CACHE_ON;
-        end else if ((addr >= 32'h8000_0000) && (addr <= 32'h800F_FFFF)) begin
-            cachable = `CACHE_ON;
-        end else if ((addr >= 32'h807F_0000) && (addr <= 32'h807F_FFFF)) begin
-            cachable = `CACHE_ON;
+        // end else if ((addr >= 32'h8000_0000) && (addr <= 32'h800F_FFFF)) begin
+        //     cachable = `CACHE_ON;
+        // end else if ((addr >= 32'h807F_0000) && (addr <= 32'h807F_FFFF)) begin
+        //     cachable = `CACHE_ON;
         end else begin
             cachable = 0;
         end
