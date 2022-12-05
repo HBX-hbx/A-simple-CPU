@@ -77,7 +77,7 @@ module mmu (
       // from tlb
 	  .tlb_ppn_o (r_tlb_ppn),
 	  .tlb_status_o (r_tlb_status),
-      .tlb_hit_o (tlb_hit_o)
+      .tlb_hit_o (tlb_hit_o) 
 	);
 
 	// 1. Attempting to fetch an instruction from a page that does not have execute permissions raises a
