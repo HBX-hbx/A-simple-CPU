@@ -60,7 +60,7 @@ module mmu (
 	  .tlb_vpn_i (tlb_vpn),
 	  .tlb_ppn_we_i (tlb_ppn_we),
 	  .tlb_ppn_i (w_tlb_ppn),
-      // from tlb
+      // from tlb 
 	  .tlb_ppn_o (r_tlb_ppn),
       .tlb_hit_o (tlb_hit)
 	);
