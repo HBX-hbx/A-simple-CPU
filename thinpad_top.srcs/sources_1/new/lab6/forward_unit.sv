@@ -10,7 +10,7 @@ module forward_unit(
     input wire reg_just_w,
 
     output logic [1:0] rs1_data_sel,
-    output logic [1:0] rs2_data_sel
+    output logic [1:0] rs2_data_sel 
 );  
     always_comb begin
         // we need to check mem first
