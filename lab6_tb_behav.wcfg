@@ -5,21 +5,22 @@
    <db_ref_list>
       <db_ref path="lab7_tb_behav.wdb" id="1">
          <top_modules>
+            <top_module name="\$unit_wb_mux_sv " />
             <top_module name="glbl" />
             <top_module name="lab7_tb" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="4653802000fs"></ZoomStartTime>
-      <ZoomEndTime time="4654920001fs"></ZoomEndTime>
-      <Cursor1Time time="4654910000fs"></Cursor1Time>
+      <ZoomStartTime time="7312505678fs"></ZoomStartTime>
+      <ZoomEndTime time="7317910865fs"></ZoomEndTime>
+      <Cursor1Time time="7317010000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="223"></NameColumnWidth>
-      <ValueColumnWidth column_width="97"></ValueColumnWidth>
+      <ValueColumnWidth column_width="91"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="135" />
+   <WVObjectSize size="284" />
    <wvobject fp_name="/lab7_tb/dut/sys_clk" type="logic">
       <obj_property name="ElementShortName">sys_clk</obj_property>
       <obj_property name="ObjectShortName">sys_clk</obj_property>
@@ -187,14 +188,6 @@
    <wvobject fp_name="/lab7_tb/dut/exe_fence" type="logic">
       <obj_property name="ElementShortName">exe_fence</obj_property>
       <obj_property name="ObjectShortName">exe_fence</obj_property>
-   </wvobject>
-   <wvobject fp_name="/lab7_tb/dut/mem_pc" type="array">
-      <obj_property name="ElementShortName">mem_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">mem_pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/lab7_tb/dut/mem_fence" type="logic">
-      <obj_property name="ElementShortName">mem_fence</obj_property>
-      <obj_property name="ObjectShortName">mem_fence</obj_property>
    </wvobject>
    <wvobject fp_name="/lab7_tb/dut/mem_inst" type="array">
       <obj_property name="ElementShortName">mem_inst[31:0]</obj_property>
@@ -389,12 +382,8 @@
       <obj_property name="ObjectShortName">data_2[63:0][31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/lab7_tb/dut/im_cache/j" type="array">
-      <obj_property name="ElementShortName">j[5:0]</obj_property>
-      <obj_property name="ObjectShortName">j[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/lab7_tb/dut/im_cache/k" type="array">
-      <obj_property name="ElementShortName">k[5:0]</obj_property>
-      <obj_property name="ObjectShortName">k[5:0]</obj_property>
+      <obj_property name="ElementShortName">j[31:0]</obj_property>
+      <obj_property name="ObjectShortName">j[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/lab7_tb/dut/im_cache/cache_hit" type="logic">
       <obj_property name="ElementShortName">cache_hit</obj_property>
@@ -452,9 +441,18 @@
       <obj_property name="ElementShortName">rf_wen</obj_property>
       <obj_property name="ObjectShortName">rf_wen</obj_property>
    </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/mem_pc" type="array">
+      <obj_property name="ElementShortName">mem_pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/mem_fence" type="logic">
+      <obj_property name="ElementShortName">mem_fence</obj_property>
+      <obj_property name="ObjectShortName">mem_fence</obj_property>
+   </wvobject>
    <wvobject fp_name="/lab7_tb/dut/u_regfile/allregs" type="array">
       <obj_property name="ElementShortName">allregs[31:0][31:0]</obj_property>
       <obj_property name="ObjectShortName">allregs[31:0][31:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/lab7_tb/dut/btb/clk_i" type="logic">
       <obj_property name="ElementShortName">clk_i</obj_property>
@@ -559,5 +557,605 @@
    <wvobject fp_name="/lab7_tb/dut/btb_branch_decider/is_branch_o" type="logic">
       <obj_property name="ElementShortName">is_branch_o</obj_property>
       <obj_property name="ObjectShortName">is_branch_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/rst_i" type="logic">
+      <obj_property name="ElementShortName">rst_i</obj_property>
+      <obj_property name="ObjectShortName">rst_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/dm_op_i" type="array">
+      <obj_property name="ElementShortName">dm_op_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">dm_op_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/sel_i" type="array">
+      <obj_property name="ElementShortName">sel_i[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sel_i[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/data_access_ack_o" type="logic">
+      <obj_property name="ElementShortName">data_access_ack_o</obj_property>
+      <obj_property name="ObjectShortName">data_access_ack_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/data_addr_i" type="array">
+      <obj_property name="ElementShortName">data_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/data_i" type="array">
+      <obj_property name="ElementShortName">data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/data_o" type="array">
+      <obj_property name="ElementShortName">data_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/dm_op_o" type="array">
+      <obj_property name="ElementShortName">dm_op_o[1:0]</obj_property>
+      <obj_property name="ObjectShortName">dm_op_o[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/sel_o" type="array">
+      <obj_property name="ElementShortName">sel_o[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sel_o[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/dm_data_access_ack_i" type="logic">
+      <obj_property name="ElementShortName">dm_data_access_ack_i</obj_property>
+      <obj_property name="ObjectShortName">dm_data_access_ack_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/dm_data_addr_o" type="array">
+      <obj_property name="ElementShortName">dm_data_addr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dm_data_addr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/dm_data_o" type="array">
+      <obj_property name="ElementShortName">dm_data_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dm_data_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/dm_data_i" type="array">
+      <obj_property name="ElementShortName">dm_data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dm_data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/fence_i" type="logic">
+      <obj_property name="ElementShortName">fence_i</obj_property>
+      <obj_property name="ObjectShortName">fence_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/align_fault_o" type="logic">
+      <obj_property name="ElementShortName">align_fault_o</obj_property>
+      <obj_property name="ObjectShortName">align_fault_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/entry" type="array">
+      <obj_property name="ElementShortName">entry[63:0]</obj_property>
+      <obj_property name="ObjectShortName">entry[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/addr_4_align" type="array">
+      <obj_property name="ElementShortName">addr_4_align[31:0]</obj_property>
+      <obj_property name="ObjectShortName">addr_4_align[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/sel_4_align" type="array">
+      <obj_property name="ElementShortName">sel_4_align[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sel_4_align[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/data_4_align" type="array">
+      <obj_property name="ElementShortName">data_4_align[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_4_align[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/cache_data" type="array">
+      <obj_property name="ElementShortName">cache_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cache_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/wishbone_data" type="array">
+      <obj_property name="ElementShortName">wishbone_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wishbone_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/align_fault" type="logic">
+      <obj_property name="ElementShortName">align_fault</obj_property>
+      <obj_property name="ObjectShortName">align_fault</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/cachable" type="logic">
+      <obj_property name="ElementShortName">cachable</obj_property>
+      <obj_property name="ObjectShortName">cachable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/cache_hit" type="logic">
+      <obj_property name="ElementShortName">cache_hit</obj_property>
+      <obj_property name="ObjectShortName">cache_hit</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/wishbone_ok" type="logic">
+      <obj_property name="ElementShortName">wishbone_ok</obj_property>
+      <obj_property name="ObjectShortName">wishbone_ok</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/writeback_dirty" type="logic">
+      <obj_property name="ElementShortName">writeback_dirty</obj_property>
+      <obj_property name="ObjectShortName">writeback_dirty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/fence_i_finish" type="logic">
+      <obj_property name="ElementShortName">fence_i_finish</obj_property>
+      <obj_property name="ObjectShortName">fence_i_finish</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/j" type="array">
+      <obj_property name="ElementShortName">j[31:0]</obj_property>
+      <obj_property name="ObjectShortName">j[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/dirty_judge_idx" type="array">
+      <obj_property name="ElementShortName">dirty_judge_idx[5:0]</obj_property>
+      <obj_property name="ObjectShortName">dirty_judge_idx[5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/judger/addr" type="array">
+      <obj_property name="ElementShortName">addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/judger/sel" type="array">
+      <obj_property name="ElementShortName">sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/judger/fault" type="logic">
+      <obj_property name="ElementShortName">fault</obj_property>
+      <obj_property name="ObjectShortName">fault</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/judger/align_pos" type="array">
+      <obj_property name="ElementShortName">align_pos[1:0]</obj_property>
+      <obj_property name="ObjectShortName">align_pos[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/cachable_mux/addr" type="array">
+      <obj_property name="ElementShortName">addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/dm_cache/cachable_mux/cachable" type="logic">
+      <obj_property name="ElementShortName">cachable</obj_property>
+      <obj_property name="ObjectShortName">cachable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/rst_i" type="logic">
+      <obj_property name="ElementShortName">rst_i</obj_property>
+      <obj_property name="ObjectShortName">rst_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/priv_i" type="array">
+      <obj_property name="ElementShortName">priv_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">priv_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/satp_i" type="array">
+      <obj_property name="ElementShortName">satp_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">satp_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_flush_i" type="logic">
+      <obj_property name="ElementShortName">tlb_flush_i</obj_property>
+      <obj_property name="ObjectShortName">tlb_flush_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/is_requesting_i" type="logic">
+      <obj_property name="ElementShortName">is_requesting_i</obj_property>
+      <obj_property name="ObjectShortName">is_requesting_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/rst_i" type="logic">
+      <obj_property name="ElementShortName">rst_i</obj_property>
+      <obj_property name="ObjectShortName">rst_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/priv_i" type="array">
+      <obj_property name="ElementShortName">priv_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">priv_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/satp_i" type="array">
+      <obj_property name="ElementShortName">satp_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">satp_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_flush_i" type="logic">
+      <obj_property name="ElementShortName">tlb_flush_i</obj_property>
+      <obj_property name="ObjectShortName">tlb_flush_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/is_requesting_i" type="logic">
+      <obj_property name="ElementShortName">is_requesting_i</obj_property>
+      <obj_property name="ObjectShortName">is_requesting_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_type_i" type="logic">
+      <obj_property name="ElementShortName">master_type_i</obj_property>
+      <obj_property name="ObjectShortName">master_type_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_rw_type_i" type="array">
+      <obj_property name="ElementShortName">master_rw_type_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">master_rw_type_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/pc_i" type="array">
+      <obj_property name="ElementShortName">pc_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_data_i" type="array">
+      <obj_property name="ElementShortName">master_data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">master_data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_ack_i" type="logic">
+      <obj_property name="ElementShortName">master_ack_i</obj_property>
+      <obj_property name="ObjectShortName">master_ack_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/ctrl_ack_i" type="logic">
+      <obj_property name="ElementShortName">ctrl_ack_i</obj_property>
+      <obj_property name="ObjectShortName">ctrl_ack_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/vir_addr_i" type="array">
+      <obj_property name="ElementShortName">vir_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">vir_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/page_fault_code_o" type="array">
+      <obj_property name="ElementShortName">page_fault_code_o[1:0]</obj_property>
+      <obj_property name="ObjectShortName">page_fault_code_o[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/page_fault_addr_o" type="array">
+      <obj_property name="ElementShortName">page_fault_addr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">page_fault_addr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_hit_o" type="logic">
+      <obj_property name="ElementShortName">tlb_hit_o</obj_property>
+      <obj_property name="ObjectShortName">tlb_hit_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/is_mmu_on_o" type="logic">
+      <obj_property name="ElementShortName">is_mmu_on_o</obj_property>
+      <obj_property name="ObjectShortName">is_mmu_on_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/mmu_state_o" type="array">
+      <obj_property name="ElementShortName">mmu_state_o[1:0]</obj_property>
+      <obj_property name="ObjectShortName">mmu_state_o[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/phy_addr_o" type="array">
+      <obj_property name="ElementShortName">phy_addr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">phy_addr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_data_reg" type="array">
+      <obj_property name="ElementShortName">master_data_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">master_data_reg[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/last_phy_addr" type="array">
+      <obj_property name="ElementShortName">last_phy_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_phy_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/page_fault_code" type="array">
+      <obj_property name="ElementShortName">page_fault_code[1:0]</obj_property>
+      <obj_property name="ObjectShortName">page_fault_code[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/last_page_fault_code" type="array">
+      <obj_property name="ElementShortName">last_page_fault_code[1:0]</obj_property>
+      <obj_property name="ObjectShortName">last_page_fault_code[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/last_pc" type="array">
+      <obj_property name="ElementShortName">last_pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/state" type="array">
+      <obj_property name="ElementShortName">state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_ppn_we" type="logic">
+      <obj_property name="ElementShortName">tlb_ppn_we</obj_property>
+      <obj_property name="ObjectShortName">tlb_ppn_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_vpn" type="array">
+      <obj_property name="ElementShortName">tlb_vpn[19:0]</obj_property>
+      <obj_property name="ObjectShortName">tlb_vpn[19:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/w_tlb_ppn" type="array">
+      <obj_property name="ElementShortName">w_tlb_ppn[19:0]</obj_property>
+      <obj_property name="ObjectShortName">w_tlb_ppn[19:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/w_tlb_status" type="array">
+      <obj_property name="ElementShortName">w_tlb_status[4:0]</obj_property>
+      <obj_property name="ObjectShortName">w_tlb_status[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_hit" type="logic">
+      <obj_property name="ElementShortName">tlb_hit</obj_property>
+      <obj_property name="ObjectShortName">tlb_hit</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/r_tlb_ppn" type="array">
+      <obj_property name="ElementShortName">r_tlb_ppn[19:0]</obj_property>
+      <obj_property name="ObjectShortName">r_tlb_ppn[19:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/r_tlb_status" type="array">
+      <obj_property name="ElementShortName">r_tlb_status[4:0]</obj_property>
+      <obj_property name="ObjectShortName">r_tlb_status[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_type_i" type="logic">
+      <obj_property name="ElementShortName">master_type_i</obj_property>
+      <obj_property name="ObjectShortName">master_type_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_rw_type_i" type="array">
+      <obj_property name="ElementShortName">master_rw_type_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">master_rw_type_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/pc_i" type="array">
+      <obj_property name="ElementShortName">pc_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_data_i" type="array">
+      <obj_property name="ElementShortName">master_data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">master_data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_ack_i" type="logic">
+      <obj_property name="ElementShortName">master_ack_i</obj_property>
+      <obj_property name="ObjectShortName">master_ack_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/ctrl_ack_i" type="logic">
+      <obj_property name="ElementShortName">ctrl_ack_i</obj_property>
+      <obj_property name="ObjectShortName">ctrl_ack_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/vir_addr_i" type="array">
+      <obj_property name="ElementShortName">vir_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">vir_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/page_fault_code_o" type="array">
+      <obj_property name="ElementShortName">page_fault_code_o[1:0]</obj_property>
+      <obj_property name="ObjectShortName">page_fault_code_o[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/page_fault_addr_o" type="array">
+      <obj_property name="ElementShortName">page_fault_addr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">page_fault_addr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_hit_o" type="logic">
+      <obj_property name="ElementShortName">tlb_hit_o</obj_property>
+      <obj_property name="ObjectShortName">tlb_hit_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/is_mmu_on_o" type="logic">
+      <obj_property name="ElementShortName">is_mmu_on_o</obj_property>
+      <obj_property name="ObjectShortName">is_mmu_on_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/mmu_state_o" type="array">
+      <obj_property name="ElementShortName">mmu_state_o[1:0]</obj_property>
+      <obj_property name="ObjectShortName">mmu_state_o[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/phy_addr_o" type="array">
+      <obj_property name="ElementShortName">phy_addr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">phy_addr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/master_data_reg" type="array">
+      <obj_property name="ElementShortName">master_data_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">master_data_reg[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/last_phy_addr" type="array">
+      <obj_property name="ElementShortName">last_phy_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_phy_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/page_fault_code" type="array">
+      <obj_property name="ElementShortName">page_fault_code[1:0]</obj_property>
+      <obj_property name="ObjectShortName">page_fault_code[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/last_page_fault_code" type="array">
+      <obj_property name="ElementShortName">last_page_fault_code[1:0]</obj_property>
+      <obj_property name="ObjectShortName">last_page_fault_code[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/last_pc" type="array">
+      <obj_property name="ElementShortName">last_pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/state" type="array">
+      <obj_property name="ElementShortName">state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_ppn_we" type="logic">
+      <obj_property name="ElementShortName">tlb_ppn_we</obj_property>
+      <obj_property name="ObjectShortName">tlb_ppn_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_vpn" type="array">
+      <obj_property name="ElementShortName">tlb_vpn[19:0]</obj_property>
+      <obj_property name="ObjectShortName">tlb_vpn[19:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/w_tlb_ppn" type="array">
+      <obj_property name="ElementShortName">w_tlb_ppn[19:0]</obj_property>
+      <obj_property name="ObjectShortName">w_tlb_ppn[19:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/w_tlb_status" type="array">
+      <obj_property name="ElementShortName">w_tlb_status[4:0]</obj_property>
+      <obj_property name="ObjectShortName">w_tlb_status[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/tlb_hit" type="logic">
+      <obj_property name="ElementShortName">tlb_hit</obj_property>
+      <obj_property name="ObjectShortName">tlb_hit</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/r_tlb_ppn" type="array">
+      <obj_property name="ElementShortName">r_tlb_ppn[19:0]</obj_property>
+      <obj_property name="ObjectShortName">r_tlb_ppn[19:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_mmu/r_tlb_status" type="array">
+      <obj_property name="ElementShortName">r_tlb_status[4:0]</obj_property>
+      <obj_property name="ObjectShortName">r_tlb_status[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/rst_i" type="logic">
+      <obj_property name="ElementShortName">rst_i</obj_property>
+      <obj_property name="ObjectShortName">rst_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/mmu_state_i" type="array">
+      <obj_property name="ElementShortName">mmu_state_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">mmu_state_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/is_mmu_on_i" type="logic">
+      <obj_property name="ElementShortName">is_mmu_on_i</obj_property>
+      <obj_property name="ObjectShortName">is_mmu_on_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/dm_op_i" type="array">
+      <obj_property name="ElementShortName">dm_op_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">dm_op_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/sel_i" type="array">
+      <obj_property name="ElementShortName">sel_i[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sel_i[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/tlb_hit_i" type="logic">
+      <obj_property name="ElementShortName">tlb_hit_i</obj_property>
+      <obj_property name="ObjectShortName">tlb_hit_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/page_fault_code_i" type="array">
+      <obj_property name="ElementShortName">page_fault_code_i[1:0]</obj_property>
+      <obj_property name="ObjectShortName">page_fault_code_i[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/mmu_ack_o" type="logic">
+      <obj_property name="ElementShortName">mmu_ack_o</obj_property>
+      <obj_property name="ObjectShortName">mmu_ack_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/data_access_ack_o" type="logic">
+      <obj_property name="ElementShortName">data_access_ack_o</obj_property>
+      <obj_property name="ObjectShortName">data_access_ack_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/data_addr_i" type="array">
+      <obj_property name="ElementShortName">data_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/mmu_data_o" type="array">
+      <obj_property name="ElementShortName">mmu_data_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mmu_data_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/data_i" type="array">
+      <obj_property name="ElementShortName">data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/data_o" type="array">
+      <obj_property name="ElementShortName">data_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_cyc_o" type="logic">
+      <obj_property name="ElementShortName">wb_cyc_o</obj_property>
+      <obj_property name="ObjectShortName">wb_cyc_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_stb_o" type="logic">
+      <obj_property name="ElementShortName">wb_stb_o</obj_property>
+      <obj_property name="ObjectShortName">wb_stb_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_ack_i" type="logic">
+      <obj_property name="ElementShortName">wb_ack_i</obj_property>
+      <obj_property name="ObjectShortName">wb_ack_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_adr_o" type="array">
+      <obj_property name="ElementShortName">wb_adr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_adr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_dat_o" type="array">
+      <obj_property name="ElementShortName">wb_dat_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_dat_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_dat_i" type="array">
+      <obj_property name="ElementShortName">wb_dat_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_dat_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_sel_o" type="array">
+      <obj_property name="ElementShortName">wb_sel_o[3:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_sel_o[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/wb_we_o" type="logic">
+      <obj_property name="ElementShortName">wb_we_o</obj_property>
+      <obj_property name="ObjectShortName">wb_we_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/mtime" type="array">
+      <obj_property name="ElementShortName">mtime[63:0]</obj_property>
+      <obj_property name="ObjectShortName">mtime[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/mtimecmp" type="array">
+      <obj_property name="ElementShortName">mtimecmp[63:0]</obj_property>
+      <obj_property name="ObjectShortName">mtimecmp[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/mtime_we" type="logic">
+      <obj_property name="ElementShortName">mtime_we</obj_property>
+      <obj_property name="ObjectShortName">mtime_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/mtimecmp_we" type="logic">
+      <obj_property name="ElementShortName">mtimecmp_we</obj_property>
+      <obj_property name="ObjectShortName">mtimecmp_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/upper" type="logic">
+      <obj_property name="ElementShortName">upper</obj_property>
+      <obj_property name="ObjectShortName">upper</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/timer_wdata" type="array">
+      <obj_property name="ElementShortName">timer_wdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">timer_wdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/state" type="array">
+      <obj_property name="ElementShortName">state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/dm_ready" type="logic">
+      <obj_property name="ElementShortName">dm_ready</obj_property>
+      <obj_property name="ObjectShortName">dm_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/data_out" type="array">
+      <obj_property name="ElementShortName">data_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_data_addr" type="array">
+      <obj_property name="ElementShortName">last_data_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_data_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_data" type="array">
+      <obj_property name="ElementShortName">last_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_sel" type="array">
+      <obj_property name="ElementShortName">last_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">last_sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_dm_op" type="array">
+      <obj_property name="ElementShortName">last_dm_op[1:0]</obj_property>
+      <obj_property name="ObjectShortName">last_dm_op[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_valid_addr" type="array">
+      <obj_property name="ElementShortName">last_valid_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_valid_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_valid_sel" type="array">
+      <obj_property name="ElementShortName">last_valid_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">last_valid_sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_valid_data" type="array">
+      <obj_property name="ElementShortName">last_valid_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">last_valid_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/last_valid_time" type="array">
+      <obj_property name="ElementShortName">last_valid_time[63:0]</obj_property>
+      <obj_property name="ObjectShortName">last_valid_time[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/time_op" type="array">
+      <obj_property name="ElementShortName">time_op[1:0]</obj_property>
+      <obj_property name="ObjectShortName">time_op[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/if_same" type="logic">
+      <obj_property name="ElementShortName">if_same</obj_property>
+      <obj_property name="ObjectShortName">if_same</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/if_time" type="logic">
+      <obj_property name="ElementShortName">if_time</obj_property>
+      <obj_property name="ObjectShortName">if_time</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/isread" type="logic">
+      <obj_property name="ElementShortName">isread</obj_property>
+      <obj_property name="ObjectShortName">isread</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/iswrite" type="logic">
+      <obj_property name="ElementShortName">iswrite</obj_property>
+      <obj_property name="ObjectShortName">iswrite</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/isread_without_mmu" type="logic">
+      <obj_property name="ElementShortName">isread_without_mmu</obj_property>
+      <obj_property name="ObjectShortName">isread_without_mmu</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/iswrite_without_mmu" type="logic">
+      <obj_property name="ElementShortName">iswrite_without_mmu</obj_property>
+      <obj_property name="ObjectShortName">iswrite_without_mmu</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/sel" type="array">
+      <obj_property name="ElementShortName">sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/data_sft" type="array">
+      <obj_property name="ElementShortName">data_sft[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_sft[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/data" type="array">
+      <obj_property name="ElementShortName">data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/lab7_tb/dut/u_dm_master/normal_time_data_buf" type="array">
+      <obj_property name="ElementShortName">normal_time_data_buf[31:0]</obj_property>
+      <obj_property name="ObjectShortName">normal_time_data_buf[31:0]</obj_property>
    </wvobject>
 </wave_config>
