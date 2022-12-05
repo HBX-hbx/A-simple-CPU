@@ -86,7 +86,7 @@ module mmu (
 	// 4. U-mode software may only access the page when U=1. ?
 	// TODO:5. what about S mode program access a page whose U=1 ? (sstatus)
 
-	assign is_mmu_on_o = (priv_i == 2'b01 || priv_i == 2'b00) & satp_i[31]; // for S mode and U mode
+	assign is_mmu_on_o = ((priv_i == 2'b01 || priv_i == 2'b00) & satp_i[31]) | (vir_addr_i < 32'h8000_0000 && vir_addr_i > 32'h7000_0000 && master_type_i); // for S mode and U mode
 	assign page_fault_code_o = master_type_i ? (last_pc != pc_i ? 2'b00 : (page_fault_code | last_page_fault_code))
 								: (page_fault_code | last_page_fault_code);
 
