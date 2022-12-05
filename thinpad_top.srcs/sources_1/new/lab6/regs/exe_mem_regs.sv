@@ -139,6 +139,65 @@ module exe_mem_regs(
     always_ff @ (posedge clk) begin
         if (reset) begin
             mem_fence_o <= 0;
+            pc_o <= 0;
+            inst_o <= `NOP;
+            rd_addr_o <= 0;
+            rs2_data_o <= 0;
+            alu_y_o <= 0;
+            rf_wen_o <= 0;
+            wb_sel_o <= 0;
+            dm_sel_o <= 0;
+            dm_op_o <= 0;
+
+            mtvec_out <= 0;
+            mscratch_out <= 0;
+            mepc_out <= 0;
+            mcause_out <= 0;
+            mstatus_out <= 0;
+            mie_out <= 0;
+            mip_out <= 0;
+            priv_out <= 0;
+
+            satp_out <= 0;
+            mtval_out <= 0;
+            mideleg_out <= 0;
+            medeleg_out <= 0;
+            sepc_out <= 0;
+            scause_out <= 0;
+            stval_out <= 0;
+            stvec_out <= 0;
+            sscratch_out <= 0;
+
+            sstatus_out <= 0;
+            mhartid_out <= 0;
+            sie_out <= 0;
+            sip_out <= 0;
+            
+            mtvec_we_out <= 0;
+            mscratch_we_out <= 0;
+            mepc_we_out <= 0;
+            mcause_we_out <= 0;
+            mstatus_we_out <= 0;
+            mie_we_out <= 0;
+            mip_we_out <= 0;
+            priv_we_out <= 0;
+
+            satp_we_out <= 0;
+            mtval_we_out <= 0;
+            mideleg_we_out <= 0;
+            medeleg_we_out <= 0;
+            sepc_we_out <= 0;
+            scause_we_out <= 0;
+            stval_we_out <= 0;
+            stvec_we_out <= 0;
+            sscratch_we_out <= 0;
+
+            sstatus_we_out <= 0;
+            mhartid_we_out <= 0;
+            sie_we_out <= 0;
+            sip_we_out <= 0;
+            
+            csr_data_o <= 0;
         end else begin
             if (exe_mem_regs_hold_i) begin
             
