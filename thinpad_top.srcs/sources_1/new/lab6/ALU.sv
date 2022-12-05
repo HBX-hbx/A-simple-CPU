@@ -26,9 +26,9 @@ module ALU(
           alu_y = alu_a >> (alu_b & 32'h1F);
         end else if (alu_op == 4'd9) begin
           if ((32'h80000000 & alu_a) == 32'h80000000)
-            alu_y = (alu_a >> (alu_b & 32'h1F)) | (36'h100000000 - (36'h100000000 >> (alu_b & 32'h1F)));
+            alu_y = (alu_a >> (alu_b & 32'hF)) | (36'h100000000 - (36'h100000000 >> (alu_b & 32'h1F)));
           else
-            alu_y = (alu_a >> (alu_b & 32'h1F));
+            alu_y = (alu_a >> (alu_b & 32'hF));
         end else if (alu_op == 4'd10) begin
           alu_y = (alu_a << (alu_b & 32'hF)) | (alu_a >> (32 - (alu_b & 32'hF)));
         end else if (alu_op == 4'd11) begin

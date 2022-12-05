@@ -19,13 +19,13 @@ module bcomp(
                 if_br_o = ($signed(a_i) < $signed(b_i)) ? 1 : 0;
             end
             3'd5: begin
-                if_br_o = ($signed(a_i) >= $signed(b_i)) ? 1 : 0;
+                if_br_o = ($signed(a_i) > $signed(b_i)) ? 1 : 0;
             end
             3'd6: begin
                 if_br_o = (a_i < b_i) ? 1 : 0;
             end
             3'd7: begin
-                if_br_o = (a_i >= b_i) ? 1 : 0;
+                if_br_o = (a_i > b_i) ? 1 : 0;
             end
             default: begin
                 if_br_o = 0;
