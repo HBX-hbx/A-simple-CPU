@@ -6,7 +6,7 @@ module cachable_mux(
     // only used in dm_cache
     // TODO
     always_comb begin
-        if ((addr >= 32'h8000_0000) && (addr <= 32'h807F_FFFF)) begin
+        if ((addr >= 32'h8010_0000) && (addr <= 32'h8010_0FFF)) begin
             cachable = 1;
             // cachable = 0;
         end else if ((addr >= 32'h0000_0000) && (addr <= 32'h002F_FFFF)) begin
