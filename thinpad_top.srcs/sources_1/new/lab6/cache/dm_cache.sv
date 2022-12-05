@@ -53,9 +53,9 @@ module dm_cache(
     // for fence
     reg [5:0] dirty_judge_idx;
 
-    // shortcut judging if addr is vga
+    // shortcut judging if addr is vga (only sw)
     reg if_vga;
-    assign if_vga = (data_addr_i[31:16] == 12'h600);
+    assign if_vga = (data_addr_i[31:20] == 12'h600) && (dm_op_i == 2);
 
     assign data_4_align = cache_hit?(cache_data):wishbone_data;
     assign data_access_ack_o = if_vga | cache_hit | (~cachable & wishbone_ok & ~fence_i);
