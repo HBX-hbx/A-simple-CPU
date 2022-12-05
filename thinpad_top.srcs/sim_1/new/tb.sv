@@ -69,29 +69,7 @@ module lab6_tb;
     reset_btn = 1;
     #100;
     reset_btn = 0;
-
-    #4500000; // wait until the supervisor falls into infinite loop
-    
-    uart.pc_send_byte(8'h47); // ASCII 'g'
-
-    #1000;
-    uart.pc_send_byte(8'h00); // 
-    #1000;
-    uart.pc_send_byte(8'h10); //
-    #1000;
-    uart.pc_send_byte(8'h00); // 
-    #1000;
-    uart.pc_send_byte(8'h80); //
-    
-    #1000000;
-    
-     #100;
-    reset_btn = 1;
-    #100;
-    reset_btn = 0;
-
-    #45000000; // wait until the supervisor falls into infinite loop
-    
+    #4000000; // wait until the supervisor falls into infinite loop
     $finish;
   end
   

@@ -2351,13 +2351,12 @@ module lab6_top (
   assign video_clk   = sys_clk;
   vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
       .clk        (clk_50M),
-      .hdata      (hdata),        // 横坐�?
-      .vdata      (),             // 纵坐�?
+      .hdata      (hdata),        // 横坐�??
+      .vdata      (),             // 纵坐�??
       .hsync      (video_hsync),
       .vsync      (video_vsync),
       .data_enable(video_de)
   );
-  
   
   logic [15:0] bram_addr_r;
   logic [7:0] bram_data_r;
@@ -2379,7 +2378,7 @@ module lab6_top (
 //      .bram_data_i(bram_data)
 //  );
   
-  bram_module(
+  bram_withinit bram(
       // write the data
       .clka(clk_50M),
       .wea(bram_we),
@@ -2387,12 +2386,9 @@ module lab6_top (
       .dina(bram_data_w),
       // read the data
       .clkb(clk_50M),
-      .enb(1'b1),
+      // .enb(1'b1),
       .addrb(bram_addr_r),
       .doutb(bram_data_r)
   );
-
-  
-
   
 endmodule
