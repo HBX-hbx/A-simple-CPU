@@ -1,11 +1,12 @@
 module cachable_mux(
     input wire [31:0] addr,
     output reg cachable
-)
+);
     // four bytes align
     // only used in dm_cache
     // TODO
     `define CACHE_ON 1'b1;
+    
     always_comb begin
         if ((addr >= 32'h8010_0000) && (addr <= 32'h8010_0FFF)) begin
             cachable = `CACHE_ON;
