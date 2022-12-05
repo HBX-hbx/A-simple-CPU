@@ -2348,11 +2348,11 @@ module lab6_top (
 //   assign video_red   = hdata < 266 ? 3'b111 : 0;  // 红色竖条
 //   assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0;  // 绿色竖条
 //   assign video_blue  = hdata >= 532 ? 2'b11 : 0;  // 蓝色竖条
-//   assign video_clk   = sys_clk;
+//   assign video_clk   = clk_50M;
 //   vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
 //       .clk        (clk_50M),
-//       .hdata      (hdata),        // 横坐�???
-//       .vdata      (),             // 纵坐�???
+//       .hdata      (hdata),        // 横坐�???
+//       .vdata      (),             // 纵坐�???
 //       .hsync      (video_hsync),
 //       .vsync      (video_vsync),
 //       .data_enable(video_de)
@@ -2363,19 +2363,19 @@ module lab6_top (
   logic [15:0] bram_addr_w;
   logic [7:0] bram_data_w;
   logic bram_we;
-  
- vga_driver #(128, 128, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga_driver (
-     .clk_i(clk_50M),
-     .rst_i(reset_btn),
-     .hsync_o(video_hsync),
-     .vsync_o(video_vsync),
-     .de_o(video_de),
-     .red_o(video_red),
-     .green_o(video_green),
-     .blue_o(video_blue),
+  assign video_clk = clk_50M;
+  vga_driver #(128, 128, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga_driver (
+      .clk_i(clk_50M),
+      .rst_i(reset_btn),
+      .hsync_o(video_hsync),
+      .vsync_o(video_vsync),
+      .de_o(video_de),
+      .red_o(video_red),
+      .green_o(video_green),
+      .blue_o(video_blue),
 
-     .bram_addr_o(bram_addr_r),
-     .bram_data_i(bram_data_r)
+      .bram_addr_o(bram_addr_r),
+      .bram_data_i(bram_data_r)
  );
   
   bram_rw bram(
