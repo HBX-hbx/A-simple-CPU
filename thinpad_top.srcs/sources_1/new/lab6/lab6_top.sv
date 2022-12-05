@@ -2344,15 +2344,46 @@ module lab6_top (
   assign video_red   = hdata < 266 ? 3'b111 : 0;  // 红色竖条
   assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0;  // 绿色竖条
   assign video_blue  = hdata >= 532 ? 2'b11 : 0;  // 蓝色竖条
-  assign video_clk   = clk_50M;
+  assign video_clk   = sys_clk;
   vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
-      .clk        (clk_50M),
-      .hdata      (hdata),        // 横坐标
-      .vdata      (),             // 纵坐标
+      .clk        (sys_clk),
+      .hdata      (hdata),        // 横坐�?
+      .vdata      (),             // 纵坐�?
       .hsync      (video_hsync),
       .vsync      (video_vsync),
       .data_enable(video_de)
   );
+  
+  
+  logic [15:0] bram_addr;
+  logic [7:0] bram_data;
+  
+//  vga_driver vga_driver (
+//      .clk_i(sys_clk),
+//      .rst_i(sys_rst),
+//      .hsync_o(video_hsync),
+//      .vsync_o(video_vsync),
+//      .de_o(video_de),
+//      .red_o(video_red),
+//      .green_o(video_green),
+//      .blue_o(video_blue),
+
+//      .bram_addr_o(bram_addr),
+//      .bram_data_i(bram_data)
+//  );
+  
+  bram_module(
+      .clka(sys_clk),
+      .wea(1'b1),
+      .addra(),
+      .dina(),
+      .clkb(sys_clk),
+      .enb(1'b1),
+      .addrb(bram_addr),
+      .doutb(bram_data)
+  );
+
+  
 
   
 endmodule
