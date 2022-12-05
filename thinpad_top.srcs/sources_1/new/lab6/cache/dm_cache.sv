@@ -27,7 +27,12 @@ module dm_cache(
     input wire fence_i,
 
     // fault
-    output wire align_fault_o
+    output wire align_fault_o,
+
+    // shortcut to bram
+    output logic [15:0] bram_addr,
+    output logic [7:0] bram_data,
+    output logic bram_we
 );
 
     dm_cache_entry entry[63:0];
@@ -48,8 +53,12 @@ module dm_cache(
     // for fence
     reg [5:0] dirty_judge_idx;
 
+    // shortcut judging if addr is vga
+    reg if_vga;
+    assign if_vga = (data_addr_i[31:16] == 12'h600);
+
     assign data_4_align = cache_hit?(cache_data):wishbone_data;
-    assign data_access_ack_o = cache_hit | (~cachable & wishbone_ok & ~fence_i);
+    assign data_access_ack_o = if_vga | cache_hit | (~cachable & wishbone_ok & ~fence_i);
     assign wishbone_ok = dm_data_access_ack_i;
     assign wishbone_data = dm_data_i;
 
@@ -68,7 +77,7 @@ module dm_cache(
             end
             fence_i_finish <= 0;
             dirty_judge_idx <= 6'b0;
-        end else begin
+        end else if (~if_vga) begin
             if (fence_i) begin // fence 
                 if (wishbone_ok) begin
                     if(~fence_i_finish) begin
@@ -144,7 +153,7 @@ module dm_cache(
         .sel(sel_i),
         .fault(align_fault)
     );
-    assign align_fault_o = align_fault & ((dm_op_i == 2'b01 ) | (dm_op_i == 2'b10));
+    assign align_fault_o = ~if_vga & align_fault & ((dm_op_i == 2'b01 ) | (dm_op_i == 2'b10));
 
     // get align addr and corresponding sel
     `define ADDR_MASK 32'hfffffffc;
@@ -170,6 +179,10 @@ module dm_cache(
                 cache_hit = 1'b0;
                 cache_data = 32'b0;
             end
+        // Add VGA situation
+        end else if (if_vga) begin
+            cache_hit = 1'b0;
+            cache_data = 32'b0;
         end else begin
             if (~align_fault_o) begin // no align fault
                 if (dm_op_i == 2'b01 || dm_op_i == 2'b10) begin
@@ -203,6 +216,13 @@ module dm_cache(
                 dm_data_o = entry[dirty_judge_idx].data;
                 sel_o = 4'b1111;
             end
+        // Add VGA situation
+        end else if (if_vga) begin
+            dm_op_o = 2'b00;
+            dm_data_addr_o = 32'b0;
+            dm_data_o = 32'b0;
+            writeback_dirty = 0;
+            sel_o = 4'b1111;
         end else begin
             if (~cache_hit && ~align_fault_o) begin // need to update cache
                 if (cachable) begin
@@ -238,7 +258,10 @@ module dm_cache(
 
     // get real data
     always_comb begin
-        if (cachable) begin
+        // Add VGA situation
+        if (if_vga) begin
+            data_o = 0;
+        end else if (cachable) begin
             case(sel_4_align)
             4'b1111 : begin
                 data_o = data_4_align;
@@ -268,6 +291,18 @@ module dm_cache(
             endcase
         end else begin
             data_o = data_4_align;
+        end
+    end
+
+    // handle VGA situation
+    always_comb begin
+        bram_addr = 0;
+        bram_data = 0;
+        bram_we = 0;
+        if (if_vga) begin
+            bram_addr = data_addr_i[15:0];
+            bram_data = data_i[7:0];
+            bram_we = 1;
         end
     end
 endmodule
