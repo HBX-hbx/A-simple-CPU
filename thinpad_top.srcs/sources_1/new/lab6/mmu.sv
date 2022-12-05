@@ -33,9 +33,8 @@ module mmu (
 
 	assign mmu_state_o = state;
 
-	assign is_mmu_on_o = (~priv_i[0]) & satp_i[31]; // TODO: only for U mode ?
+	assign is_mmu_on_o = (~priv_i[0]) & satp_i[31];
 
-	// TODO: add Page Fault
 	// without execute permission
 
 	always_comb begin

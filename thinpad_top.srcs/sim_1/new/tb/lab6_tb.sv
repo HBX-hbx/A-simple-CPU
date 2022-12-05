@@ -38,6 +38,9 @@ module lab6_tb;
   wire uart_tsre;  // 数据发送完毕标志
 
   // Windows 需要注意路径分隔符的转义，例如 "D:\\foo\\bar.bin"
+//  parameter BASE_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\ucore_os_lab\\labcodes_answer\\lab8_evil\\bin\\rbl.img"; // BaseRAM 初始化文件，请修改为实际的绝对路径
+//  parameter EXT_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\ucore_os_lab\\labcodes_answer\\lab8_evil\\bin\\ucore.img";  // ExtRAM 初始化文件，请修改为实际的绝对路径
+
   parameter BASE_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\supervisor-rv\\kernel\\kernel.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路径
   parameter EXT_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\asmcode";  // ExtRAM 初始化文件，请修改为实际的绝对路径
 
@@ -55,13 +58,11 @@ module lab6_tb;
     #12000000; // wait until the supervisor falls into infinite loop
     
     uart.pc_send_byte(8'h47); // ASCII 'g'
-    // 0x80001000
-    // 0x80001080
-    // 0x800010c4
+
     #1000;
-    uart.pc_send_byte(8'h00); // 
+    uart.pc_send_byte(8'h20); // 
     #1000;
-    uart.pc_send_byte(8'h10); //
+    uart.pc_send_byte(8'h12); //
     #1000;
     uart.pc_send_byte(8'h00); // 
     #1000;
