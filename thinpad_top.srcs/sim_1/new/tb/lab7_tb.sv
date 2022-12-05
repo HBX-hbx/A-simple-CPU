@@ -38,7 +38,7 @@ module lab7_tb;
   wire uart_tsre;  // 数据发�?�完毕标�??
 
   // Windows �??要注意路径分隔符的转义，例如 "D:\\foo\\bar.bin"
-  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\supervisor-rv\\kernel\\kernel_g_fence.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路�??
+  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\supervisor-rv\\kernel\\kernel.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路�??
   // parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\lab6.bin"; // BaseRAM 初始化文件，请修改为实际的绝对路�??
   parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";  // ExtRAM 初始化文件，请修改为实际的绝对路�??
 
@@ -50,91 +50,103 @@ module lab7_tb;
     reset_btn = 0;
     #4500000;
     // 写一�? A
-    // #3000000;
-    uart.pc_send_byte(8'h41);
-    #1000;
-    // 初始地址
-    uart.pc_send_byte(8'h00);
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
-    uart.pc_send_byte(8'h30);
-    #1000;
-    uart.pc_send_byte(8'h80);
-    #1000;
-    // 写入�?个四�?
-    uart.pc_send_byte(8'h04); //
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
-    uart.pc_send_byte(8'h00);
+    #3000000;
+    // uart.pc_send_byte(8'h41);
+    // #1000;
+    // // 初始地址
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h30);
+    // #1000;
+    // uart.pc_send_byte(8'h80);
+    // #1000;
+    // // 写入�?个四�?
+    // uart.pc_send_byte(8'h04); //
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h00);
 
-    // 写一条指�? li a0,6
-    #1000;
-    uart.pc_send_byte(8'h13);
-    #1000;
-    uart.pc_send_byte(8'h05);
-    #1000;
-    uart.pc_send_byte(8'h60);
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
+    // // 写一条指�? li a0,6
+    // #1000;
+    // uart.pc_send_byte(8'h13);
+    // #1000;
+    // uart.pc_send_byte(8'h05);
+    // #1000;
+    // uart.pc_send_byte(8'h60);
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
     
-    // 写一�? A
-    uart.pc_send_byte(8'h41);
-    #1000;
-    // 初始地址
-    uart.pc_send_byte(8'h04); //
-    #1000;
-    uart.pc_send_byte(8'h00); //
-    #1000;
-    uart.pc_send_byte(8'h30); //
-    #1000;
-    uart.pc_send_byte(8'h80); //
-    #1000;
-    // 写入�?个四�?
-    uart.pc_send_byte(8'h04); //
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
-    uart.pc_send_byte(8'h00); //
-    #1000;
-    uart.pc_send_byte(8'h00); //
+    // // 写一�? A
+    // uart.pc_send_byte(8'h41);
+    // #1000;
+    // // 初始地址
+    // uart.pc_send_byte(8'h04); //
+    // #1000;
+    // uart.pc_send_byte(8'h00); //
+    // #1000;
+    // uart.pc_send_byte(8'h30); //
+    // #1000;
+    // uart.pc_send_byte(8'h80); //
+    // #1000;
+    // // 写入�?个四�?
+    // uart.pc_send_byte(8'h04); //
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h00); //
+    // #1000;
+    // uart.pc_send_byte(8'h00); //
 
-    // 写一条指�? li jr,ra
-    //00008067
-    #1000;
-    uart.pc_send_byte(8'h67); //
-    #1000;
-    uart.pc_send_byte(8'h80); //
-    #1000;
-    uart.pc_send_byte(8'h00); //
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
+    // // 写一条指�? li jr,ra
+    // //00008067
+    // #1000;
+    // uart.pc_send_byte(8'h67); //
+    // #1000;
+    // uart.pc_send_byte(8'h80); //
+    // #1000;
+    // uart.pc_send_byte(8'h00); //
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
 
-    // 写一�? G
-    #10000;
-    uart.pc_send_byte(8'h47);
-    #1000;
-    // 初始地址
-    uart.pc_send_byte(8'h00);
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
-    uart.pc_send_byte(8'h20);
-    #1000;
-    uart.pc_send_byte(8'h00);
-    #1000;
+    // // 写一�? G
+    // #10000;
+    // uart.pc_send_byte(8'h47);
+    // #1000;
+    // // 初始地址
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h20);
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
 
-    // 写一�? G
-    #1000000;
-    uart.pc_send_byte(8'h47);
+    // // 写一�? G
+    // #1000000;
+    // uart.pc_send_byte(8'h47);
+    // #1000;
+    // // 初始地址
+    // uart.pc_send_byte(8'ha8);
+    // #1000;
+    // uart.pc_send_byte(8'h10);
+    // #1000;
+    // uart.pc_send_byte(8'h00);
+    // #1000;
+    // uart.pc_send_byte(8'h80);
+    // #1000;
+  // # 3000000
+  uart.pc_send_byte(8'h47);
     #1000;
-    // 初始地址
-    uart.pc_send_byte(8'ha8);
+    // 初始地址 800011e8
+    uart.pc_send_byte(8'h80);
     #1000;
     uart.pc_send_byte(8'h10);
     #1000;
@@ -142,18 +154,6 @@ module lab7_tb;
     #1000;
     uart.pc_send_byte(8'h80);
     #1000;
-  // # 3000000
-  // uart.pc_send_byte(8'h47);
-  //   #1000;
-  //   // 初始地址 800011e8
-  //   uart.pc_send_byte(8'he8);
-  //   #1000;
-  //   uart.pc_send_byte(8'h11);
-  //   #1000;
-  //   uart.pc_send_byte(8'h00);
-  //   #1000;
-  //   uart.pc_send_byte(8'h80);
-  //   #1000;
   end
 
   // 待测试用户设�??
