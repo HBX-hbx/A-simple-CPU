@@ -2364,8 +2364,9 @@ module lab6_top (
   logic [7:0] bram_data_w;
   logic bram_we;
   
- vga_driver vga_driver (
-     .clk_i(sys_clk),
+ vga_driver #(128, 128, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga_driver (
+     .clk_i(clk_50M),
+     .rst_i(reset_btn),
      .hsync_o(video_hsync),
      .vsync_o(video_vsync),
      .de_o(video_de),

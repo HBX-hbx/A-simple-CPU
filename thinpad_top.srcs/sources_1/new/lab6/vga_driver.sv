@@ -16,6 +16,7 @@ module vga_driver
 #(parameter IMG_W = 0, IMG_H = 0, HSIZE = 0, HFP = 0, HSP = 0, HMAX = 0, VSIZE = 0, VFP = 0, VSP = 0, VMAX = 0, HSPP = 0, VSPP = 0)
 (
     input wire clk_i,
+    input wire rst_i,
     output wire hsync_o,
     output wire vsync_o,
     output reg de_o,
@@ -24,34 +25,31 @@ module vga_driver
     output reg [1:0] blue_o,
 
     output reg [15:0] bram_addr_o,
-    output reg [7:0] bram_data_i
+    input wire [7:0] bram_data_i
 );
 
 reg [15:0] hdata = 0;
 reg [15:0] vdata = 0;
 
 // hdata
-always @ (posedge clk_i)
-begin
+always @(posedge clk_i)
+if (rst_i) begin
+    hdata <= 0;
+    vdata <= 0;
+    bram_addr_o <= 0;
+end else begin
     if (hdata == (HMAX - 1))
         hdata <= 0;
     else
         hdata <= hdata + 1;
-end
-
-// vdata
-always @ (posedge clk_i)
-begin
-    if (hdata == (HMAX - 1)) 
-    begin
+    
+    if (hdata == (HMAX - 1)) begin
         if (vdata == (VMAX - 1))
             vdata <= 0;
         else
             vdata <= vdata + 1;
     end
-end
 
-always @ (posedge clk_i) begin
     if (hdata >= 0 && hdata < IMG_W && vdata >= 0 && vdata < IMG_H) begin
         red_o <= bram_data_i[7:5];
         green_o <= bram_data_i[4:2];
