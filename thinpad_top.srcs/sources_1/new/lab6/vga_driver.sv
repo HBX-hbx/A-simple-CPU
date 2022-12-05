@@ -16,8 +16,8 @@ module vga_driver
 #(parameter IMG_W = 0, IMG_H = 0, HSIZE = 0, HFP = 0, HSP = 0, HMAX = 0, VSIZE = 0, VFP = 0, VSP = 0, VMAX = 0, HSPP = 0, VSPP = 0)
 (
     input wire clk_i,
-    output wire hsync,
-    output wire vsync,
+    output wire hsync_o,
+    output wire vsync_o,
     output reg de_o,
     output reg [2:0] red_o,
     output reg [2:0] green_o,
@@ -70,8 +70,8 @@ always @ (posedge clk_i) begin
 end
 
 // hsync & vsync & blank
-assign hsync = ((hdata >= HFP) && (hdata < HSP)) ? HSPP : !HSPP;
-assign vsync = ((vdata >= VFP) && (vdata < VSP)) ? VSPP : !VSPP;
+assign hsync_o = ((hdata >= HFP) && (hdata < HSP)) ? HSPP : !HSPP;
+assign vsync_o = ((vdata >= VFP) && (vdata < VSP)) ? VSPP : !VSPP;
 // when active
 assign de_o = ((hdata < HSIZE) & (vdata < VSIZE));
 
