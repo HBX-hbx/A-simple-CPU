@@ -110,7 +110,10 @@ module if_id_regs(
     output logic sstatus_we_out,
     output logic mhartid_we_out,
     output logic sie_we_out,
-    output logic sip_we_out
+    output logic sip_we_out,
+
+    input wire [1:0]   page_fault_code_i,
+    output logic [1:0] page_fault_code_o
 );
     always_ff @ (posedge clk_i) begin
         if (rst_i) begin
@@ -170,6 +173,8 @@ module if_id_regs(
                 sie_we_out <= 0;
                 sip_we_out <= 0;
 
+                page_fault_code_o <= 0;
+
             end else begin
                 pc_o <= pc_i;
                 inst_o <= inst_i;
@@ -221,6 +226,8 @@ module if_id_regs(
                 mhartid_we_out <= mhartid_we_in;
                 sie_we_out <= sie_we_in;
                 sip_we_out <= sip_we_in;
+
+                page_fault_code_o <= page_fault_code_i;
             end
         end
     end

@@ -445,6 +445,7 @@ module lab6_top (
       .mmu_state_i (if_mmu_state),
       .is_mmu_on_i (if_mmu_on),
       .tlb_hit_i (if_tlb_hit),
+      .page_fault_code_i (if_page_fault_code),
       // to mmu
       .mmu_ack_o (if_master_ack_mmu),
       .mmu_data_o (if_master_data_mmu),
@@ -689,7 +690,10 @@ module lab6_top (
       .sstatus_we_out(id_sstatus_we_i),
       .mhartid_we_out(id_mhartid_we_i),
       .sie_we_out(id_sie_we_i),
-      .sip_we_out(id_sip_we_i)
+      .sip_we_out(id_sip_we_i),
+
+      .page_fault_code_i (if_page_fault_code),
+      .page_fault_code_o (id_page_fault_code)
   );
 
   logic id_mtvec_we_i;
@@ -787,6 +791,8 @@ module lab6_top (
   logic [31:0] id_mhartid_data_o;
   logic [31:0] id_sie_data_o;
   logic [31:0] id_sip_data_o;
+
+  logic [1:0]  id_page_fault_code;
   
   /* =========== ID Stage start =========== */
   
@@ -824,7 +830,7 @@ module lab6_top (
   decoder u_decoder (
       .inst_i     (id_inst),
       .time_int_i (id_time_int),
-      .page_fault_i ((if_page_fault_code != 2'b00) || (mem_page_fault_code != 2'b00)),
+      .page_fault_i ((id_page_fault_code != 2'b00) || (mem_page_fault_code != 2'b00)),
       
       .rd_addr_o  (id_rd_addr),
       .rf_wen_o   (id_rf_wen),
@@ -1042,7 +1048,7 @@ module lab6_top (
       .sip_we_out(id_sip_we_o),
       
       // Other signals
-      .if_page_fault_code_i (if_page_fault_code),
+      .if_page_fault_code_i (id_page_fault_code),
       .mem_page_fault_code_i (mem_page_fault_code),
       .direct_branch_addr(id_direct_branch_addr),
       .csr_code(id_csr_code)
@@ -1211,6 +1217,9 @@ module lab6_top (
       .ex_tlb_flush(ex_tlb_flush),
       .id_direct_branch_addr(id_direct_branch_addr),
       .ex_direct_branch_addr(ex_direct_branch_addr),
+
+      .page_fault_code_i (id_page_fault_code),
+      .page_fault_code_o (ex_page_fault_code),
       .id_fence(id_fence),
       .exe_fence(exe_fence)
   );
@@ -1356,6 +1365,7 @@ module lab6_top (
   logic [31:0] ex_direct_branch_addr;
   logic [3:0] ex_csr_code;
   logic        ex_tlb_flush;
+  logic [1:0]  ex_page_fault_code;
 
   logic [31:0] exe_csr_data;
 
@@ -2038,6 +2048,7 @@ module lab6_top (
       .pc_hold_o (pc_hold),
       
       .if_ack_i (if_ack),
+      .if_page_fault_code_i (if_page_fault_code | id_page_fault_code | ex_page_fault_code),
       
       .if_id_regs_hold_o (if_id_regs_hold),
       .if_id_regs_bubble_o (if_id_regs_bubble),

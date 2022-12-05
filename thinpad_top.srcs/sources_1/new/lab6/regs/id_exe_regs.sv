@@ -156,6 +156,8 @@ module id_exe_regs(
     output reg [3:0] ex_csr_code,
     output reg       ex_tlb_flush,
 
+    input wire [1:0]   page_fault_code_i,
+    output logic [1:0] page_fault_code_o,
     input wire id_fence,
     output reg exe_fence
 );
@@ -235,6 +237,7 @@ module id_exe_regs(
 
                 ex_csr_code <= 0;
                 ex_direct_branch_addr <= 0;
+                page_fault_code_o <= 0;
                 exe_fence <= 0;
 
             end else begin
@@ -307,6 +310,7 @@ module id_exe_regs(
 
                 ex_csr_code <= id_csr_code;
                 ex_direct_branch_addr <= id_direct_branch_addr;
+                page_fault_code_o <= page_fault_code_i;
 
                 exe_fence <= id_fence;
             end
