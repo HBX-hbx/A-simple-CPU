@@ -8,8 +8,8 @@ module cachable_mux(
     // TODO
     always_comb begin
         if ((addr >= 32'h8000_0000) && (addr <= 32'h807F_FFFF)) begin
-            cachable = 1;
-            // cachable = 0;
+            // cachable = 1;
+            cachable = 0;
         end else begin
             cachable = 0;
         end
