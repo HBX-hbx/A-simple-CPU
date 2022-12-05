@@ -99,11 +99,13 @@ module im_fast_cache(
                 end else begin
                     if (~valid_1[pc_i[7:2]] || (valid_1[pc_i[7:2]] && valid_2[pc_i[7:2]])) begin
                         pc_tag_1[pc_i[7:2]] <= pc_i[31:8];
-                        valid_1[pc_i[7:2]] <= 1'b1;
+                        // valid_1[pc_i[7:2]] <= 1'b1;
+                        valid_1[pc_i[7:2]] <= 1'b0;
                         data_1[pc_i[7:2]] <= im_inst_i;
                     end else begin // if (~valid_2[pc_i[7:2]]) begin
                         pc_tag_2[pc_i[7:2]] <= pc_i[31:8];
-                        valid_2[pc_i[7:2]] <= 1'b1;
+                        // valid_2[pc_i[7:2]] <= 1'b1;
+                        valid_2[pc_i[7:2]] <= 1'b0;
                         data_2[pc_i[7:2]] <= im_inst_i;
                     end
                 end

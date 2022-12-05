@@ -40,7 +40,8 @@ module BTB(
             if (addr_sel_i != 2'b11) begin
                 if (~stall && (exe_is_branch_i === 1'b1) && (branch_taken_i === 1'b1) && (branch_addr_i !== id_addr_i)) begin // 该跳跳错了或者没�?
                     pc_tag[exe_addr_i[7:2]] <= exe_addr_i[31:8]; // 23+1
-                    taken[exe_addr_i[7:2]] <= 1'b1;
+                    // taken[exe_addr_i[7:2]] <= 1'b1;
+                    taken[exe_addr_i[7:2]] <= 1'b0;
                     next_pc[exe_addr_i[7:2]] <= branch_addr_i;
                 end else if (~stall && (exe_is_branch_i === 1'b1) && ~branch_taken_i && ( (exe_addr_i + 4) != id_addr_i)) begin // 不该跳跳�?
                     pc_tag[exe_addr_i[7:2]] <= exe_addr_i[31:8];
