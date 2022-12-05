@@ -22,14 +22,18 @@ module BTB(
     reg [23:0] pc_tag [63:0]; // 24 6 2
     reg taken [63:0];
     reg [`ADDR_WIDTH-1:0] next_pc [63:0];
-    reg [5:0] j;
+    // reg [5:0] j;
+    integer j;
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            j = 6'b0;
-            repeat(64) begin
+            // j = 6'b0;
+            // repeat(64) begin
+            //     taken[j] <= 1'b0;
+            //     j = j + 1;
+            // end
+            for(j=0;j<64;j=j+1) begin
                 taken[j] <= 1'b0;
-                j = j + 1;
             end
         end else begin
             // 更新 taken tag 以及寄存�?

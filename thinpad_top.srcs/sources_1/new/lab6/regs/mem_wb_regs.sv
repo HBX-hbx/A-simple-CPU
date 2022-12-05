@@ -14,7 +14,9 @@ module mem_wb_regs(
 );
     always_ff @ (posedge clk_i) begin
         if (rst_i) begin
-
+            rd_addr_o <= 0;
+            rf_wen_o <= 0;
+            wb_data_o <= 0;
         end else begin
             if (mem_wb_regs_hold_i) begin
             
