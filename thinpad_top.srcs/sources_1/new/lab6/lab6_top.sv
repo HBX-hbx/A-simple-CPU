@@ -2358,13 +2358,13 @@ module lab6_top (
 //       .data_enable(video_de)
 //   );
   
-  logic [15:0] bram_addr_r;
+  logic [18:0] bram_addr_r;
   logic [7:0] bram_data_r;
-  logic [15:0] bram_addr_w;
+  logic [18:0] bram_addr_w;
   logic [7:0] bram_data_w;
   logic bram_we;
   assign video_clk = clk_50M;
-  vga_driver #(128, 95, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga_driver (
+  vga_driver #(800, 385, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga_driver (
       .clk_i(clk_50M),
       .rst_i(reset_btn),
       .hsync_o(video_hsync),
@@ -2378,7 +2378,7 @@ module lab6_top (
       .bram_data_i(bram_data_r)
  );
   
-  bram_rw_new bram(
+  bram_rw bram(
       // write the data
       .clka(clk_50M),
       .wea(bram_we),

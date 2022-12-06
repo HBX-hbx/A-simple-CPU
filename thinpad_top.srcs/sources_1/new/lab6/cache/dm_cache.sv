@@ -30,7 +30,7 @@ module dm_cache(
     output wire align_fault_o,
 
     // shortcut to bram
-    output logic [15:0] bram_addr,
+    output logic [18:0] bram_addr,
     output logic [7:0] bram_data,
     output logic bram_we
 );
@@ -300,7 +300,7 @@ module dm_cache(
         bram_data = 0;
         bram_we = 0;
         if (if_vga) begin
-            bram_addr = data_addr_i[15:0];
+            bram_addr = data_addr_i[18:0];
             bram_data = data_i[7:0];
             bram_we = 1;
         end

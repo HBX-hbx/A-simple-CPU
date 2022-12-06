@@ -24,7 +24,7 @@ module vga_driver
     output reg [2:0] green_o,
     output reg [1:0] blue_o,
 
-    output reg [15:0] bram_addr_o,
+    output reg [18:0] bram_addr_o,
     input wire [7:0] bram_data_i
 );
 
