@@ -51,19 +51,24 @@ end else begin
     end
 
     if (hdata >= 0 && hdata < IMG_W && vdata >= 0 && vdata < IMG_H) begin
-        red_o <= bram_data_i[7:5];
-        green_o <= bram_data_i[4:2];
-        blue_o <= bram_data_i[1:0];
         if (bram_addr_o == IMG_H * IMG_W - 1) begin
             bram_addr_o <= 0;
         end else begin
             bram_addr_o <= bram_addr_o + 1;
         end
     end else begin
-        red_o <= 0;
-        green_o <= 0;
-        blue_o <= 0;
         bram_addr_o <= bram_addr_o;
+    end
+end
+
+always_comb begin
+    red_o = 0;
+    green_o = 0;
+    blue_o = 0;
+    if (hdata >= 0 && hdata < IMG_W && vdata >= 0 && vdata < IMG_H) begin
+        red_o = bram_data_i[7:5];
+        green_o = bram_data_i[4:2];
+        blue_o = bram_data_i[1:0];
     end
 end
 
