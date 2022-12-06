@@ -2364,7 +2364,7 @@ module lab6_top (
   logic [7:0] bram_data_w;
   logic bram_we;
   assign video_clk = clk_50M;
-  vga_driver #(400, 266, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga_driver (
+  vga_driver #(400, 299, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga_driver (
       .clk_i(clk_50M),
       .rst_i(reset_btn),
       .hsync_o(video_hsync),
