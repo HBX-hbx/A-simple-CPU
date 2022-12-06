@@ -2378,7 +2378,7 @@ module lab6_top (
       .bram_data_i(bram_data_r)
  );
   
-  bram_rw bram(
+  bram_rw_new bram(
       // write the data
       .clka(clk_50M),
       .wea(bram_we),

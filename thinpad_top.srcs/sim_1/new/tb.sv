@@ -61,7 +61,7 @@ module lab6_tb;
 //  parameter BASE_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\ucore_os_lab\\labcodes_answer\\lab8_evil\\bin\\rbl.img"; // BaseRAM ��ʼ���ļ������޸�Ϊʵ�ʵľ���·��
 //  parameter EXT_RAM_INIT_FILE = "D:\\THUstudy\\study\\2022-2023autumn\\ComputerComposition\\rv-2022\\ucore_os_lab\\labcodes_answer\\lab8_evil\\bin\\ucore.img";  // ExtRAM ��ʼ���ļ������޸�Ϊʵ�ʵľ���·��
 
-  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\create_img.bin"; // BaseRAM ��ʼ���ļ������޸�Ϊʵ�ʵľ���·��
+  parameter BASE_RAM_INIT_FILE = "D:\\rv-2022\\asmcode\\badapple_single.bin"; // BaseRAM ��ʼ���ļ������޸�Ϊʵ�ʵľ���·��
   parameter EXT_RAM_INIT_FILE = "";  // ExtRAM ��ʼ���ļ������޸�Ϊʵ�ʵľ���·��
   
   initial begin
