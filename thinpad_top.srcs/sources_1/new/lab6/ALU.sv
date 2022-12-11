@@ -38,6 +38,79 @@ module ALU(
         // ALU especially for JALR
         end else if (alu_op == 4'd12) begin
           alu_y = (alu_a + alu_b) & 32'hFFFFFFFE;
+        // XPERM8
+        end else if (alu_op == 4'd13) begin
+          case (alu_b[31:24])
+            8'd0: begin
+              alu_y[31:24] = alu_a[7:0];
+            end
+            8'd1: begin
+              alu_y[31:24] = alu_a[15:8];
+            end
+            8'd2: begin
+              alu_y[31:24] = alu_a[23:16];
+            end
+            8'd3: begin
+              alu_y[31:24] = alu_a[31:24];
+            end
+            default: begin
+              alu_y[31:24] = 8'd0;
+            end
+          endcase
+
+          case (alu_b[23:16])
+            8'd0: begin
+              alu_y[23:16] = alu_a[7:0];
+            end
+            8'd1: begin
+              alu_y[23:16] = alu_a[15:8];
+            end
+            8'd2: begin
+              alu_y[23:16] = alu_a[23:16];
+            end
+            8'd3: begin
+              alu_y[23:16] = alu_a[31:24];
+            end
+            default: begin
+              alu_y[23:16] = 8'd0;
+            end
+          endcase
+
+          case (alu_b[15:8])
+            8'd0: begin
+              alu_y[15:8] = alu_a[7:0];
+            end
+            8'd1: begin
+              alu_y[15:8] = alu_a[15:8];
+            end
+            8'd2: begin
+              alu_y[15:8] = alu_a[23:16];
+            end
+            8'd3: begin
+              alu_y[15:8] = alu_a[31:24];
+            end
+            default: begin
+              alu_y[15:8] = 8'd0;
+            end
+          endcase
+
+          case (alu_b[7:0])
+            8'd0: begin
+              alu_y[7:0] = alu_a[7:0];
+            end
+            8'd1: begin
+              alu_y[7:0] = alu_a[15:8];
+            end
+            8'd2: begin
+              alu_y[7:0] = alu_a[23:16];
+            end
+            8'd3: begin
+              alu_y[7:0] = alu_a[31:24];
+            end
+            default: begin
+              alu_y[7:0] = 8'd0;
+            end
+          endcase
         end else begin
           alu_y = 0;
         end

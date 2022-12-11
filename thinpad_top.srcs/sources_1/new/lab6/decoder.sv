@@ -50,6 +50,7 @@ module decoder(
       BNE,
       JAL,
       JALR,
+      XPERM8,
       ERR
     } decode_ops;
     
@@ -58,6 +59,8 @@ module decoder(
     always_comb begin
         if (inst_i[6:0] == 7'b0110111) begin
             d_op = LUI;
+        end else if (inst_i[31:25] == 7'b0010100 && inst_i[14:12] == 3'b100 && inst_i[6:0] == 7'b0110011) begin
+            d_op = XPERM8;
         end else if (inst_i[6:0] == 7'b0010111) begin
             d_op = AUIPC;
         end else if (inst_i[14:12] == 3'b000 && inst_i[6:0] == 7'b0110011) begin
@@ -366,6 +369,20 @@ module decoder(
             shamt_o = 0;
             dm_sel_o = 0;
             dm_op_o = 0;
+        end else if (d_op == XPERM8) begin
+            rd_addr_o = inst_i[11:7];
+            rs1_addr_o = inst_i[19:15];
+            rs2_addr_o = inst_i[24:20];
+            rf_wen_o = 1;
+            alu_a_sel_o = 1;
+            alu_b_sel_o = 1;
+            alu_op_o = 13; // 1 is XPERM8
+            imm_sel_o = 0; // 0 represent no imm
+            wb_sel_o = 1; // 1 represent wb data comes from ALU
+            br_op_o = 2; // no branch op
+            shamt_o = 0; // no shamt
+            dm_sel_o = 0; // no dm sel
+            dm_op_o = 0; // no dm op
         end else begin
             // all default situations
             rd_addr_o = 0;
