@@ -1,7 +1,25 @@
-Thinpad 模板工程
----------------
+数据旁路
 
-工程包含示例代码和所有引脚约束，可以直接编译。
+BTB
 
-代码中包含中文注释，编码为utf-8，在Windows版Vivado下可能出现乱码问题。  
-请用别的代码编辑器打开文件，并将编码改为GBK。
+分支预测
+
+Icache
+
+Dcache
+
+TLB
+
+RV32I
+
+中断异常
+
+S态
+
+虚实转换+页表
+
+uCore Shell
+
+VGA
+
+![image-20230618215211572](C:\Users\Alexander\AppData\Roaming\Typora\typora-user-images\image-20230618215211572.png)
